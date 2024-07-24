@@ -2,6 +2,14 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij,windows,macos,java,gradle,maven
 
 ### Custom ###
+# VirtualBox
+**/centos*/
+*/ubuntu-mysql/
+**/.vbox
+**/.vbox-prev
+**/*.vdi
+
+# Intellij
 .idea/
 /**/*.iml
 /**/datasource.properties
