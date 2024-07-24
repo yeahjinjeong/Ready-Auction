@@ -1,6 +1,6 @@
 spring:
   application:
-    name: Ready-Auction
+    name: ready-auction
 
 logging:
   level:

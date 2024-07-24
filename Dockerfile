@@ -1,7 +1,7 @@
 # base image
 FROM amazoncorretto:17
 # image meta
-LABEL maintainer="jyna120<jyna120@gmail.com>"
+LABEL maintainer="ready-auction<jyna120@gmail.com>"
 
 # build시 사용할 변수 선언
 ARG JAR_FILE_PATH=build/libs/*.jar
