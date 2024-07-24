@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: ready-auction
+
+server:
+  servlet:
+    context-path: /app
+
+logging:
+  level:
+    root: info
+    com.readyauction.app: debug
