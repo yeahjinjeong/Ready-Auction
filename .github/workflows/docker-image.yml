@@ -25,16 +25,16 @@ jobs:
     # Gradle 실행 권한 부여
     - name: Grant permission for gradlew
       run: chmod +x ./gradlew
-      working-directory: ./Ready-Auction
+      working-directory: ./ready-auction
     # Gradle Build (테스트 생략)
     - name: Build with Gradle
       run: ./gradlew clean build -x test
-      working-directory: ./Ready-Auction
+      working-directory: ./ready-auction
     # 빌드된 jar파일을 도커 이미지로 빌드 및 도커 허브에 발행(푸시)
     - name: Docker build and publish
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ vars.APP_NAME }} ./Ready-Auction
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ vars.APP_NAME }} ./ready-auction
         docker push ${{ secrets.DOCKER_USERNAME }}/${{ vars.APP_NAME }}
 
   # 2. CD 배포
