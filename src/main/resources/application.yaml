@@ -1,18 +1,6 @@
 spring:
   application:
     name: ready-auction
-  datasource:
-    url: jdbc:mysql://192.168.219.106/readyauctiondb
-    username: root
-    password: mysql
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      connection-timeout: 30000
-      maximum-pool-size: 50
-      max-lifetime: 60000
-      minimum-idle: 5
-      idle-timeout: 30000
-      auto-commit: false
   servlet:
     multipart:
       max-request-size: 50MB
@@ -28,10 +16,3 @@ logging:
 server:
   servlet:
     context-path: /app
-
-ftp:
-  server:
-    host: 192.168.219.106
-    port: 21
-    username: root
-    password: mysql
