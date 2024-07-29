@@ -1,0 +1,227 @@
+// Navbar //
+@media (max-width: 991.98px) {
+  .header-bottom {
+    nav {
+      position: relative;
+      .logo {
+        button {
+          position: absolute;
+          right: 20px;
+          top: 13px;
+          outline: none;
+          i {
+            color: $primary-color;
+            font-size: 30px;
+            &.navbar-toggler-icon {
+              height: 1em;
+            }
+          }
+        }
+      }
+      .search-nav {
+        position: absolute;
+        right: 90px;
+        top: 5px;
+      }
+      .navbar-collapse {
+        float: none !important;
+        position: absolute;
+        background-color: $primary-color;
+        top: 77px;
+        left: 0px;
+        width: 100%;
+        .nav-item {
+          border-bottom: 1px solid #bccaea;
+          a {
+            color: $black-color;
+            padding: 5px 20px !important;
+            font-size: 16px !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 575.98px) {
+  .header-top {
+    a {
+      span {
+        display: none;
+      }
+    }
+  }
+  .header-bottom {
+    nav {
+      .logo {
+        button {
+          right: 0;
+        }
+        img {
+          margin-left: 10px;
+        }
+      }
+      .search-nav {
+        form {
+          display: none;
+          position: relative;
+          right: -70px;
+          top: 65px;
+          .btn-search {
+            top: -10px;
+          }
+          input {
+            background: #3f22b3;
+            border: 1px solid #bccaea;
+          }
+        }
+        .icon {
+          display: block;
+          color: $primary-color;
+          position: absolute;
+          top: 15px;
+          right: 0;
+        }
+      }
+    }
+  }
+}
+// ----- //
+
+// Footer //
+@media (max-width: 991.98px) {
+  .subscribe {
+    .area {
+      padding: 25px !important;
+      .image {
+        display: none;
+      }
+      .content {
+        padding: 15px;
+      }
+    }
+  }
+
+  .footer-top {
+    .item {
+      padding-bottom: 30px;
+    }
+  }
+}
+// ----- //
+
+// Home Page //
+@media (max-width: 991.98px) {
+  #banner {
+    img {
+      display: none;
+    }
+    .banner-content {
+      margin-bottom: 100px;
+      h1 {
+        font-size: 60px !important;
+        span {
+          display: inline !important;
+        }
+      }
+      p {
+        font-size: 20px;
+      }
+    }
+  }
+
+  #catagory-slider {
+    .item {
+      width: 240px !important;
+    }
+  }
+
+  .header {
+    .title {
+      .text {
+        p {
+          max-width: 400px !important;
+        }
+      }
+    }
+  }
+
+  #register-for-free {
+    padding-top: 0px !important;
+    .content {
+      padding: 65px 40px 30px !important;
+    }
+  }
+
+  #real-estate-auction {
+    .real-estate-slider {
+      .image {
+        margin-top: 50px;
+      }
+    }
+  }
+}
+
+@media (max-width: 767.98px) {
+  #banner {
+    .banner-content {
+      margin-bottom: 100px;
+      h1 {
+        font-size: 42px !important;
+        line-height: 42px !important;
+        span {
+          display: inline !important;
+        }
+      }
+      p {
+        font-size: 16px !important;
+      }
+    }
+  }
+  #catagory-slider {
+    .item {
+      width: 100% !important;
+    }
+  }
+  .header {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 45px;
+    .title {
+      margin-bottom: 0 !important;
+      justify-content: center;
+      .text {
+        text-align: center;
+        h1 {
+          font-size: 32px;
+        }
+      }
+      img {
+        display: none;
+      }
+    }
+  }
+  #popular-auctions {
+    .popular-products {
+      background: none !important;
+      box-shadow: none !important;
+      .popular-item {
+        flex-direction: column;
+        justify-content: center;
+        box-shadow: 0px 9px 20px 0px rgba(22, 26, 57, 0.26);
+        background: $primary-color;
+        border-radius: 10px;  
+        padding: 15px;
+        .image {
+          margin-left: 0px !important;
+          text-align: center;
+        }
+        .content {
+          padding-left: 0px !important;
+        }
+      }
+    }
+  }
+}
+// ----- //

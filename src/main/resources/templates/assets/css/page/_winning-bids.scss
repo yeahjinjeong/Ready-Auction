@@ -1,0 +1,59 @@
+#dashboard {
+  .winning-bids {
+    .header {
+      border-radius: 20px;
+      background-color: $primary-color;
+      box-shadow: 0px 6px 18px 0px rgba(16, 5, 54, 0.17);
+      padding: 30px;
+      margin-bottom: 30px;
+      .title {
+        margin-bottom: 30px;
+        h3 {
+          color: $blue-dark-color;
+        }
+      }
+      .search {
+        form {
+          max-width: 240px;
+          position: relative;
+          input {
+            background: transparent;
+            height: 37px;
+            border-radius: 19px;
+            border: 1px solid rgba(13, 21, 75, 0.15);
+            font-size: 14px;
+            padding-right: 30px;
+            padding-left: 20px;
+            width: 100%;
+            outline: none;
+          }
+          button {
+            height: 35px;
+            width: 35px;
+            text-align: center;
+            background: transparent;
+            font-size: 14px;
+            position: absolute;
+            right: 1px;
+            bottom: 1px;
+            border: none;
+            outline: none;
+          }
+        }
+        .sort {
+          span {
+            margin-right: 8px;
+            color: $black-color;
+          }
+          select {
+            border-radius: 19px;
+            border: 1px solid rgba(13, 21, 75, 0.15);
+          }
+        }
+      }
+    }
+    .auction-item{
+      @include auction-item();
+    }
+  }
+}

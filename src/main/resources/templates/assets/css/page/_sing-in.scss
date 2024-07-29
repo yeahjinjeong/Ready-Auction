@@ -1,0 +1,92 @@
+#login {
+  position: relative;
+  padding-bottom: 120px;
+  .account {
+    margin-top: -440px;
+    .left-side {
+      padding: 60px 30px 60px 60px;
+      width: 70%;
+      background: $primary-color;
+      border-radius: 10px 0px 0px 10px;
+      box-shadow: 0 0 15px rgba(44, 46, 69, 0.11);
+      .header {
+        margin-bottom: 55px;
+      }
+      form {
+        .form-group {
+          position: relative;
+          font-size: 16px;
+          text-align: center;
+          &:first-child {
+            margin-bottom: 30px;
+          }
+          input {
+            height: 50px;
+            border: 1px solid rgba(97, 90, 191, 0.2);
+            background: #ffffff;
+            padding: 0 75px;
+            &:focus {
+              outline: 0 !important;
+              box-shadow: none;
+            }
+          }
+          label {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+          }
+          span {
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            position: absolute;
+            cursor: pointer;
+          }
+          a {
+            color: $gray-color;
+          }
+          button {
+            @include auction-item-btn();
+            border: none;
+          }
+        }
+      }
+    }
+    .right-side {
+      background: -webkit-linear-gradient(
+        90deg,
+        #5140fe 0%,
+        #7757f7 56%,
+        #9d6ef0 100%
+      );
+      border-radius: 0 10px 10px 0;
+      width: 30%;
+      padding: 60px 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      h2 {
+        color: $primary-color;
+        font-size: 36px;
+        margin-bottom: 18px;
+      }
+      p {
+        color: $white-litte-color;
+        margin-bottom: 20px;
+      }
+      a {
+        display: inline-block;
+        color: $primary-color;
+        border-radius: 30px;
+        padding: 12px 30px 10px;
+        font-size: 18px;
+        box-shadow: -1.04px 4.891px 20px 0px rgba(69, 49, 183, 0.5);
+        font-family:$secondary_font_family;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        font-weight: 400;
+      }
+    }
+  }
+}

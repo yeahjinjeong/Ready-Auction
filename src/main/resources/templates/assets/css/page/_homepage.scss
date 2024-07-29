@@ -1,0 +1,624 @@
+#banner {
+  padding: 140px 0px 120px;
+  position: relative;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  z-index: 1;
+  overflow: hidden;
+  .banner-content {
+    padding-top: 100px;
+    h5 {
+      margin-bottom: 15px;
+      color: #00f7ff;
+    }
+    h1 {
+      font-size: 80px;
+      line-height: 90px;
+      color: $primary-color;
+      margin-bottom: 15px;
+      span {
+        display: block;
+      }
+    }
+    p {
+      font-size: 22px;
+      line-height: 34px;
+      margin: 0;
+      margin-bottom: 33px;
+      color: $white-litte-color;
+    }
+    a {
+      padding: 12px 48px 8px;
+      line-height: 40px;
+      border-radius: 30px;
+      background: -webkit-linear-gradient(92deg, #ff8359 0%, #ffdf40 100%);
+      box-shadow: 0px 19px 56px 0px rgba(0, 0, 0, 0.2);
+      letter-spacing: 2px;
+      color: $primary-color;
+      font-size: 18px;
+      font-weight: 500;
+      font-family: $secondary_font_family;
+      display: inline-block;
+    }
+  }
+  .banner-bottom-image {
+    position: absolute;
+    content: "";
+    left: 50%;
+    bottom: -5px;
+    transform: translateX(-50%);
+    width: 100%;
+  }
+}
+
+#catagory-slider {
+  position: relative;
+  margin-top: -140px;
+  background-color: #f6f9ff;
+  overflow: hidden;
+  .title {
+    padding-left: 30px;
+    z-index: 1;
+    h5 {
+      color: $primary-color;
+    }
+  }
+  .slider {
+    margin-top: 15px;
+    .item {
+      width: 190px;
+      a {
+        display: block;
+        padding: 40px 15px;
+        text-align: center;
+        text-transform: uppercase;
+        color: $black-color;
+        margin: 15px;
+        background: $primary-color;
+        border-radius: 10px;
+        box-shadow: -2.034px 6.84px 10px 0px rgba(55, 34, 154, 0.3);
+        img {
+          display: block;
+          height: 88px;
+          width: unset !important;
+          margin: 0px auto 10px;
+        }
+        span {
+          text-transform: uppercase;
+          color: $black-color;
+          font-weight: 500;
+          font-family: $secondary_font_family;
+        }
+      }
+    }
+    .owl-nav {
+      position: absolute;
+      top: -23%;
+      right: 0;
+      @include slider-navs();
+    }
+  }
+}
+
+#car-auction {
+  padding: 120px 0px;
+  background-color: #f6f9ff;
+  overflow: hidden;
+  position: relative;
+  z-index: 0;
+  .title {
+    margin-bottom: 55px;
+    img {
+      height: 88px;
+      width: unset !important;
+      margin-right: 30px;
+    }
+    .text {
+      p {
+        max-width: 700px;
+        margin-top: 5px;
+      }
+    }
+  }
+  .header-button {
+    @include section-header-btn();
+  }
+  .auction-item {
+   @include auction-item();
+  }
+
+  .car-bg {
+    min-width: 1400px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    z-index: -1;
+    img {
+      width: 100%;
+    }
+  }
+}
+
+#jewelry-auction {
+  padding: 120px 0px;
+  overflow: hidden;
+  position: relative;
+  z-index: 0;
+  .title {
+    margin-bottom: 55px;
+    img {
+      height: 88px;
+      width: unset !important;
+      margin-right: 30px;
+    }
+    .text {
+      p {
+        margin-top: 5px;
+      }
+    }
+  }
+  .header-button {
+    @include section-header-btn();
+  }
+  .auction-item {
+    @include auction-item();
+  }
+
+  .jewelry-bg {
+    min-width: 1400px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    z-index: -1;
+    img {
+      width: 100%;
+    }
+  }
+}
+
+#register-for-free {
+  padding-top: 120px;
+  overflow: hidden;
+  .content {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    padding: 80px 80px 50px;
+    border-radius: 20px;
+
+    h2 {
+      margin-bottom: 18px;
+      color: $primary-color;
+    }
+    p {
+      color: $white-litte-color;
+    }
+    a {
+      display: inline-block;
+      background: $primary-color;
+      color: $blue-color;
+      border-radius: 30px;
+      font-weight: 500;
+      text-transform: uppercase;
+      padding: 12px 30px 10px;
+      font-size: 18px;
+      font-family: $secondary_font_family;
+      @include transition(all ease 0.3s);
+      &:hover {
+        background: $blue-color;
+        color: $primary-color;
+        @include transition(all ease 0.3s);
+      }
+    }
+  }
+}
+
+#watches-auction {
+  padding: 120px 0px;
+  overflow: hidden;
+  position: relative;
+  z-index: 0;
+  .title {
+    margin-bottom: 55px;
+    img {
+      height: 88px;
+      width: unset !important;
+      margin-right: 30px;
+    }
+    .text {
+      p {
+        margin-top: 5px;
+      }
+    }
+  }
+  .header-button {
+    @include section-header-btn();
+  }
+  .auction-item {
+    @include auction-item();
+  }
+}
+
+#popular-auctions {
+  padding-top: 120px;
+  position: relative;
+  overflow: hidden;
+  .title {
+    margin-bottom: 55px;
+    span {
+      font-size: 24px;
+      font-family: $secondary_font_family;
+      color: $white-litte-color;
+    }
+    h1 {
+      margin: 10px 0px;
+      color: $primary-color;
+    }
+    p {
+      color: $white-litte-color;
+    }
+  }
+  .popular-products {
+    border-radius: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 0 20px rgba(23, 29, 28, 0.2);
+    padding: 50px 30px;
+    .popular-item {
+      margin-bottom: 40px;
+      .image {
+        position: relative;
+        margin-left: 10px;
+        img {
+          width: 230px;
+          height: 185px;
+          object-fit: cover;
+          border-radius: 10px;
+        }
+        .hammer {
+          width: 40px;
+          height: 40px;
+          color: $primary-color;
+          line-height: 40px;
+          font-size: 18px;
+          position: absolute;
+          bottom: 20px;
+          right: 20px;
+          border-radius: 50%;
+          text-align: center;
+          background: linear-gradient(135deg, #b122e6 0%, #ff63de 100%);
+          box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.13);
+        }
+      }
+      .content {
+        padding-left: 34px;
+        align-self: center;
+        h5 {
+          margin: 0;
+          line-height: 26px;
+          font-size: 20px;
+          margin-bottom: 15px;
+        }
+        .current-bid {
+          padding: 12px 20px;
+          justify-content: center;
+          align-items: center;
+          border-bottom: 2px dotted #deddf5;
+          border-top: 2px dotted #deddf5;
+          i {
+            line-height: 1;
+            font-size: 36px;
+            color: $green-color;
+          }
+          p {
+            margin: 0;
+            padding-left: 15px;
+            color: $green-color;
+            font-size: 14px;
+            span {
+              font-size: 20px;
+              line-height: 20px;
+              color: $black-color;
+            }
+          }
+        }
+        .total-bid {
+          margin-top: 7px;
+          font-size: 16px;
+          span {
+            color: $green-color;
+          }
+        }
+      }
+    }
+  }
+  .popular-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    img {
+      width: 100%;
+      height: 600px;
+    }
+  }
+}
+
+#coins-auction {
+  padding: 120px 0px;
+  overflow: hidden;
+  position: relative;
+  z-index: 0;
+  .title {
+    margin-bottom: 55px;
+    img {
+      height: 88px;
+      width: unset !important;
+      margin-right: 30px;
+    }
+    .text {
+      p {
+        margin-top: 5px;
+      }
+    }
+  }
+  .header-button {
+    @include section-header-btn();
+  }
+  .auction-item {
+    @include auction-item();
+  }
+
+  .coins-bg {
+    min-width: 1400px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    z-index: -1;
+    img {
+      width: 100%;
+    }
+  }
+}
+
+#real-estate-auction {
+  padding: 120px 0px;
+  overflow: hidden;
+  position: relative;
+  z-index: 0;
+  .title {
+    margin-bottom: 55px;
+    img {
+      height: 88px;
+      width: unset !important;
+      margin-right: 30px;
+    }
+    .text {
+      p {
+        margin-top: 5px;
+      }
+    }
+  }
+  .header-button {
+    @include section-header-btn();
+  }
+  .real-estate-slider {
+    .owl-carousel {
+      .item {
+        h3 {
+          margin-top: 30px;
+          text-align: center;
+          padding: 16px 0;
+          margin-bottom: 15px;
+        }
+        .bid {
+          padding: 12px 10px;
+          border-top: 2px dotted #deddf5;
+          .current-bid {
+            position: relative;
+            &::after {
+              position: absolute;
+              content: "";
+              width: 1px;
+              right: -50px;
+              bottom: 15px;
+              top: 5px;
+              background: #bfbee8;
+            }
+            i {
+              line-height: 1;
+              font-size: 36px;
+              color: $green-color;
+            }
+            p {
+              font-size: 14px;
+              color: $green-color;
+              line-height: 20px;
+              margin-bottom: 5px;
+              padding-left: 15px;
+              span {
+                font-size: 20px;
+                line-height: 20px;
+                color: $black-color;
+                margin-top: 5px;
+              }
+            }
+          }
+          .buy-now-price {
+            i {
+              line-height: 1;
+              font-size: 36px;
+              color: $red-color;
+            }
+            p {
+              font-size: 14px;
+              color: $red-color;
+              line-height: 20px;
+              padding-left: 15px;
+              span {
+                margin-top: 5px;
+                font-size: 20px;
+                line-height: 20px;
+                color: $black-color;
+              }
+            }
+          }
+        }
+        .time {
+          font-size: 18px;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 10px;
+          margin-bottom: 20px;
+          padding-left: 10px;
+          padding-right: 10px;
+          font-family: $secondary_font_family;
+          .countdown {
+            padding-left: 20px;
+            @include countdown-style();
+          }
+          span {
+            text-shadow: 0px 6px 7px rgba(0, 0, 0, 0.19);
+            color: $green-color;
+            padding-right: 15%;
+            padding-left: 22.5%;
+            border-left: 1px solid #d0cff0;
+          }
+        }
+        .button {
+          a {
+            margin-top: 5px;
+            @include auction-item-btn();
+          }
+        }
+      }
+      .owl-nav {
+        position: absolute;
+        left: 50%;
+        bottom: -40px;
+        transform: translateX(-50%);
+        @include slider-navs();
+        .owl-prev {
+          background-color: $primary-color;
+        }
+      }
+      .owl-dots {
+        padding-top: 10px;
+        .owl-dot {
+          background: none;
+          outline: none;
+          border: none;
+          &.active {
+            color: $blue-color;
+            font-size: 24px;
+          }
+          span {
+            margin: 0;
+            width: 30px !important;
+            height: 30px !important;
+            line-height: 30px !important;
+            display: block !important;
+            background: none;
+            outline: none;
+            border: none;
+          }
+        }
+      }
+    }
+  }
+  .real-estate-bg {
+    min-width: 1400px;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    z-index: -1;
+    img {
+      width: 100%;
+    }
+  }
+}
+
+#how-it-works {
+  padding-top: 120px;
+  overflow: hidden;
+  .bg {
+    padding: 40px 60px;
+    border-radius: 20px;
+    background: #f1f3fd;
+    .title {
+      margin-bottom: 5px;
+      h1 {
+        margin-bottom: 10px;
+      }
+    }
+    .item {
+      text-align: center;
+      .image {
+        margin-bottom: 30px;
+      }
+      .content {
+        h3 {
+          margin-bottom: 10px;
+        }
+        p {
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+#customer-comments {
+  padding: 120px 0px;
+  overflow: hidden;
+  .title {
+    margin-bottom: 55px;
+    h1 {
+      margin-bottom: 10px;
+    }
+  }
+  .customers-slider {
+    margin: -15px;
+    .owl-item {
+      margin-right: 0;
+      width: 380px;
+      .item {
+        background: #ffffff;
+        margin: 15px;
+        border-radius: 20px;
+        box-shadow: 0.487px 3.97px 15px 0px rgba(40, 58, 140, 0.19);
+        .comment {
+          padding: 25px 30px;
+        }
+        .author {
+          border-top: 1px solid #edeafb;
+          padding: 20px 30px;
+          align-items: center;
+          .image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 20px;
+          }
+          .icon {
+            i {
+              color: $gray-color;
+              &.yellow {
+                color: $yellow-color;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,137 @@
+#about-header {
+  margin-top: -440px;
+  .bg {
+    padding: 50px 30px;
+    padding-bottom: 50px;
+    border-radius: 10px;
+    background: #ffffff;
+    box-shadow: 0 0 15px rgba(44, 46, 69, 0.15);
+    position: relative;
+  }
+  h3 {
+    margin-bottom: 15px;
+    margin-top: 30px;
+  }
+  h1 {
+    span {
+      color: $red-color;
+      margin-bottom: 15px;
+    }
+    margin-bottom: 19px;
+  }
+  P {
+    margin-bottom: 20px;
+    color: $black-color;
+  }
+  .item {
+    padding: 0 15px 20px;
+    max-width: 250px;
+    color: $black-color;
+    img {
+      height: 84px;
+      margin-bottom: 20px;
+    }
+  }
+}
+
+#business-counter {
+  padding-top: 120px;
+  .item {
+    text-align: center;
+    padding: 28px 30px 30px;
+    border: 1px solid rgba(181, 156, 228, 0.5);
+    border-radius: 10px;
+    .title {
+      justify-content: center;
+      color: $black-color;
+      margin-bottom: 15px;
+      .timer,
+      span {
+        font-size: 36px;
+        line-height: 46px;
+        font-weight: 700;
+      }
+    }
+    p {
+      margin: 0;
+    }
+  }
+}
+
+#expect {
+  overflow: hidden;
+  padding-top: 120px;
+  .header {
+    margin-bottom: 55px;
+  }
+  .item {
+    text-align: center;
+    margin-bottom: 40px;
+    img {
+      max-height: 66px;
+      height: 47px;
+      margin: 0 0 38px;
+    }
+  }
+}
+
+.padding-bottom {
+  padding-bottom: 120px;
+}
+
+#team-section {
+  padding: 120px 0;
+  background: #f1f3fd;
+  .header {
+    margin-bottom: 55px;
+    h1 {
+      margin-bottom: 10px;
+    }
+  }
+  .team {
+    .item {
+      max-width: 220px;
+      margin: 0 auto 30px;
+      padding: 0 15px;
+      position: relative;
+      z-index: 1;
+      .image {
+        border-radius: 5px;
+        text-align: center;
+        overflow: hidden;
+        img {
+          max-width: 100%;
+        }
+      }
+      .content {
+        padding: 15px 10px 5px;
+        text-align: center;
+        ul{
+          li{
+            a{
+              color: #52606d;
+              padding: 5px;
+              font-size: 16px;
+              line-height: 1;
+              .fa-twitter{
+                color: $red-color;
+              }
+            }
+          }
+        }
+      }
+      &::after{
+        position: absolute;
+        content: "";
+        top: 60px;
+        width: 85%;
+        left: 16px;;
+        bottom: 0;
+        z-index: -1;
+        border-radius: 10px;
+        background: #ffffff;
+        box-shadow: 1.753px 3.595px 10px 0px rgba(44, 46, 69, 0.09);
+      }
+    }
+  }
+}
