@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    default: prod
   application:
     name: ready-auction
   servlet:
@@ -8,6 +10,14 @@ spring:
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
+  jpa:
+    generate-ddl: true
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        hbm2ddl:
+          auto: none
 logging:
   level:
     root: info

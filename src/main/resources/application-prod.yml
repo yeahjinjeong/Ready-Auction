@@ -1,0 +1,9 @@
+# 사용자 정의 속성
+profile:
+  value: 'prod'
+spring:
+  datasource:
+    url: ${PROD_DB_URL}
+    username: ${PROD_DB_USERNAME}
+    password: ${PROD_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
