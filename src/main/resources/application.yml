@@ -1,6 +1,6 @@
 spring:
   profiles:
-    default: test
+    default: prod
   application:
     name: ready-auction
   servlet:
