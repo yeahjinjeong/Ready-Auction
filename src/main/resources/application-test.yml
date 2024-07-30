@@ -4,7 +4,7 @@ profile:
 
 spring:
   datasource:
-    url: ${TEST_DB_URL}
-    username: ${TEST_DB_USERNAME}
-    password: ${TEST_DB_PASSWORD}
+    url: jdbc:mysql://ssg-java3.iptime.org:3306/auctiondb
+    username: root
+    password: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
