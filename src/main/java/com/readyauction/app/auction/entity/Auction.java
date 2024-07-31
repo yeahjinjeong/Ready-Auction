@@ -1,7 +1,7 @@
 package com.readyauction.app.auction.entity;
 
 import jakarta.persistence.*;
-
+@Entity
 public class Auction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
