@@ -12,12 +12,14 @@ spring:
     suffix: .html
   jpa:
     generate-ddl: true
+    hibernate:
+      ddl-auto: update # 이 부분을 추가합니다.
     properties:
       hibernate:
         format_sql: true
         show_sql: true
         hbm2ddl:
-          auto: none
+          auto: update # 또는 create, create-drop, validate 중 선택
   s3:
     accessKey: ${SPRING_S3_ACCESSKEY}
     secretKey: ${SPRING_S3_SECRETKEY}
