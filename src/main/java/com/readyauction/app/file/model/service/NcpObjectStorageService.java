@@ -22,8 +22,8 @@ public class NcpObjectStorageService {
     @Value("${spring.s3.bucket}")
     private String bucketName;
 
-//    @Value("${file.upload-dir}")
-//    private String uploadDir;
+    @Value("${file.upload-dir}")
+    private String uploadDir;
 
     public String getUuidFileName(String fileName) {
         String ext = fileName.substring(fileName.indexOf(".") + 1);
@@ -76,5 +76,31 @@ public class NcpObjectStorageService {
         }
 
         return s3files;
+    }
+
+    // ncp에 업로드한 이미지들 전체 불러오기
+    public List<FileDto> listFiles(String filePath) {
+        List<FileDto> files = new ArrayList<>();
+        ListObjectsV2Request req = new ListObjectsV2Request().withBucketName(bucketName).withPrefix(filePath + "/");
+        ListObjectsV2Result result;
+
+        do {
+            result = amazonS3Client.listObjectsV2(req);
+
+            for (S3ObjectSummary objectSummary : result.getObjectSummaries()) {
+                String key = objectSummary.getKey();
+                String fileName = key.substring(key.lastIndexOf("/") + 1);
+
+                files.add(FileDto.builder()
+                        .originalFileName(fileName)
+                        .uploadFileName(fileName)
+                        .uploadFilePath(filePath) // 현재 지정한 폴더만 가져옴
+                        .uploadFileUrl("https://kr.object.ncloudstorage.com/" + bucketName + "/" + key)
+                        .build());
+            }
+            req.setContinuationToken(result.getNextContinuationToken());
+        } while (result.isTruncated());
+
+        return files;
     }
 }
