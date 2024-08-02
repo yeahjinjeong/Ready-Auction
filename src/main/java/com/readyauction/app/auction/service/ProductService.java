@@ -26,34 +26,34 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public ProductReqDto CreateProduct(ProductReqDto productReqDto) {
-        MultipartFile file = productReqDto.getImage();
-        String fileExtension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-        String fileName = System.currentTimeMillis() + fileExtension;
-        Path filePath = Paths.get(uploadDir + File.separator + fileName);
-        System.out.println("사진 저장");
-        try {
-            Files.createDirectories(filePath.getParent()); // 디렉토리가 없는 경우 생성
-            Files.write(filePath, file.getBytes());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Delete the partially uploaded file if there is a failure
-            try {
-                Files.deleteIfExists(filePath);// 사진 삭제
-                System.out.println("사진 삭제");
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-            throw new RuntimeException("Failed to insert product and save image", e);
-        }
-        finally {
-            String imagePath = filePath.toString(); // 저장된 파일 경로를 설정
-
-            ProductDto productDto = productRegistDto.toProductDto(fileName);
-            return productMapper.insertProduct(productDto);
-        }
-    }
+//    public ProductReqDto CreateProduct(ProductReqDto productReqDto) {
+//        MultipartFile file = productReqDto.getImage();
+//        String fileExtension = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+//        String fileName = System.currentTimeMillis() + fileExtension;
+//        Path filePath = Paths.get(uploadDir + File.separator + fileName);
+//        System.out.println("사진 저장");
+//        try {
+//            Files.createDirectories(filePath.getParent()); // 디렉토리가 없는 경우 생성
+//            Files.write(filePath, file.getBytes());
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            // Delete the partially uploaded file if there is a failure
+//            try {
+//                Files.deleteIfExists(filePath);// 사진 삭제
+//                System.out.println("사진 삭제");
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//            }
+//            throw new RuntimeException("Failed to insert product and save image", e);
+//        }
+//        finally {
+//            String imagePath = filePath.toString(); // 저장된 파일 경로를 설정
+//
+//            ProductDto productDto = productRegistDto.toProductDto(fileName);
+//            return productMapper.insertProduct(productDto);
+//        }
+//    }
 
 
 }
