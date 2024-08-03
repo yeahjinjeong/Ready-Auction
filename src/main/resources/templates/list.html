@@ -15,8 +15,8 @@
     </thead>
     <tbody>
     <tr th:each="file : ${files}">
-<!--        <td th:text="${file.originalFileName}"></td>-->
-<!--        <td><a th:href="${file.uploadFileUrl}" th:text="${file.uploadFileUrl}"></a></td>-->
+        <td th:text="${file.originalFileName}"></td>
+        <td><a th:href="${file.uploadFileUrl}" th:text="${file.uploadFileUrl}"></a></td>
         <img th:src="@{${file.uploadFileUrl}}" alt="list Image">
     </tr>
     </tbody>

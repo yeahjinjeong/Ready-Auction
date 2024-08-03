@@ -39,6 +39,7 @@ public class FileUploadController {
     public String listFiles(Model model) {
         // 가져올 파일의 폴더명 설정
         List<FileDto> files = ncpObjectStorageService.listFiles("sample-folder");
+        System.out.println(files);
         model.addAttribute("files", files);
         return "list";
     }

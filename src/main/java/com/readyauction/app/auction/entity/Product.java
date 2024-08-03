@@ -3,18 +3,22 @@ package com.readyauction.app.auction.entity;
 // Getters and Setters
 
 import jakarta.persistence.*;
+import lombok.*;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    private Long memberId;
 
     private String name;
 
@@ -25,9 +29,9 @@ public class Product {
 
     private Integer bidUnit;
 
-    private Date endTime;
+    private Timestamp endTime;
 
-    private Date startTime;
+    private Timestamp startTime;
 
     private Integer currentPrice;
 

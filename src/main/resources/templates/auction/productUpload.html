@@ -2,81 +2,148 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/default}">
-
-
+<head>
+    <!-- Include jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
 <body>
 
 <div layout:fragment="content1">
     <div class="col-lg-7 mt-5 mt-lg-0">
         <div class="contact-box-wrap">
-        <div class="contact-form">
-            <h4>상품 등록</h4>
+            <div class="contact-form">
+                <h4>상품 등록</h4>
 
-            <form action="#" id="contact_form" method="post">
-                <div class="contact-input-group">
-                    <label for="first-Name">상품 이름</label>
-                    <input type="text" id="first-Name" placeholder="Full Name">
-                    <br>
-                </div>
-                <div class="contact-input-group">
-                    <label for="image">상품 이미지</label>
-                    <input type="file" id="image" accept="image/*" />
-                </div>
+                <form id="contact_form">
+                    <div class="contact-input-group">
+                        <label for="first-Name">상품 이름</label>
+                        <input type="text" id="first-Name" placeholder="Full Name">
+                    </div>
+                    <div class="contact-input-group">
+                        <label for="image">상품 이미지</label>
+                        <input type="file" id="image" name="image" accept="image/*">
+                    </div>
+                    <div class="blog-widget widget-categories">
+                        <h5 class="widget-title">Sports Categories</h5>
+                        <ul class="sidebar-tag-list">
+                            <li><a href="#" onclick="setCategory('SOCCER')">축구</a></li>
+                            <li><a href="#" onclick="setCategory('BASKETBALL')">농구</a></li>
+                            <li><a href="#" onclick="setCategory('BASEBALL')">야구</a></li>
+                            <li><a href="#" onclick="setCategory('ESPORTS')">e스포츠</a></li>
+                            <li><a href="#" onclick="setCategory('OTHER')">기타</a></li>
+                        </ul>
+                    </div>
+                    <input type="hidden" name="category" id="categoryInput">
 
-                <div class="blog-widget widget-categories">
-                    <h5 class="widget-title">Sports Categories</h5>
-                    <ul class="sidebar-tag-list">
-                        <li><a onclick="setCategory('SOCCER')">축구</a></li>
-                        <li><a onclick="setCategory('BASKETBALL')">농구</a></li>
-                        <li><a onclick="setCategory('BASEBALL')">야구</a></li>
-                        <li><a onclick="setCategory('ESPORTS')">e스포츠</a></li>
-                        <li><a onclick="setCategory('OTHER')">기타</a></li>
-                    </ul>
-                </div>
+                    <div class="contact-input-group">
+                        <label for="bidUnit">응찰당 상승 가격</label>
+                        <input type="number" name ="bidUnit" id="bidUnit" placeholder="Enter product code">
+                    </div>
+                    <div class="contact-input-group">
+                        <label for="immediatePrice">즉시 구매가격</label>
+                        <input type="number" id="immediatePrice" placeholder="Enter product code">
+                    </div>
+                    <div class="contact-input-group">
+                        <label for="currentPrice">시작 구매가격</label>
+                        <input type="number" id="currentPrice" placeholder="Enter product code">
+                    </div>
 
-                <script>
-                    function setCategory(category) {
-                        var input = document.getElementById('categoryInput');
-                        input.value = category;
-                        console.log('Category set to:', category); // For debugging
-                        // 모든 링크에서 active-link 클래스를 제거
-                    }
-                </script>
-                <!-- Hidden form to store selected categories -->
-                <input type="hidden" name="category" id="categoryInput">
+                    <div class="contact-input-group">
+                        <label for="endTime">경매 종료 날짜 및 시간 설정:</label>
+                        <input type="datetime-local" id="endTime" name="endTime">
+                    </div>
 
-                <div class="contact-input-group">
-                    <label for="bigUnit">응찰당 상승 가격</label>
-                    <input type="number" id="bigUnit" placeholder="Enter product code">
-                    <br>
-                </div>
-                <div class="contact-input-group">
-                    <label for="immediatePrice">즉시 구매가격</label>
-                    <input type="number" id="immediatePrice" placeholder="Enter product code">
-                    <br>
-                </div>
-                <div class="contact-input-group">
-                    <label for="auctionEndDateTime">경매 종료 날짜 및 시간 설정:</label>
-                    <input type="datetime-local" id="auctionEndDateTime" name="auctionEndDateTime">
-                </div>
-                <div class="contact-input-group">
-                    <label for="discription">상품 설명</label>
-                    <textarea id="discription" cols="3000" rows="10" placeholder="Type your discription"></textarea>
-                </div>
-                <div class="contact-input-group mt-0">
-                    <button type="submit" class="submit-btn">상품 <등록></등록></button>
-                </div>
-            </form>
+                    <div class="contact-input-group">
+                        <label for="discription">상품 설명</label>
+                        <textarea id="discription" cols="30" rows="10" placeholder="Type your discription"></textarea>
+                    </div>
+                    <div class="contact-input-group mt-0">
+                        <button type="submit" class="submit-btn">상품 등록</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-</div>
-</div>
-</div>
+z
+    <script>
+        var imgUrl = null;
+        function setCategory(category) {
+            var input = document.getElementById('categoryInput');
+            input.value = category;
+        }
 
+        $(document).ready(function() {
+            // Image upload on file select
+            $('#image').on('change', function() {
+                var fileData = $(this).prop('files')[0];
+                var formData = new FormData();
+                formData.append('file', fileData);
+                $.ajax({
+                    url: '[[@{/auction-api/img-upload}]]',//주소 상대주소로
+                    type: 'POST',
+                    data: formData,
+                    processData: false, // prevent jQuery from converting the data into a query string
+                    contentType: false, // prevent jQuery from overriding the content type
+                    beforeSend: function(xhr) {
+                        // 요청 헤더에 email 추가
+                        xhr.setRequestHeader("email", "member1@example.com"); // 세션에서 가져오기
+                    },
+                    success: function(response) {
+                        console.log('Image uploaded successfully:', response);
+                        imgUrl = response;
+                        alert('이미지가 성공적으로 등록되었습니다.');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Failed to upload image:', error);
+                        alert('이미지 등록에 실패했습니다.');
+                    }
+                });
+            });
 
+            $('#contact_form').on('submit', function(e) {
+                e.preventDefault();
 
+                var formData = new FormData(this);
+                formData.delete('image'); // Removes the image entry from the formData
+
+                // Add the image URL to the form data if it exists
+                if (imgUrl !== null) {
+                    console.log(imgUrl+" 상품 url");
+                    formData.append('imgUrl', imgUrl);
+                }
+                var productData = {
+                    name: $('#first-Name').val(),
+                    imgUrl: imgUrl, // 이미 업로드된 이미지 URL
+                    category: $('#categoryInput').val(),
+                    bidUnit: $('#bidUnit').val(),
+                    immediatePrice: $('#immediatePrice').val(),
+                    endTime: $('#endTime').val(),
+                    description: $('#discription').val(),
+                    currentPrice: $('#currentPrice').val()
+                };
+                console.log(productData);
+                // AJAX 요청으로 JSON 데이터 전송
+                $.ajax({
+                    url: '[[@{/auction-api/create}]]', // 서버 URL
+                    type: 'POST',
+                    contentType: 'application/json', // JSON 형식으로 전송
+                    data: JSON.stringify(productData), // JSON 직렬화
+                    beforeSend: function(xhr) {
+                        // 요청 헤더에 email 추가
+                        xhr.setRequestHeader("email", "member1@example.com");
+                    },
+                    success: function(data) {
+                        alert('상품이 성공적으로 등록되었습니다.');
+                        console.log('Success:', data);
+                    },
+                    error: function(xhr, status, error) {
+                        alert('상품 등록에 실패했습니다.');
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
 </div>
-
 </body>
 </html>
