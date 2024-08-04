@@ -1,4 +1,4 @@
-package com.readyauction.app.auction.entity;
+package com.readyauction.app.member.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

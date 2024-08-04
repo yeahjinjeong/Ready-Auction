@@ -1,4 +1,4 @@
-package com.readyauction.app.auction.entity;
+package com.readyauction.app.member.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ public abstract class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String email; // E-mail
+        private String email; // E-mail
 
     @Column(nullable = false)
     private String password;

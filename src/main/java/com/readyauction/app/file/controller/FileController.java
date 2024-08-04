@@ -38,6 +38,7 @@ public class FileController {
     public String listFiles(Model model) {
         // 가져올 파일의 폴더명 직접 설정 필요
         List<FileDto> files = ncpObjectStorageService.listFiles("sample-folder");
+        System.out.println(files);
         model.addAttribute("files", files);
         return "file/list";
     }

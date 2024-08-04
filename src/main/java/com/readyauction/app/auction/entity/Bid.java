@@ -1,8 +1,10 @@
 package com.readyauction.app.auction.entity;
 
+import com.readyauction.app.member.entity.Member;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 @Entity
 public class Bid {
@@ -10,9 +12,7 @@ public class Bid {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    private Long memberId;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
@@ -20,7 +20,7 @@ public class Bid {
 
     private Integer myPrice;
 
-    private Date bidTime;
+    private Timestamp bidTime;
 
     private Integer bidState;
 
