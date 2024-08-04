@@ -5,6 +5,8 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
 import com.readyauction.app.file.model.dto.FileDto;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +20,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class NcpObjectStorageService {
+    private static final Logger log = LoggerFactory.getLogger(NcpObjectStorageService.class);
     private final AmazonS3Client amazonS3Client;
 
     @Value("${spring.s3.bucket}")
@@ -46,29 +49,35 @@ public class NcpObjectStorageService {
             String originalFileName = multipartFile.getOriginalFilename();
             String uploadFileName = getUuidFileName(originalFileName);
             String uploadFileUrl = "";
+            String keyName = filePath + "/" + uploadFileName;
 
-            System.out.println(uploadFileName);
-
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(multipartFile.getSize());
-            objectMetadata.setContentType(multipartFile.getContentType());
-
-            try (InputStream inputStream = multipartFile.getInputStream()) {
-
-                String keyName = filePath + "/" + uploadFileName;
-
-                // S3에 폴더 및 파일 업로드
-                amazonS3Client.putObject(
-                        new PutObjectRequest(bucketName, keyName, inputStream, objectMetadata)
-                                .withCannedAcl(CannedAccessControlList.PublicRead));
-
-                // S3에 업로드한 폴더 및 파일 URL
+            // Check if the file already exists in S3
+            if (amazonS3Client.doesObjectExist(bucketName, keyName)) {
+                System.out.println("사진 이미 올라가있음");
+                // File exists, get its URL
                 uploadFileUrl = "https://kr.object.ncloudstorage.com/" + bucketName + "/" + keyName;
+            } else {
+                // File does not exist, proceed to upload
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentLength(multipartFile.getSize());
+                objectMetadata.setContentType(multipartFile.getContentType());
 
-            } catch (IOException e) {
-                e.printStackTrace();
+                try (InputStream inputStream = multipartFile.getInputStream()) {
+
+                    // Upload the file to S3
+                    amazonS3Client.putObject(
+                            new PutObjectRequest(bucketName, keyName, inputStream, objectMetadata)
+                                    .withCannedAcl(CannedAccessControlList.PublicRead));
+
+                    // Set the URL of the uploaded file
+                    uploadFileUrl = "https://kr.object.ncloudstorage.com/" + bucketName + "/" + keyName;
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
+            // Add file information to the list
             s3files.add(
                     FileDto.builder()
                             .originalFileName(originalFileName)
