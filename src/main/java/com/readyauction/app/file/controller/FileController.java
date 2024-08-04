@@ -7,22 +7,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/file")
 @RequiredArgsConstructor
-public class FileUploadController {
+public class FileController {
     private final NcpObjectStorageService ncpObjectStorageService;
 
     // 파일 업로드
     @GetMapping("/upload")
     public String getUpload(){
-        return "upload";
+        return "file/upload";
     }
 
     // 파일 업로드
@@ -34,13 +33,20 @@ public class FileUploadController {
                 .body(ncpObjectStorageService.uploadFilesSample(multipartFiles));
     }
 
-    // 파일 불러오기
+    // 전체 파일 불러오기
     @GetMapping("/list")
     public String listFiles(Model model) {
-        // 가져올 파일의 폴더명 설정
+        // 가져올 파일의 폴더명 직접 설정 필요
         List<FileDto> files = ncpObjectStorageService.listFiles("sample-folder");
         System.out.println(files);
         model.addAttribute("files", files);
-        return "list";
+        return "file/list";
+    }
+
+    // 파일 삭제
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteFile(@RequestParam String filePath, @RequestParam String fileName) {
+        ncpObjectStorageService.deleteFile(filePath, fileName);
+        return new ResponseEntity<>("File Delete Success", HttpStatus.OK);
     }
 }

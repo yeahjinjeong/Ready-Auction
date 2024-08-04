@@ -1,5 +1,6 @@
 package com.readyauction.app.file.model.service;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
 import com.readyauction.app.file.model.dto.FileDto;
@@ -45,6 +46,8 @@ public class NcpObjectStorageService {
             String originalFileName = multipartFile.getOriginalFilename();
             String uploadFileName = getUuidFileName(originalFileName);
             String uploadFileUrl = "";
+
+            System.out.println(uploadFileName);
 
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(multipartFile.getSize());
@@ -102,5 +105,17 @@ public class NcpObjectStorageService {
         } while (result.isTruncated());
 
         return files;
+    }
+
+    // ncp에 업로드한 파일 삭제
+    public void deleteFile(String filePath, String fileName) {
+        String key = filePath + "/" + fileName;
+        try {
+            amazonS3Client.deleteObject(bucketName, key);
+            System.out.println("파일이 성공적으로 삭제되었습니다.");
+        } catch (AmazonServiceException e) {
+            e.printStackTrace();
+            System.out.println("파일 삭제 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 }
