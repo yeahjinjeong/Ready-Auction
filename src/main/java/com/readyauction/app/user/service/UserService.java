@@ -1,7 +1,7 @@
-package com.readyauction.app.member.service;
+package com.readyauction.app.user.service;
 
-import com.readyauction.app.member.entity.User;
-import com.readyauction.app.member.repository.UserRepository;
+import com.readyauction.app.user.entity.User;
+import com.readyauction.app.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

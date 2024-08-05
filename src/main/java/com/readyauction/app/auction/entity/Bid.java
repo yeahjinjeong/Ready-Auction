@@ -1,9 +1,7 @@
 package com.readyauction.app.auction.entity;
 
-import com.readyauction.app.member.entity.Member;
 import jakarta.persistence.*;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
@@ -22,7 +20,8 @@ public class Bid {
 
     private Timestamp bidTime;
 
-    private Integer bidState;
+    @Enumerated(EnumType.STRING)
+    private BidStatus bidStatus;
 
     private Boolean highBid;
 

@@ -1,6 +1,5 @@
-package com.readyauction.app.auction.entity;
+package com.readyauction.app.cash.entity;
 
-import com.readyauction.app.member.entity.Member;
 import jakarta.persistence.*;
 @Entity
 public class Account {
@@ -10,5 +9,5 @@ public class Account {
 
     private Long memberId;
 
-    private Long cash;
+    private Integer cash;
 }

@@ -1,7 +1,6 @@
-package com.readyauction.app.member.repository;
+package com.readyauction.app.user.repository;
 
-import com.readyauction.app.member.entity.Member;
-import com.readyauction.app.member.entity.User;
+import com.readyauction.app.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
