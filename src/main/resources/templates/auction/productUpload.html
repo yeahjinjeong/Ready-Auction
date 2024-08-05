@@ -9,6 +9,14 @@
 <body>
 
 <div layout:fragment="content1">
+    <div class="breadcrumb breadcrumb-style-one mb-0 ">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">상픔 등록</h1>
+            </div>
+        </div>
+    </div>
+
     <div class="col-lg-7 mt-5 mt-lg-0">
         <div class="contact-box-wrap">
             <div class="contact-form">
@@ -21,16 +29,17 @@
                     </div>
                     <div class="contact-input-group">
                         <label for="image">상품 이미지</label>
-                        <input type="file" id="image" name="image" accept="image/*">
+                        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)" >
+                        <img id="imagePreview" style="display:none; max-width: 100%; height: auto; margin-top: 10px;">
                     </div>
                     <div class="blog-widget widget-categories">
                         <h5 class="widget-title">Sports Categories</h5>
                         <ul class="sidebar-tag-list">
-                            <li><a href="#" onclick="setCategory('SOCCER')">축구</a></li>
-                            <li><a href="#" onclick="setCategory('BASKETBALL')">농구</a></li>
-                            <li><a href="#" onclick="setCategory('BASEBALL')">야구</a></li>
-                            <li><a href="#" onclick="setCategory('ESPORTS')">e스포츠</a></li>
-                            <li><a href="#" onclick="setCategory('OTHER')">기타</a></li>
+                            <li><a onclick="setCategory('SOCCER')">축구</a></li>
+                            <li><a onclick="setCategory('BASKETBALL')">농구</a></li>
+                            <li><a onclick="setCategory('BASEBALL')">야구</a></li>
+                            <li><a onclick="setCategory('ESPORTS')">e스포츠</a></li>
+                            <li><a onclick="setCategory('OTHER')">기타</a></li>
                         </ul>
                     </div>
                     <input type="hidden" name="category" id="categoryInput">
@@ -67,6 +76,21 @@
 z
     <script>
         var imgUrl = null;
+        function previewImage(event) {
+            const input = event.target;
+            const imagePreview = document.getElementById('imagePreview');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
         function setCategory(category) {
             var input = document.getElementById('categoryInput');
             input.value = category;
