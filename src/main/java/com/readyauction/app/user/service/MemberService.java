@@ -1,8 +1,10 @@
 package com.readyauction.app.user.service;
 
 import com.readyauction.app.user.dto.MemberDTO;
+import com.readyauction.app.user.entity.Gender;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.entity.User;
+import com.readyauction.app.user.entity.UserStatus;
 import com.readyauction.app.user.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ public class MemberService {
         // 1. dto -> entity 변환
         // 2. repository의 save 메서드 호출
         Member memberEntity = Member.toMember(memberDTO);
+        memberEntity.setUserStatus(UserStatus.active);
+        memberEntity.setGender(Gender.M);
         memberRepository.save(memberEntity);
         // repository의 save메서드 호출 (조건. entity객체를 넘겨줘야 함)
     }

@@ -41,7 +41,8 @@
                 <div class="col-lg-6">
                     <div class="right-form-area">
                         <h3>Register Your Account</h3>
-                        <form class="w-100" action="/member/save" method="post">
+<!--                        action="[[@{/member/save}]]"-->
+                        <form class="w-100" th:action="@{/member/save}"  method="post">
                             <!-- 이름 -->
                             <div class="form-inner">
                                 <label>이름</label>
@@ -83,10 +84,10 @@
                             <div class="form-inner">
                                 <label>성별</label>
                                 <label>
-                                    <input type="radio" name="gender" value="남성">남성 <br>
+                                    <input type="radio" name="gender" value="M">남성 <br>
                                 </label>
                                 <label>
-                                    <input type="radio" name="gender" value="여성">여성 <br>
+                                    <input type="radio" name="gender" value="F">여성 <br>
                                 </label>
                             </div>
                             <!-- 생년월일 -->
