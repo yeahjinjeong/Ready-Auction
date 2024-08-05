@@ -1,6 +1,8 @@
 package com.readyauction.app.chat.controller;
 
+import com.readyauction.app.chat.dto.ChatRoomDto;
 import com.readyauction.app.chat.dto.MessageDto;
+import com.readyauction.app.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -16,7 +18,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class ChatController {
-//    private final ChatService chatService;
+    private final ChatService chatService;
 
     @MessageMapping("foo") // pub/foo
     @SendTo("/sub/foo") //
@@ -30,8 +32,8 @@ public class ChatController {
     public void chatList(
 //            @PathVariable Long memberId,
             Model model) {
-//        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(0L);
-//        log.debug(chatRoomList.toString());
-//        model.addAttribute("chatRoomList", chatRoomList);
+        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(0L);
+        log.debug(chatRoomList.toString());
+        model.addAttribute("chatRoomList", chatRoomList);
     }
 }
