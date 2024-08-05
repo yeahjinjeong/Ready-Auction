@@ -1,7 +1,10 @@
 package com.readyauction.app.chat.controller;
 
+import com.readyauction.app.chat.dto.MessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,13 +18,13 @@ import java.util.List;
 public class ChatController {
 //    private final ChatService chatService;
 
-//    @MessageMapping("foo") // pub/foo
-//    @SendTo("/sub/foo") //
-//    public MessageDto chatting(MessageDto messageDto) {
-//        log.debug("message = {}", messageDto);
+    @MessageMapping("foo") // pub/foo
+    @SendTo("/sub/foo") //
+    public MessageDto chatting(MessageDto messageDto) {
+        log.debug("message = {}", messageDto);
 //        chatService.save(messageDto);
-//        return messageDto;
-//    }
+        return messageDto;
+    }
 
     @GetMapping("chat/list")
     public void chatList(
