@@ -1,10 +1,16 @@
 package com.readyauction.app.auction.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.sql.Timestamp;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Bid {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +29,7 @@ public class Bid {
     @Enumerated(EnumType.STRING)
     private BidStatus bidStatus;
 
-    private Boolean highBid;
+
 
     // Getters and Setters
 }

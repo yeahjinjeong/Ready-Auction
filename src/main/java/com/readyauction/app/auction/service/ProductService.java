@@ -33,7 +33,7 @@ public class ProductService {
         // Create and save the Product entity
         Long userId = 0L;
         try {
-         userId=userService.findMemberByEmail(request.getHeader("email")).getId();
+         userId = userService.findMemberByEmail(request.getHeader("email")).getId();
         log.info("유저아이디 " + userId);
 
         }catch (Exception e) {
@@ -44,7 +44,6 @@ public class ProductService {
             System.out.println("Current Timestamp: " + timestamp);
             Product product = Product.builder()
                     .memberId(userId)
-//                .memberId(1L)
                     .name(productReqDto.getName())
                     .category(productReqDto.getCategory())
                     .description(productReqDto.getDescription())
