@@ -21,9 +21,17 @@ public class Member extends User {
 
     public static Member toMember(MemberDTO memberDTO) {
         Member Member = new Member();
+        Member.setId(memberDTO.getId());
         Member.setEmail(memberDTO.getEmail());
         Member.setPassword(memberDTO.getPassword());
         Member.setName(memberDTO.getName());
+        Member.setPhone(memberDTO.getPhone());
+        Member.setAddress(memberDTO.getAddress());
+        Member.setBirth(memberDTO.getBirthday());
+        Member.setNickname(memberDTO.getNickname());
+        Member.setProfilePicture(memberDTO.getProfilePicture());
+        Member.setCreatedAt(memberDTO.getCreatedAt());
+        Member.setUserStatus(memberDTO.getUserStatus());
         return Member;
     }
 
