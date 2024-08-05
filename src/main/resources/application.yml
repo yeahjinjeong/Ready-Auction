@@ -13,7 +13,7 @@ spring:
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: create # 이 부분을 추가합니다.
+      ddl-auto: update # 이 부분을 추가합니다.
     properties:
       hibernate:
         format_sql: true

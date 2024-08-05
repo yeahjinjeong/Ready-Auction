@@ -1,9 +1,8 @@
-package com.readyauction.app.auction.entity;
+package com.readyauction.app.cash.entity;
 
-import com.readyauction.app.member.entity.Member;
+import com.readyauction.app.auction.entity.Product;
 import jakarta.persistence.*;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 @Entity
@@ -13,12 +12,14 @@ public class Payment {
     private Long id;
 
     private Long memberId;
+
     @ManyToOne
-    private Account sendAccount;
+    private Account senderAccount;
 
-    private Long receiveAccountId;
+    @ManyToOne
+    private Account receiverAccount;
 
-    private Integer payment;
+    private Integer payAmount;
 
     private Timestamp date;
 
