@@ -24,7 +24,7 @@ public class ChatController {
     @SendTo("/sub/foo") //
     public MessageDto chatting(MessageDto messageDto) {
         log.debug("message = {}", messageDto);
-//        chatService.save(messageDto);
+        chatService.save(messageDto);
         return messageDto;
     }
 

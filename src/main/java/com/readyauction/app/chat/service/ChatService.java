@@ -37,13 +37,13 @@ public class ChatService {
         return chatRoomList.stream().map(ChatRoomDto::toChatRoomDto).toList();
     }
 
-//    public ChatRoomDto findChatRoomByProductId(Long productId) {
-//        ChatRoom chatRoom = chatRoomRepository.findChatRoomByProductId(productId);
-//        return ChatRoomDto.toChatRoomDto(chatRoom);
-//    }
-//
-//    public List<MessageDto> findChatMessagesByChatRoomId(Long id) {
-//        List<ChatMessage> chatMessageList = chatMessageRepository.findChatMessagesByChatRoomId(id);
-//        return chatMessageList.stream().map(MessageDto::toChatMessageDto).toList();
-//    }
+    public ChatRoomDto findChatRoomByProductId(Long productId) {
+        ChatRoom chatRoom = chatRoomRepository.findChatRoomByProductId(productId);
+        return ChatRoomDto.toChatRoomDto(chatRoom);
+    }
+
+    public List<MessageDto> findChatMessagesByChatRoomId(Long id) {
+        List<ChatMessage> chatMessageList = chatMessageRepository.findChatMessagesByChatRoomId(id);
+        return chatMessageList.stream().map(MessageDto::toChatMessageDto).toList();
+    }
 }
