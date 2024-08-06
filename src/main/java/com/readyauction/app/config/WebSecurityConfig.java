@@ -34,7 +34,7 @@ public class WebSecurityConfig {
          */
         http.authorizeHttpRequests((registry) -> {
             // 특수한 경우부터 보편적인 경우순으로 작성
-            registry.requestMatchers("/", "/index.html", "auction/auction", "/member/login","/member/login-post").permitAll() // 누구나 허용
+            registry.requestMatchers("/", "/index.html", "auction/auction", "/member/save", "/member/login","/member/login-post").permitAll() // 누구나 허용
                     .requestMatchers( "/member/save", "/member/login").anonymous()
 //                    .requestMatchers("/board/**").authenticated()   // 인증된 사용자만 허용
 //                    .requestMatchers("/admin/**").hasRole("ADMIN")  // ROLE_ADMIN 권한이 있는 사용자만 허용
@@ -62,7 +62,7 @@ public class WebSecurityConfig {
     }
     
     @Bean 
-    public PasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder  passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

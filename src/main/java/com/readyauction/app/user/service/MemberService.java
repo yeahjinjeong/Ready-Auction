@@ -1,12 +1,13 @@
 package com.readyauction.app.user.service;
 
 import com.readyauction.app.user.dto.MemberDTO;
-import com.readyauction.app.user.entity.Gender;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.entity.User;
 import com.readyauction.app.user.entity.UserStatus;
 import com.readyauction.app.user.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +21,9 @@ public class MemberService {
 
     @Autowired
     private MemberRepository memberRepository;
+
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
     public void save(MemberDTO memberDTO) {
@@ -46,10 +48,12 @@ public class MemberService {
          */
         System.out.println("로그인 디비 조회중");
         Member memberEntity = memberRepository.findByEmail(memberDTO.getEmail());
+        System.out.println(memberEntity.toString());
         if (memberEntity != null) {
             // 조회 결과가 있다(해당 이메일을 가진 회원 정보가 있다)
+            if (passwordEncoder.matches(memberDTO.getPassword(), memberEntity.getPassword()) == true) {
+//            if (memberDTO.getPassword().equals(memberEntity.getPassword()) == true) {
 
-            if (memberEntity.getPassword().equals(memberDTO.getPassword())) {
                 System.out.println("비밀번호 일치");
                 // 비밀번호 일치
                 // entity -> dto 변환 후 리턴

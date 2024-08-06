@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +20,13 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
-//    @Autowired
-//    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     // 회원가입 페이지 출력 요청
     @GetMapping("/save")
     public String saveForm() {
-        return "register";
+        return "/member/register";
     }
 
     @PostMapping("/save")
@@ -36,7 +35,7 @@ public class MemberController {
 //        System.out.println("memberDTO = " + memberDTO);
         // 비밀번호 암호화해서 저장
 //        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-//        memberDTO.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
+        memberDTO.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
         memberService.save(memberDTO);
         return "/member/login";
     }
@@ -46,7 +45,7 @@ public class MemberController {
     }
 
     @PostMapping("/login-post")
-    public String loginPost(@ModelAttribute MemberDTO memberDTO,HttpSession session, Model model) {
+    public String loginPost(@ModelAttribute MemberDTO memberDTO, HttpSession session, Model model) {
         System.out.println("로그인중");
         MemberDTO loginResult = memberService.login(memberDTO);
         if (loginResult != null) {
