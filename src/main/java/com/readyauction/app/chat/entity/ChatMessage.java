@@ -25,7 +25,7 @@ public class ChatMessage {
     @Column(name = "message")
     private String message;
     @UpdateTimestamp
-    @Column(name = "created_at")
+    @Column(name = "created_at") // null값 들어가도 되겠는데
     private LocalDateTime createdAt;
     @Column
     private Short status;

@@ -2,6 +2,7 @@ package com.readyauction.app.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -36,6 +37,6 @@ public class ChatRoom {
 //    )
 //    @OrderColumn(name = "chat_message_idx")
 //    private List<ChatMessage> chatMessages;
-    @UpdateTimestamp
+    @CreationTimestamp
     private LocalDateTime createdAt;
 }
