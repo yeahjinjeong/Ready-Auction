@@ -8,4 +8,53 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Slf4j
 public class AppController {
 
+//    @GetMapping("/about")
+//    public String about() {
+//        return "/about";
+//    }
+//
+//    @GetMapping("/auction-details")
+//    public String auctionDetails() {
+//        return "/auction-details";
+//    }
+//
+//    @GetMapping("/blog")
+//    public String blog() {
+//        return "/blog";
+//    }
+//
+//    @GetMapping("/blog-details")
+//    public String blogDetails() {
+//        return "/blog-details";
+//    }
+//
+//    @GetMapping("/blog-standard")
+//    public String blogStandard() {
+//        return "/blog-standard";
+//    }
+//
+//    @GetMapping("/faq")
+//    public String faq() {
+//        return "/faq";
+//    }
+//
+//    @GetMapping("/privacy")
+//    public String privacy() {
+//        return "/privacy";
+//    }
+
+//    @GetMapping("/register")
+//    public String register() {
+//        return "/register";
+//    }
+
+//    @GetMapping("/register-origin")
+//    public String registerOrigin() {
+//        return "register-origin";
+//    }
+//
+//    @GetMapping("/winner")
+//    public String winner() {
+//        return "/winner";
+//    }
 }

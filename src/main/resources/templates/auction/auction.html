@@ -2,16 +2,54 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/default}">
+<head>
+ <meta charset="UTF-8">
+ <title>경매 목록</title>
+ <link rel="stylesheet" th:href="@{/css/styles.css}">
+ <script th:inline="javascript">
+  function startCountdown(endTime, elementId) {
+   var countDownDate = new Date(endTime).getTime();
+   var x = setInterval(function() {
+    var now = new Date().getTime();
+    var distance = countDownDate - now;
 
+    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    document.getElementById(elementId).innerHTML = days + "일 " + hours + "시 "
+            + minutes + "분 " + seconds + "초 ";
+
+    if (distance < 0) {
+     clearInterval(x);
+     document.getElementById(elementId).innerHTML = "EXPIRED";
+    }
+   }, 1000);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+   /* [[${products}]]를 자바스크립트에서 접근 가능하게 하기 위해 th:inline="javascript" 사용 */
+   /* 이를 통해 [[${products}]]를 JSON 형태로 JavaScript 변수에 저장 */
+   /* thymeleaf 내에서 th:each 반복문으로 products를 JSON.stringify를 이용해 JS 변수로 변환 */
+   var products = /*[[${products}]]*/ [];
+   products.forEach(product => {
+    let endTime = product.endTime;
+    let elementId = 'week-countdown-' + product.id;
+    startCountdown(endTime, elementId);
+   });
+  });
+ </script>
+</head>
 <body>
 <div layout:fragment="content1">
- <div class="breadcrumb breadcrumb-style-one mb-0 ">
+ <div class="breadcrumb breadcrumb-style-one mb-0">
   <div class="container">
    <div class="col-lg-12 text-center">
-    <h1 class="breadcrumb-title">Auction</h1>
+    <h1 class="breadcrumb-title">경매 목록</h1>
     <ul class="d-flex justify-content-center breadcrumb-items">
-     <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/index.html}">Home</a></li>
-     <li class="breadcrumb-item active">Auction</li>
+     <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/index.html}">메인화면으로</a></li>
+     <li class="breadcrumb-item active">경매 목록</li>
     </ul>
    </div>
   </div>
@@ -20,228 +58,28 @@
  <div class="auction-wrapper pt-110">
   <div class="container">
    <div class="row g-4">
-    <div class="col-lg-4 col-md-6 ">
-     <div class="product-card product-beta-md">
+    <div class="col-lg-4 col-md-6" th:each="product : ${products}">
+     <div class="product-card product-beta-md" style="min-width: 300px; max-width: 350px;">
       <div class="product-header">
-       <h5 class="product-title"><a th:href="@{/auction-details.html}">Citroen C4 Picasso 1.6 e-HDi Aird</a></h5>
-       <h4 class="price">$2,526</h4>
+       <h5 class="product-title"><a th:href="@{/auction-details.html}">[[${product.name}]]</a></h5>
+       <h4 class="price">₩[[${product.immediatePrice}]]</h4>
       </div>
       <div class="product">
-       <img th:src="@{/assets/images/product/lp-1.png}" alt="">
-       <div class="id"><span>ID 0195639</span></div>
+       <img th:src="@{${product.imgUrl}}" alt="product image" style="width: 100%; height: auto;">
+       <div class="id"><span>ID [[${product.id}]]</span></div>
       </div>
       <div class="product-disc">
        <div class="product-acution">
         <div class="cv">
-         <span>current Bid</span>
-         <h6>$1,079.00</h6>
+         <span>현재 입찰가</span>
+         <h6>₩[[${product.currentPrice}]]</h6>
         </div>
-        <div class="countdown" id="week-countdown1">
+        <div class="countdown" style="font-weight: 800; font-size: 20px; text-transform: capitalize; color: #00152b;" th:id="'week-countdown-' + ${product.id}">
          <h6> </h6>
-         <span>Waiting For Bid</span>
+         <span>경매 마감 시간</span>
         </div>
        </div>
-       <a th:href="@{/auction-details.html}" class="bid-btn">Submit A Bid</a>
-      </div>
-     </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-     <div class="product-card product-beta-md">
-      <div class="product-header">
-       <h5 class="product-title"><a th:href="@{/auction-details.html}">Ford Focus 1.8 ZETEC 5d 125 </a></h5>
-       <h4 class="price">$3,000</h4>
-      </div>
-      <div class="product">
-       <img th:src="@{/assets/images/product/lp-2.png}" alt="">
-       <div class="id"><span>ID 0195640</span></div>
-      </div>
-      <div class="product-disc">
-       <div class="product-acution">
-        <div class="cv">
-         <span>current Bid</span>
-         <h6>$2,00.00</h6>
-        </div>
-        <div class="countdown" id="week-countdown2">
-         <h6> </h6>
-         <span>Waiting For Bid</span>
-        </div>
-       </div>
-       <a th:href="@{/auction-details.html}" class="bid-btn">Submit A Bid</a>
-      </div>
-     </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-     <div class="product-card product-beta-md">
-      <div class="product-header">
-       <h5 class="product-title"><a th:href="@{/auction-details.html}">Maserati Mustang GT Premium</a></h5>
-       <h4 class="price">$1500</h4>
-      </div>
-      <div class="product">
-       <img th:src="@{/assets/images/product/lp-3.png}" alt="">
-       <div class="id"><span>ID 0195641</span></div>
-      </div>
-      <div class="product-disc">
-       <div class="product-acution">
-        <div class="cv">
-         <span>current Bid</span>
-         <h6>$899.00</h6>
-        </div>
-        <div class="countdown" id="week-countdown3">
-         <h6> </h6>
-         <span>Waiting For Bid</span>
-        </div>
-       </div>
-       <a th:href="@{/auction-details.html}" class="bid-btn">Submit A Bid</a>
-      </div>
-     </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-     <div class="product-card product-beta-md">
-      <div class="product-header">
-       <h5 class="product-title"><a th:href="@{/auction-details.html}">Citroen C1 AIRSCAPE FEEL EDIT</a></h5>
-       <h4 class="price">$1,506</h4>
-      </div>
-      <div class="product">
-       <img th:src="@{/assets/images/product/lp-4.png}" alt="">
-       <div class="id"><span>ID 0195642</span></div>
-      </div>
-      <div class="product-disc">
-       <div class="product-acution">
-        <div class="cv">
-         <span>current Bid</span>
-         <h6>$1,079.00</h6>
-        </div>
-        <div class="countdown" id="week-countdown4">
-         <h6> </h6>
-         <span>Waiting For Bid</span>
-        </div>
-       </div>
-       <a th:href="@{/auction-details.html}" class="bid-btn">Submit A Bid</a>
-      </div>
-     </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-     <div class="product-card product-beta-md">
-      <div class="product-header">
-       <h5 class="product-title"><a th:href="@{/auction-details.html}">Ford Focus 1.8 ZETEC 5d 125</a></h5>
-       <h4 class="price">$3,526</h4>
-      </div>
-      <div class="product">
-       <img th:src="@{/assets/images/product/lp-5.png}" alt="">
-       <div class="id"><span>ID 0195643</span></div>
-      </div>
-      <div class="product-disc">
-       <div class="product-acution">
-        <div class="cv">
-         <span>current Bid</span>
-         <h6>$3,000.00</h6>
-        </div>
-        <div class="countdown" id="week-countdown5">
-         <h6> </h6>
-         <span>Waiting For Bid</span>
-        </div>
-       </div>
-       <a th:href="@{/auction-details.html}" class="bid-btn">Submit A Bid</a>
-      </div>
-     </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-     <div class="product-card product-beta-md">
-      <div class="product-header">
-       <h5 class="product-title"><a th:href="@{/auction-details.html}">Smart fortwo Red Mercedes AMG</a></h5>
-       <h4 class="price">$2,000</h4>
-      </div>
-      <div class="product">
-       <img th:src="@{/assets/images/product/lp-6.png}" alt="">
-       <div class="id"><span>ID 0195644</span></div>
-      </div>
-      <div class="product-disc">
-       <div class="product-acution">
-        <div class="cv">
-         <span>current Bid</span>
-         <h6>$2,079.00</h6>
-        </div>
-        <div class="countdown" id="week-countdown6">
-         <h6> </h6>
-         <span>Waiting For Bid</span>
-        </div>
-       </div>
-       <a th:href="@{/auction-details.html}" class="bid-btn">Submit A Bid</a>
-      </div>
-     </div>
-    </div>
-    <div class="col-lg-4 col-md-6 ">
-     <div class="product-card product-beta-md">
-      <div class="product-header">
-       <h5 class="product-title"><a th:href="@{/auction-details.html}">Citroen C4 Picasso 1.6 e-HDi Aird</a></h5>
-       <h4 class="price">$2,526</h4>
-      </div>
-      <div class="product">
-       <img th:src="@{/assets/images/product/lp-1.png}" alt="">
-       <div class="id"><span>ID 0195645</span></div>
-      </div>
-      <div class="product-disc">
-       <div class="product-acution">
-        <div class="cv">
-         <span>current Bid</span>
-         <h6>$1,079.00</h6>
-        </div>
-        <div class="countdown" id="week-countdown7">
-         <h6> </h6>
-         <span>Waiting For Bid</span>
-        </div>
-       </div>
-       <a th:href="@{/auction-details.html}" class="bid-btn">Submit A Bid</a>
-      </div>
-     </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-     <div class="product-card product-beta-md">
-      <div class="product-header">
-       <h5 class="product-title"><a th:href="@{/auction-details.html}">Ford Focus 1.8 ZETEC 5d 125 </a></h5>
-       <h4 class="price">$3,000</h4>
-      </div>
-      <div class="product">
-       <img th:src="@{/assets/images/product/lp-2.png}" alt="">
-       <div class="id"><span>ID 0195646</span></div>
-      </div>
-      <div class="product-disc">
-       <div class="product-acution">
-        <div class="cv">
-         <span>current Bid</span>
-         <h6>$2,00.00</h6>
-        </div>
-        <div class="countdown" id="week-countdown8">
-         <h6> </h6>
-         <span>Waiting For Bid</span>
-        </div>
-       </div>
-       <a th:href="@{/auction-details.html}" class="bid-btn">Submit A Bid</a>
-      </div>
-     </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-     <div class="product-card product-beta-md">
-      <div class="product-header">
-       <h5 class="product-title"><a th:href="@{/auction-details.html}">Maserati Mustang GT Premium</a></h5>
-       <h4 class="price">$1500</h4>
-      </div>
-      <div class="product">
-       <img th:src="@{/assets/images/product/lp-3.png}" alt="">
-       <div class="id"><span>ID 0195647</span></div>
-      </div>
-      <div class="product-disc">
-       <div class="product-acution">
-        <div class="cv">
-         <span>current Bid</span>
-         <h6>$899.00</h6>
-        </div>
-        <div class="countdown" id="week-countdown9">
-         <h6> </h6>
-         <span>Waiting For Bid</span>
-        </div>
-       </div>
-       <a th:href="@{/auction-details.html}" class="bid-btn">Submit A Bid</a>
+       <a th:href="@{/auction-details.html}" class="bid-btn">입찰하기</a>
       </div>
      </div>
     </div>
@@ -256,8 +94,6 @@
    </ul>
   </div>
  </div>
-
-</div>
 </div>
 </body>
 </html>
