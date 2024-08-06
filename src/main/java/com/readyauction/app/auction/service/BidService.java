@@ -2,13 +2,12 @@ package com.readyauction.app.auction.service;
 
 
 import com.readyauction.app.auction.dto.BidDto;
-import com.readyauction.app.auction.dto.ProductReqDto;
 import com.readyauction.app.auction.entity.Bid;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.repository.BidRepository;
 import com.readyauction.app.auction.repository.ProductRepository;
-import com.readyauction.app.user.repository.UserRepository;
-import com.readyauction.app.user.service.UserService;
+import com.readyauction.app.user.repository.MemberRepository;
+import com.readyauction.app.user.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +25,9 @@ import java.util.Optional;
 public class BidService {
 
     private final BidRepository bidRepository;
-    private final UserService userService;
+    private final MemberService memberService;
     private final ProductRepository productRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository userRepository;
 
     @Transactional
     public boolean createBid(Long userId, Product product, Integer price, Timestamp timestamp) {
@@ -63,7 +62,7 @@ public class BidService {
 
     @Transactional
     public void startBid(HttpServletRequest request, BidDto bidDto) {
-        Long userId = userService.findMemberByEmail(request.getHeader("email")).getId();
+        Long userId = memberService.findMemberByEmail(request.getHeader("email")).getId();
         Optional<Product> optionalProduct = productRepository.findById(bidDto.getProductId());
         if (!optionalProduct.isPresent()) {
             throw new RuntimeException("Product not found");

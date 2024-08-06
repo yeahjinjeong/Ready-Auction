@@ -1,25 +1,25 @@
 package com.readyauction.app.user.service;
 
-import com.readyauction.app.user.entity.User;
-import com.readyauction.app.user.repository.UserRepository;
+import com.readyauction.app.user.entity.Member;
+import com.readyauction.app.user.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class UserService {
+public class MemberService {
 
     @Autowired
-    private UserRepository userRepository;
+    private MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public User findMemberByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email);
     }
 
     @Transactional
-    public User saveUser(User user) {
-        return userRepository.save(user);
+    public Member saveUser(Member user) {
+        return memberRepository.save(user);
     }
 
 //    @Transactional
@@ -36,6 +36,6 @@ public class UserService {
 
     @Transactional
     public void deleteMember(Long id) {
-        userRepository.deleteById(id);
+        memberRepository.deleteById(id);
     }
 }

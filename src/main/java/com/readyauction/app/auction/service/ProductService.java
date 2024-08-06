@@ -6,7 +6,7 @@ import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.repository.ProductRepository;
 import com.readyauction.app.file.model.dto.FileDto;
 import com.readyauction.app.file.model.service.NcpObjectStorageService;
-import com.readyauction.app.user.service.UserService;
+import com.readyauction.app.user.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,18 +27,19 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
-    private final UserService userService;
+    private final MemberService memberService;
     @Transactional
     public ProductReqDto createProduct(HttpServletRequest request,ProductReqDto productReqDto) {
         // Create and save the Product entity
         Long userId = 0L;
         try {
-         userId = userService.findMemberByEmail(request.getHeader("email")).getId();
+         userId = memberService.findMemberByEmail(request.getHeader("email")).getId();
         log.info("유저아이디 " + userId);
 
         }catch (Exception e) {
             log.error(e.getMessage());
         }
+
         finally {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             System.out.println("Current Timestamp: " + timestamp);

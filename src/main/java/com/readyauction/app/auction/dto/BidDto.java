@@ -19,7 +19,6 @@ public class BidDto {
 
     @Override
     public String toString() {
-
-        return "BidDto [productId=" + productId + ", email=" + email + ", bidPrice=" + bidPrice + ", bidTime=" + bidTime + "]";
+        return "BidDto [productId=" + productId + ",     bidPrice=" + bidPrice + ", bidTime=" + bidTime + "]";
     };
 }
