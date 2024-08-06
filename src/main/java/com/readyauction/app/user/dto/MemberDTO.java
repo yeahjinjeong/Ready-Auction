@@ -22,7 +22,7 @@ public class MemberDTO {
     private String address;
     private Integer mannerScore;
     private Gender gender;
-    private LocalDate birthday;
+    private LocalDate birth;
     private String nickname;
     private String profilePicture;
     private Timestamp createdAt;
@@ -39,7 +39,7 @@ public class MemberDTO {
         memberDTO.setName(memberEntity.getName());
         memberDTO.setPhone(memberEntity.getPhone());
         memberDTO.setAddress(memberEntity.getAddress());
-        memberDTO.setBirthday(memberDTO.getBirthday());
+        memberDTO.setBirth(memberDTO.getBirth());
         memberDTO.setNickname(memberEntity.getNickname());
         memberDTO.setProfilePicture(memberEntity.getProfilePicture());
         memberDTO.setMannerScore(memberEntity.getMannerScore());
