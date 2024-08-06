@@ -2,6 +2,7 @@ package com.readyauction.app.user.controller;
 
 import com.readyauction.app.user.dto.MemberDTO;
 import com.readyauction.app.user.service.MemberService;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -47,10 +47,9 @@ public class MemberController {
         MemberDTO loginResult = memberService.login(memberDTO);
         if (loginResult != null) {
             // login 성공
-//            session.setAttribute("loginResult", loginResult);
             session.setAttribute("email", loginResult.getEmail());
             session.setAttribute("name", loginResult.getName());
-            return "index";
+            return "auction";
         } else {
             // login 실패
             return "login";
