@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 
 @Slf4j
@@ -81,4 +82,32 @@ public class ProductService {
 
         return filePath;
     }
+@Transactional
+    public ProductReqDto productDetail(Long productId) {
+    System.out.println("상품 검색중");
+        //상품검색
+    Optional<Product> productOptional = productRepository.findById(productId);
+    // 2. 상품 검증
+    if (productOptional.isEmpty()) {
+        throw new IllegalStateException("상품을 찾을 수 없습니다.");
+    }
+
+    Product product = productOptional.get();
+
+    // 3. DTO 변환
+    ProductReqDto productReqDto = ProductReqDto.builder()
+            .name(product.getName())
+            .category(product.getCategory())
+            .description(product.getDescription())
+            .bidUnit(product.getBidUnit())
+            .endTime(product.getEndTime())
+            .startTime(product.getStartTime())
+            .currentPrice(product.getCurrentPrice())
+            .immediatePrice(product.getImmediatePrice())
+            .imgUrl(product.getImage())
+            .build();
+
+    // 4. 결과 반환
+    return productReqDto;
+}
 }

@@ -38,4 +38,6 @@ public class AuctionRestController {
         System.out.println("사진 올라감");
         return productService.uploadFile(request,file);
     }
+
+
 }
