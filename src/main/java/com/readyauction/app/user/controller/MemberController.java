@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,9 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
+//    @Autowired
+//    private PasswordEncoder passwordEncoder;
+
     // 회원가입 페이지 출력 요청
     @GetMapping("/save")
     public String saveForm() {
@@ -31,28 +35,29 @@ public class MemberController {
 //        System.out.println("MemberController.save");
 //        System.out.println("memberDTO = " + memberDTO);
         // 비밀번호 암호화해서 저장
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        memberDTO.setPassword(encoder.encode(memberDTO.getPassword()));
+//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+//        memberDTO.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
         memberService.save(memberDTO);
-        return "login";
+        return "/member/login";
     }
 
     @GetMapping("/login")
-    public String loginForm() {
-        return "login";
+    public void loginForm() {
     }
 
-    @PostMapping("/login")
-    public String login(@ModelAttribute MemberDTO memberDTO, HttpSession session, Model model) {
+    @PostMapping("/login-post")
+    public String loginPost(@ModelAttribute MemberDTO memberDTO,HttpSession session, Model model) {
+        System.out.println("로그인중");
         MemberDTO loginResult = memberService.login(memberDTO);
         if (loginResult != null) {
             // login 성공
             session.setAttribute("email", loginResult.getEmail());
             session.setAttribute("name", loginResult.getName());
-            return "auction";
+            return "redirect:/auction/auction";
         } else {
             // login 실패
-            return "login";
+            System.out.println("실패함");
+            return "redirect:/member/login";
         }
     }
 

@@ -26,7 +26,7 @@
                 <div class="col-12">
                     <div class="register-btn-group">
                         <a href="register.html" class="register-btn">Register</a>
-                        <a href="login.html" class="login-btn">Login</a>
+                        <a href="member/login.html" class="login-btn">Login</a>
                     </div>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                     <div class="right-form-area">
                         <h3>Register Your Account</h3>
 <!--                        action="[[@{/member/save}]]"-->
-                        <form class="w-100" th:action="@{/member/save}"  method="post">
+                        <form class="w-100" th:action="@{/member/login-post}"  method="post">
                             <!-- 이름 -->
                             <div class="form-inner">
                                 <label>이름</label>
