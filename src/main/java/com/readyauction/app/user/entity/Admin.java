@@ -11,6 +11,5 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString(callSuper = true)
 public class Admin extends User {
-    private Long adminId;
     // Getters and Setters
 }

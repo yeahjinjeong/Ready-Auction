@@ -166,6 +166,11 @@
             element.addEventListener("click", function() {
                 const ws = new SockJS('[[@{/chat/list}]]'); // 한 사용자당 하나 // 채팅을 시작할 때마다 할당되고 디비에 소켓 아이디가 저장된다. // 클라이언트에서 소켓 리스너랑 소켓 센더
                 stompClient = Stomp.over(ws);
+
+                // if(mySubscription != null) {
+                //     mySubscription.disconnect();
+                //     mySubscription = null;
+                // }
                 // 모든 clickableElements에서 active_chat 클래스를 빼고
                 clickableElements.forEach(function(el) {
                     el.classList.remove("active_chat");
@@ -223,7 +228,10 @@
                         )
                     }
                 )
-
+                function unsubscribeAndLog() {
+                    stompClient.unsubscribe();
+                    console.log("구독해지되었습니다.");
+                }
             });
         });
     });
