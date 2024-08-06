@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<body>
+
+
+<div layout:fragment="content1">
+    <div class="breadcrumb breadcrumb-style-one mb-0 ">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">Auction Details</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a href="../index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Auction Details</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <section class="auction-details-section pt-110">
+        <div class="container">
+            <div class="row gy-5">
+                <div class="col-lg-6">
+
+                    <div class="item-bid-timer">
+                        <div class="auction-bid">
+                            <p>Current Bid</p>
+                            <h5>$20,0379.00</h5>
+                        </div>
+                        <div class="auction-timer">
+                            <div class="countdown" id="timer4">
+                                <h6><span id="days4"></span>D :<span id="hours4"></span>H : <span id="minutes4"></span>M
+                                    : <span id="seconds4"></span>S</h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-content">
+                        <div class="tab-pane big-image fade show active" id="gallery-img1">
+                            <span class="eg-badge">ID 0195638</span>
+                            <img src="assets/images/product/details11.png" alt="">
+                        </div>
+                        <div class="tab-pane big-image fade" id="gallery-img2">
+                            <span class="eg-badge">ID 0195638</span>
+                            <img src="assets/images/product/details22.png" alt="">
+                        </div>
+                        <div class="tab-pane big-image fade" id="gallery-img3">
+                            <span class="eg-badge">ID 0195638</span>
+                            <img src="assets/images/product/details33.png" alt="">
+                        </div>
+                        <div class="tab-pane big-image fade show" id="gallery-img4">
+                            <span class="eg-badge">ID 0195638</span>
+                            <img src="assets/images/product/details44.png" alt="">
+                        </div>
+                        <div class="tab-pane big-image fade" id="gallery-img5">
+                            <span class="eg-badge">ID 0195638</span>
+                            <img src="assets/images/product/details55.png" alt="">
+                        </div>
+                    </div>
+                    <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">
+                        <li class="nav-item">
+                            <div id="details-img1" data-bs-toggle="pill" data-bs-target="#gallery-img1"
+                                 aria-controls="gallery-img1">
+                                <img src="assets/images/product/details1.png" alt="">
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div id="details-img2" data-bs-toggle="pill" data-bs-target="#gallery-img2"
+                                 aria-controls="gallery-img2">
+                                <img src="assets/images/product/details2.png" alt="">
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div id="details-img3" data-bs-toggle="pill" data-bs-target="#gallery-img3"
+                                 aria-controls="gallery-img3">
+                                <img src="assets/images/product/details3.png" alt="">
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div id="details-img4" data-bs-toggle="pill" data-bs-target="#gallery-img4"
+                                 aria-controls="gallery-img4">
+                                <img src="assets/images/product/details4.png" alt="">
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div id="details-img5" data-bs-toggle="pill" data-bs-target="#gallery-img5"
+                                 aria-controls="gallery-img5">
+                                <img src="assets/images/product/details5.png" alt="">
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="item-describe-area">
+                        <ul class="nav nav-pills d-flex justify-content-center gap-sm-4 gap-1" id="pills-tab"
+                            role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active describe-btn" id="pills-home-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+                                        aria-selected="true">Description
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link describe-btn" id="pills-profile-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-profile" type="button" role="tab"
+                                        aria-controls="pills-profile" aria-selected="false">Location
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link describe-btn" id="pills-contact-tab" data-bs-toggle="pill"
+                                        data-bs-target="#pills-contact" type="button" role="tab"
+                                        aria-controls="pills-contact" aria-selected="false">About Video
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="pills-tabContent">
+                            <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                                 aria-labelledby="pills-home-tab">
+                                <div class="describe-content">
+                                    <p class="mb-15">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis
+                                        molestiae dolore, quaerat illo adipisci fugiat voluptatibus eligendi provident
+                                        animi qui totam commodi a dolor saepe labore tempore.</p>
+                                    <p> Consequuntur doloremque accusantium aspernatur illo labore quisquam consectetur
+                                        tenetur temporibus, eos ad, fuga cumque suscipit quasi iure veniam, omnis in
+                                        iste ipsa optio. Sint voluptates sed inventore saepe, obcaecati dolores rerum
+                                        aliquid eaque.</p>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="pills-profile" role="tabpanel"
+                                 aria-labelledby="pills-profile-tab">
+                                <div class="map-area">
+                                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3649.73467103074!2d90.36181521536365!3d23.828032291722206!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3755c13a21730b43%3A0xb14a9c52d01c00d9!2sMirpur-12%20Bus%20Stand!5e0!3m2!1sen!2sbd!4v1640171021567!5m2!1sen!2sbd"
+                                            style="border-radius: 5px;" allowfullscreen="" loading="lazy"></iframe>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="pills-contact" role="tabpanel"
+                                 aria-labelledby="pills-contact-tab">
+                                <div class="about-video">
+                                    <div class="wrapper">
+                                        <div class="video-pluse">
+                                            <span style="--i:1;"></span>
+                                            <span style="--i:5;"></span>
+                                            <span style="--i:3;"></span>
+                                            <a href="https://www.youtube.com/watch?v=u31qwQUeGuM"
+                                               class="video-frame video-icon"><i class="bx bx-play"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="details-social-area">
+                            <h5 class="wdget-title">Share Now</h5>
+                            <ul>
+                                <li><a href="https://www.facebook.com"><i class='bx bxl-facebook'></i></a></li>
+                                <li><a href="https://twitter.com"><i class='bx bxl-twitter'></i></a></li>
+                                <li><a href="https://www.pinterest.com"><i class='bx bxl-pinterest-alt'></i></a></li>
+                                <li><a href="https://www.instagram.com"><i class='bx bxl-instagram'></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="widget-right-area">
+                        <h4>Lamborghini Huracán Red Mercedes AMG</h4>
+                        <p class="paragraph">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas in
+                            pulvinar neque. Nulla finibus lobortis pulvinar. Donec a consectetur nulla. Nulla posuere
+                            sapien vitae lectus suscipit</p>
+                        <div class="single-widget">
+                            <h5 class="widget-title">Product Overview</h5> <!-- 수정된 클래스 이름 -->
+                            <ul class="widget-list">
+                                <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
+                                <li><span>판매자 ID :</span><span th:text="${productDetail.memberId}">판매자</span></li>
+                                <li><span>카테고리 :</span><span th:text="${productDetail.category}">카테고리</span></li>
+                                <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
+                                <li><span>즉시 구매가 :</span><span th:text="${productDetail.immediatePrice}">즉시 구매가</span></li>
+                                <li><span>상품 설명 :</span><span th:text="${productDetail.description}">상품 설명</span></li>
+                            </ul>
+                        </div>
+                        <div class="single-widget">
+                            <h5 class="wdget-title wdget-title2">Bid Now</h5>
+                            <p class="widget-subtitle">Bid Amount : Minimum Bid 20.00$</p>
+                            <form class="widget-form">
+                                <div class="form-group d-flex justify-content-center align-items-center">
+                                    <input type="text" placeholder="$00.00">
+                                    <button class="widget-btn">Place Bid</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="single-widget">
+                            <h5 class="wdget-title">Bidding History</h5>
+                            <div class="bidding-item gap-sm-4 gap-2">
+                                <div class="bidding-img">
+                                    <img src="assets/images/buyer/bid-histo1.png" alt="">
+                                </div>
+                                <div class="bidding-content">
+                                    <h6><a href="../winner.html">Robart FOX</a></h6>
+                                    <p>Bid 23 minutes ago for 24.5$</p>
+                                </div>
+                            </div>
+                            <div class="bidding-item gap-sm-4 gap-2">
+                                <div class="bidding-img">
+                                    <img src="assets/images/buyer/bid-histo2.png" alt="">
+                                </div>
+                                <div class="bidding-content">
+                                    <h6><a href="../winner.html">Leslie Alexander</a></h6>
+                                    <p>Bid 23 minutes ago for 24.5$</p>
+                                </div>
+                            </div>
+                            <div class="bidding-item gap-sm-4 gap-2">
+                                <div class="bidding-img">
+                                    <img src="assets/images/buyer//bid-hidto3.png" alt="">
+                                </div>
+                                <div class="bidding-content">
+                                    <h6><a href="../winner.html">Jane Cooper</a></h6>
+                                    <p>Bid 23 minutes ago for 24.5$</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="best-auction-section pt-110">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="section-title-eg">
+                        <h3>Best Related Auction</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6 ">
+                    <div class="product-card product-beta-md">
+                        <div class="product-header">
+                            <h5 class="product-title"><a href="product-details.html">Smart fortwo Red Mercedes AMG</a>
+                            </h5>
+                            <h4 class="price">$3,526</h4>
+                        </div>
+                        <div class="product">
+                            <img src="assets/images/product/lp-1.png" alt="">
+                            <div class="id"><span>ID 0195667</span></div>
+                        </div>
+                        <div class="product-disc">
+                            <div class="product-acution">
+                                <div class="cv">
+                                    <span>current Bid</span>
+                                    <h6>$2,079.00</h6>
+                                </div>
+                                <div class="countdown" id="week-countdown1">
+                                    <h6>&nbsp;</h6>
+                                    <span>Waiting For Bid</span>
+                                </div>
+                            </div>
+                            <a href="auctionDetails.html" class="bid-btn">Submit A Bid</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="product-card product-beta-md">
+                        <div class="product-header">
+                            <h5 class="product-title"><a href="product-details.html">Smart fortwo Red Mercedes AMG</a>
+                            </h5>
+                            <h4 class="price">$3,526</h4>
+                        </div>
+                        <div class="product">
+                            <img src="assets/images/product/lp-2.png" alt="">
+                            <div class="id"><span>ID 0195668</span></div>
+                        </div>
+                        <div class="product-disc">
+                            <div class="product-acution">
+                                <div class="cv">
+                                    <span>current Bid</span>
+                                    <h6>$2,079.00</h6>
+                                </div>
+                                <div class="countdown" id="week-countdown2">
+                                    <h6>&nbsp;</h6>
+                                    <span>Waiting For Bid</span>
+                                </div>
+                            </div>
+                            <a href="auctionDetails.html" class="bid-btn">Submit A Bid</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="product-card product-beta-md">
+                        <div class="product-header">
+                            <h5 class="product-title"><a href="product-details.html">Smart fortwo Red Mercedes AMG</a>
+                            </h5>
+                            <h4 class="price">$3,526</h4>
+                        </div>
+                        <div class="product">
+                            <img src="assets/images/product/lp-3.png" alt="">
+                            <div class="id"><span>ID 0195669</span></div>
+                        </div>
+                        <div class="product-disc">
+                            <div class="product-acution">
+                                <div class="cv">
+                                    <span>current Bid</span>
+                                    <h6>$2,079.00</h6>
+                                </div>
+                                <div class="countdown" id="week-countdown3">
+                                    <h6>&nbsp;</h6>
+                                    <span>Waiting For Bid</span>
+                                </div>
+                            </div>
+                            <a href="auctionDetails.html" class="bid-btn">Submit A Bid</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+</div>
+</body>
+</html>
