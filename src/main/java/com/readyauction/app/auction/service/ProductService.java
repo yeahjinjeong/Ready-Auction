@@ -1,6 +1,7 @@
 package com.readyauction.app.auction.service;
 
 
+import com.readyauction.app.auction.dto.ProductDto;
 import com.readyauction.app.auction.dto.ProductReqDto;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.repository.ProductRepository;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -80,5 +82,20 @@ public class ProductService {
         String filePath = s3files.get(0).getUploadFileUrl();
 
         return filePath;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductDto> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+        return products.stream().map(product -> new ProductDto(
+                product.getId(),
+                product.getName(),
+                product.getCategory(),
+                product.getBidUnit(),
+                product.getEndTime(),
+                product.getCurrentPrice(),
+                product.getImmediatePrice(),
+                product.getImage()
+        )).collect(Collectors.toList());
     }
 }

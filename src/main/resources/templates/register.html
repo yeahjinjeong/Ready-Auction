@@ -41,16 +41,17 @@
                 <div class="col-lg-6">
                     <div class="right-form-area">
                         <h3>Register Your Account</h3>
-                        <form class="w-100">
+<!--                        action="[[@{/member/save}]]"-->
+                        <form class="w-100" th:action="@{/member/save}"  method="post">
                             <!-- 이름 -->
                             <div class="form-inner">
                                 <label>이름</label>
-                                <input type="text" placeholder="Full Name">
+                                <input type="text" name="name" placeholder="Full Name">
                             </div>
                             <!-- 이메일 -->
                             <div class="form-inner">
                                 <label>이메일</label>
-                                <input type="text" placeholder="Your email">
+                                <input type="text" name="email" placeholder="Your email">
                             </div>
                             <!-- 비밀번호 -->
                             <div class="form-inner">
@@ -67,51 +68,58 @@
                             <!-- 휴대폰 번호 -->
                             <div class="form-inner">
                                 <label>Phone</label>
-                                <input type="text" placeholder="Phone">
+                                <input type="text" name="phone" placeholder="Phone">
                             </div>
                             <!-- 주소 -->
                             <div class="form-inner">
                                 <label>주소</label>
-                                <input type="text" placeholder="Address">
+                                <input type="text" name="address" placeholder="Address">
                             </div>
                             <!-- 닉네임 -->
                             <div class="form-inner">
                                 <label>닉네임</label>
-                                <input type="text" placeholder="Nickname">
+                                <input type="text" name="nickname" placeholder="Nickname">
                             </div>
                             <!-- 성별 -->
                             <div class="form-inner">
                                 <label>성별</label>
                                 <label>
-                                    <input type="radio" name="gender" value="남성">남성
+                                    <input type="radio" name="gender" value="M">남성 <br>
                                 </label>
                                 <label>
-                                    <input type="radio" name="gender" value="여성">여성
+                                    <input type="radio" name="gender" value="F">여성 <br>
                                 </label>
                             </div>
-                            <!-- 좋아하는 스포츠 종목 -->
+                            <!-- 생년월일 -->
                             <div class="form-inner">
-                            <label>좋아하는 스포츠 종목</label>
-                            <select name="sports" id="sports">
-                                <option value="select">좋아하는 스포츠 종목을 선택하세요</option>
-                                <option value="soccer">축구</option>
-                                <option value="baseball">야구</option>
-                                <option value="basketball">농구</option>
-                                <option value="volleyball">배구</option><!-- 배구는 인기가 없는 종목이라서 따로 분류해서 다루지는 않기로 했었나? -->
-                                <option value="etc">기타</option>
-                            </select>
+                                <label for="birth">생년월일</label>
+                                <input type="date" id="birth" name="birth">
                             </div>
+<!--                            &lt;!&ndash; 좋아하는 스포츠 종목 &ndash;&gt;-->
+<!--                            &lt;!&ndash; 배구는 인기가 없는 종목이라서 따로 분류해서 다루지는 않기로 했었나? &ndash;&gt;-->
+<!--                            <div class="form-inner">-->
+<!--                            <label>좋아하는 스포츠 종목</label>-->
+<!--                            <select name="sports" id="sports">-->
+<!--                                <option value="select">좋아하는 스포츠 종목을 선택하세요</option>-->
+<!--                                <option value="soccer">축구</option>-->
+<!--                                <option value="baseball">야구</option>-->
+<!--                                <option value="basketball">농구</option>-->
+<!--&lt;!&ndash;                                <option value="volleyball">배구</option>&ndash;&gt;-->
+<!--                                <option value="etc">기타</option>-->
+<!--                            </select>-->
+<!--                            </div>-->
                             <!-- 좋아하는 스포츠 팀 -->
-                            <div class="form-inner">
-                            <label>좋아하는 스포츠 팀</label>
-                            <select name="team" id="team">
-                                <option value="select">좋아하는 스포츠 팀을 선택하세요</option>
-                                <option value="soccer">축구</option><!-- 무슨 팀이 있는지 전혀 모르겠어서 일단은 내비둠-->
-                                <option value="baseball">야구</option>
-                                <option value="basketball">농구</option>
-                                <option value="etc">기타</option>
-                            </select>
-                            </div>
+                            <!-- 무슨 팀이 있는지 전혀 모르겠어서 일단은 내비둠-->
+<!--                            <div class="form-inner">-->
+<!--                            <label>좋아하는 스포츠 팀</label>-->
+<!--                            <select name="team" id="team">-->
+<!--                                <option value="select">좋아하는 스포츠 팀을 선택하세요</option>-->
+<!--                                <option value="soccer">축구</option>-->
+<!--                                <option value="baseball">야구</option>-->
+<!--                                <option value="basketball">농구</option>-->
+<!--                                <option value="etc">기타</option>-->
+<!--                            </select>-->
+<!--                            </div>-->
                             <div class="form-inner d-flex justify-content-between flex-wrap">
                                 <div class="form-group">
                                     <input type="checkbox" id="html">
@@ -119,7 +127,7 @@
                                 </div>
                                 <a href="#" class="forgot-pass">Forgotten Password</a>
                             </div>
-                            <button class="account-btn">CREATE AN ACCOUNT</button>
+                            <input type="submit" value = "회원가입" class="account-btn">
                         </form>
                         <div class="alternate-signup-box">
                             <h6>or Sign up WITH</h6>
