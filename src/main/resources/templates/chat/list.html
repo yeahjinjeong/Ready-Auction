@@ -153,10 +153,8 @@
 <script>
     let id = Math.floor(Math.random() * 4);
     let $chatRoomId;
-    let url;
     let stompClient;
-    // $chatRoomId = document.querySelector("#chat_ib").getAttribute("data-chat-room-id");
-
+    let mySubscription = null;
 
     document.addEventListener("DOMContentLoaded", function() {
         // 'clickable' 클래스를 가진 모든 요소 선택
@@ -167,10 +165,10 @@
                 const ws = new SockJS('[[@{/chat/list}]]'); // 한 사용자당 하나 // 채팅을 시작할 때마다 할당되고 디비에 소켓 아이디가 저장된다. // 클라이언트에서 소켓 리스너랑 소켓 센더
                 stompClient = Stomp.over(ws);
 
-                // if(mySubscription != null) {
-                //     mySubscription.disconnect();
-                //     mySubscription = null;
-                // }
+                if(mySubscription != null) {
+                    mySubscription.unsubscribe();
+                    mySubscription = null;
+                }
                 // 모든 clickableElements에서 active_chat 클래스를 빼고
                 clickableElements.forEach(function(el) {
                     el.classList.remove("active_chat");
@@ -180,7 +178,7 @@
 
                 var productId = element.getAttribute("data-product-id");
                 $chatRoomId = element.getAttribute("data-chat-room-id");
-                url = `/sub/${$chatRoomId}`;
+                const url = `/sub/${$chatRoomId}`;
                 console.log(productId);
                 console.log($chatRoomId);
 
@@ -199,7 +197,7 @@
                 stompClient.connect(
                     {},
                     (frame) => {
-                        stompClient.subscribe(
+                        mySubscription = stompClient.subscribe(
                             url,
                             (frame) => {
                                 console.log(url + "을 구독하였습니다");
@@ -208,30 +206,27 @@
                                 const {chatMsgId, memberId, message, createdAt, status} = data;
                                 if (memberId == id) { // 만약 내가 보낸 거면
                                     $container.insertAdjacentHTML('beforeend',
-                                        `<div class="outgoing_msg">
-                            <div class="sent_msg">
-                                <p>${message}</p>
-                                <span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
-                        </div>`)
+                                    `<div class="outgoing_msg">
+                                        <div class="sent_msg">
+                                        <p>${message}</p>
+                                        <span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
+                                    </div>`)
                                 } else {
                                     $container.insertAdjacentHTML('beforeend',
-                                        `<div class="incoming_msg">
-                            <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                            <div class="received_msg">
-                            <div class="received_withd_msg">
-                                <p>${message}</p>
-                                <span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
-                            </div>
-                        </div>`)
+                                    `<div class="incoming_msg">
+                                        <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                                        <div class="received_msg">
+                                            <div class="received_withd_msg">
+                                                <p>${message}</p>
+                                                <span class="time_date">${new Date(createdAt).toLocaleString()}</span>
+                                            </div>
+                                        </div>
+                                    </div>`)
                                 }
                             }
                         )
                     }
                 )
-                function unsubscribeAndLog() {
-                    stompClient.unsubscribe();
-                    console.log("구독해지되었습니다.");
-                }
             });
         });
     });
