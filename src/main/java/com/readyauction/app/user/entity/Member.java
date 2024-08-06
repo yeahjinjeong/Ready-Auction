@@ -12,7 +12,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString(callSuper = true)
 public class Member extends User {
-    private Long memberId;
     private Integer mannerScore; // 매너지수
     // Getters and Setters
 }

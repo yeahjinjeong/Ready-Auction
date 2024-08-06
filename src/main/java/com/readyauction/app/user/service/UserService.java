@@ -1,5 +1,6 @@
 package com.readyauction.app.user.service;
 
+import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.user.entity.User;
 import com.readyauction.app.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,10 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    public User findUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+    }
 
     @Transactional(readOnly = true)
     public User findMemberByEmail(String email) {
