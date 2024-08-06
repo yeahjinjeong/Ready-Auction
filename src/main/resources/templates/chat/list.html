@@ -155,12 +155,10 @@
     let $chatRoomId;
 
     document.addEventListener("DOMContentLoaded", function() {
-        // 'clickable' 클래스를 가진 모든 요소 선택
         var clickableElements = document.querySelectorAll(".chat_list");
 
         clickableElements.forEach(function(element) {
             element.addEventListener("click", function() {
-                // 모든 clickableElements에서 active_chat 클래스를 빼고
                 clickableElements.forEach(function(el) {
                     el.classList.remove("active_chat");
                 });
@@ -172,16 +170,15 @@
                 console.log(productId);
                 console.log($chatRoomId);
 
-                // location.href = `[[@{/chat/${productId}}]]`;
                 $.ajax({
-                    url : `[[@{/chat/${productId}}]]`,
+                    url : `[[@{/chat/${productId}}]]`, // 실제 사용할 URL 패턴에 맞게 조정 필요
                     method : 'get', // 기본값
                     dataType : 'json', // 기대하는 응답 MIME
                     success: function(data) {
                         displayChatMessages(data, id);
+
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error fetching chat:', status, error);
                     }
                 })
             });

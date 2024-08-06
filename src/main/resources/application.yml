@@ -36,3 +36,12 @@ server:
 
 file:
   upload-dir: /path/to/upload/directory
+
+  spring:
+    redis:
+      host: localhost
+      port: 6379
+
+  redis:
+    bid:
+      prefix: bids
