@@ -151,7 +151,8 @@
 </head>
 <body>
 <script>
-    var id = Math.floor(Math.random() * 4);
+    let id = Math.floor(Math.random() * 4);
+    let $chatRoomId;
 
     document.addEventListener("DOMContentLoaded", function() {
         var clickableElements = document.querySelectorAll(".chat_list");
@@ -161,22 +162,25 @@
                 clickableElements.forEach(function(el) {
                     el.classList.remove("active_chat");
                 });
+                // 새롭게 클릭된 요소에 'active_chat' 클래스 추가
                 element.classList.add("active_chat");
 
                 var productId = element.getAttribute("data-product-id");
+                $chatRoomId = element.getAttribute("data-chat-room-id");
                 console.log(productId);
+                console.log($chatRoomId);
 
                 $.ajax({
                     url : `[[@{/chat/${productId}}]]`, // 실제 사용할 URL 패턴에 맞게 조정 필요
-                    method : 'GET',
-                    dataType : 'json',
+                    method : 'get', // 기본값
+                    dataType : 'json', // 기대하는 응답 MIME
                     success: function(data) {
-                        displayChatMessages(data);
+                        displayChatMessages(data, id);
+
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error fetching chat:', status, error);
                     }
-                });
+                })
             });
         });
     });
@@ -185,29 +189,26 @@
         var messageHistory = document.getElementById('target');
         messageHistory.innerHTML = ''; // 기존 메시지를 지우고 새로운 메시지를 표시
         console.log(messages);
-
         messages.forEach(function(msg) {
             // 예시로, 현재 로그인한 사용자의 ID와 메시지를 보낸 사람의 ID를 비교하여 메시지 타입 결정
-            var isIncoming = msg.memberId !== currentMemberId;
+            var isIncoming = msg.memberId !== currentMemberId; // true/false
             var msgType = isIncoming ? 'incoming_msg' : 'outgoing_msg';
-            var imgHTML = isIncoming ? '<img src="https://ptetutorials.com/images/user-profile.png" alt="user">' : '';
+            var imgHTML = isIncoming ? '<img src="https://ptetutorials.com/images/user-profile.png" alt="user"></div>' : '';
             var dateTimeFormat = new Date(msg.createdAt2).toLocaleString(); // 'createdAt2' 필드를 사용하여 날짜 포맷팅
-
-            var msgHTML = `<div class="${msgType}">
-            <div class="${isIncoming ? 'incoming_msg_img' : 'sent_msg'}">
-                ${imgHTML}
-                <div class="${isIncoming ? 'received_msg' : ''}">
-                    <div class="${isIncoming ? 'received_withd_msg' : ''}">
-                        <p>${msg.message}</p>
-                        <span class="time_date">${dateTimeFormat}</span>
+            var msgHTML =
+                `<div class="${msgType}">
+                    <div class="${isIncoming ? 'incoming_msg_img' : 'sent_msg'}">
+                        ${imgHTML}
+                    <div class="${isIncoming ? 'received_msg' : ''}">
+                        <div class="${isIncoming ? 'received_withd_msg' : ''}">
+                            <p>${msg.message}</p>
+                            <span class="time_date">${dateTimeFormat}</span>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>`;
+                </div>`;
             messageHistory.innerHTML += msgHTML; // 메시지 추가
         });
     }
-
 </script>
 <div class="container">
     <h3 class=" text-center">Messaging</h3>
@@ -237,11 +238,11 @@
 <!--                            </div>-->
 <!--                        </div>-->
 <!--                    </div>-->
-                    <div class="chat_list" th:each="chatRoom, stat : ${chatRoomList}" th:object="${chatRoom}"  th:attr="data-product-id=${chatRoom.productId}">
+                    <div class="chat_list" th:each="chatRoom, stat : ${chatRoomList}" th:object="${chatRoom}" th:attr="data-product-id=${chatRoom.productId}, data-chat-room-id=${chatRoom.id}">
                         <div class="chat_people">
                             <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
                             <div class="chat_ib">
-                                <h5 th:text="*{productId}">Sunil Rajput</h5> <span class="chat_date" th:text="*{Id}">Dec 25</span>
+                                <h5 th:text="*{productId}">Sunil Rajput</h5> <span class="chat_date" th:text="*{id}">Dec 25</span>
                                 <p th:text="*{chatRoomMembers}">Test, which is a new approach to have all solutions
                                     astrology under one roof.</p>
                             </div>
@@ -297,24 +298,21 @@
                     const {chatMsgId, memberId, message, createdAt, status} = data;
                     if (memberId == id) { // 만약 내가 보낸 거면
                         $container.insertAdjacentHTML('beforeend',
-                            `<div class="outgoing_msg"><h6>${memberId}</h6>
+                        `<div class="outgoing_msg">
                             <div class="sent_msg">
                                 <p>${message}</p>
-                                <span class="time_date">${createdAt}</span></div>
+                                <span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
                         </div>`)
                     } else {
                         $container.insertAdjacentHTML('beforeend',
-                            `
-                            <div class="incoming_msg">
-                        <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                        <h6>${memberId}</h6>
-                        <div class="received_msg">
+                        `<div class="incoming_msg">
+                            <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                            <div class="received_msg">
                             <div class="received_withd_msg">
                                 <p>${message}</p>
-                                <span class="time_date">${createdAt}</span></div>
-                        </div>
-                    </div>
-                            `)
+                                <span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
+                            </div>
+                        </div>`)
                     }
                 }
             )
@@ -324,7 +322,7 @@
     document.querySelector("#send").addEventListener('click', (e) => {
         const message = {
             id: null,
-            chatRoomId: 1,
+            chatRoomId: $chatRoomId,
             memberId: id,
             message: $message.value,
             createdAt: Date.now(),
