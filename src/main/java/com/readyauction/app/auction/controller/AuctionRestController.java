@@ -1,7 +1,6 @@
 package com.readyauction.app.auction.controller;
 
 import com.readyauction.app.auction.dto.BidDto;
-import com.readyauction.app.auction.dto.ProductDto;
 import com.readyauction.app.auction.dto.ProductReqDto;
 import com.readyauction.app.auction.service.BidService;
 import com.readyauction.app.auction.service.ProductService;
@@ -12,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @Slf4j
@@ -53,12 +50,5 @@ public class AuctionRestController {
             // startBid에서 던져진 RuntimeException을 처리
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Bid failed: " + e.getMessage());
         }
-
-    @GetMapping("/all")
-    public ResponseEntity<List<ProductDto>> getAllAuctions() {
-        List<ProductDto> auctions = productService.getAllProducts();
-        return ResponseEntity.ok(auctions);
     }
 }
-
-
