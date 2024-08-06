@@ -79,7 +79,8 @@
          <span>경매 마감 시간</span>
         </div>
        </div>
-       <a th:href="@{/auction-details.html}" class="bid-btn">입찰하기</a>
+       <a th:href="@{/auction/product/{id}(id=${product.id})}" class="bid-btn">입찰하기</a>
+
       </div>
      </div>
     </div>

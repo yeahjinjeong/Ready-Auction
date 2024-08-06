@@ -26,8 +26,8 @@ public class BidService {
 
     private final BidRepository bidRepository;
     private final MemberService memberService;
-    private final ProductRepository productRepository;
     private final MemberRepository userRepository;
+    private final ProductService productService;
 
     @Transactional
     public boolean createBid(Long userId, Product product, Integer price, Timestamp timestamp) {
@@ -63,7 +63,8 @@ public class BidService {
     @Transactional
     public void startBid(HttpServletRequest request, BidDto bidDto) {
         Long userId = memberService.findMemberByEmail(request.getHeader("email")).getId();
-        Optional<Product> optionalProduct = productRepository.findById(bidDto.getProductId());
+        Optional<Product> optionalProduct = productService.findById(bidDto.getProductId());
+        productService.updateBidPrice(optionalProduct.get(),bidDto.getBidPrice()); // 여기가 동시성 처리 필요
         if (!optionalProduct.isPresent()) {
             throw new RuntimeException("Product not found");
         }

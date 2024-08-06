@@ -2,6 +2,7 @@ package com.readyauction.app.auction.service;
 
 
 import com.readyauction.app.auction.dto.ProductDto;
+import com.readyauction.app.auction.dto.ProductRepDto;
 import com.readyauction.app.auction.dto.ProductReqDto;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.repository.ProductRepository;
@@ -32,7 +33,7 @@ public class ProductService {
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
     @Transactional
-    public ProductReqDto createProduct(HttpServletRequest request,ProductReqDto productReqDto) {
+    public ProductRepDto createProduct(HttpServletRequest request,ProductReqDto productReqDto) {
         // Create and save the Product entity
         Long userId = 0L;
         try {
@@ -58,8 +59,21 @@ public class ProductService {
                     .immediatePrice(productReqDto.getImmediatePrice())
                     .image(productReqDto.getImgUrl())
                     .build();
-            productRepository.save(product);
-            return productReqDto;
+            product = productRepository.save(product);
+
+            ProductRepDto productRepDto = ProductRepDto.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .category(product.getCategory())
+                    .description(product.getDescription())
+                    .bidUnit(product.getBidUnit())
+                    .endTime(product.getEndTime())
+                    .startTime(product.getStartTime())
+                    .currentPrice(product.getCurrentPrice())
+                    .immediatePrice(product.getImmediatePrice())
+                    .imgUrl(product.getImage())
+                    .build();
+            return productRepDto;
 
         }
        }
@@ -85,7 +99,7 @@ public class ProductService {
         return filePath;
     }
 @Transactional
-    public ProductReqDto productDetail(Long productId) {
+    public ProductRepDto productDetail(Long productId) {
     System.out.println("상품 검색중");
         //상품검색
     Optional<Product> productOptional = productRepository.findById(productId);
@@ -97,7 +111,8 @@ public class ProductService {
     Product product = productOptional.get();
 
     // 3. DTO 변환
-    ProductReqDto productReqDto = ProductReqDto.builder()
+    ProductRepDto productRepDto = ProductRepDto.builder()
+            .id(product.getId())
             .name(product.getName())
             .category(product.getCategory())
             .description(product.getDescription())
@@ -110,7 +125,7 @@ public class ProductService {
             .build();
 
     // 4. 결과 반환
-    return productReqDto;
+    return productRepDto;
 }
 
     @Transactional(readOnly = true)
@@ -126,5 +141,21 @@ public class ProductService {
                 product.getImmediatePrice(),
                 product.getImage()
         )).collect(Collectors.toList());
+    }
+    @Transactional
+    public Boolean updateBidPrice(Product product, Integer bidPrice) { // 여기서 동시성 처리 필요함
+        try {
+            product.setCurrentPrice(bidPrice + product.getBidUnit());
+            productRepository.save(product);
+            return true; // 성공적으로 업데이트 및 저장이 완료되면 true 반환
+        } catch (Exception e) {
+            // 예외가 발생하면 로그를 기록하고 false 반환
+            System.err.println("Failed to update bid price: " + e.getMessage());
+            return false;
+        }
+    }
+    @Transactional
+    public Optional<Product> findById(Long productId) {
+        return productRepository.findById(productId);
     }
 }
