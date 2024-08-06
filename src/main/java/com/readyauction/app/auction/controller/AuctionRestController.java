@@ -1,5 +1,6 @@
 package com.readyauction.app.auction.controller;
 
+import com.readyauction.app.auction.dto.ProductDto;
 import com.readyauction.app.auction.dto.ProductReqDto;
 import com.readyauction.app.auction.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -38,4 +41,12 @@ public class AuctionRestController {
         System.out.println("사진 올라감");
         return productService.uploadFile(request,file);
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ProductDto>> getAllAuctions() {
+        List<ProductDto> auctions = productService.getAllProducts();
+        return ResponseEntity.ok(auctions);
+    }
 }
+
+
