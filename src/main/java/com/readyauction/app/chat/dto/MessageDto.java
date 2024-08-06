@@ -15,7 +15,7 @@ import java.time.ZoneId;
 @AllArgsConstructor
 @Builder
 public class MessageDto {
-    private Long chatMsgId;
+    private Long id;
     private Long chatRoomId;
     private Long memberId;
     private String message;

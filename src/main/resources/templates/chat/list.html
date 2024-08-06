@@ -153,12 +153,25 @@
 <script>
     let id = Math.floor(Math.random() * 4);
     let $chatRoomId;
+    let url;
+    let stompClient;
+    // $chatRoomId = document.querySelector("#chat_ib").getAttribute("data-chat-room-id");
+
 
     document.addEventListener("DOMContentLoaded", function() {
+        // 'clickable' 클래스를 가진 모든 요소 선택
         var clickableElements = document.querySelectorAll(".chat_list");
 
         clickableElements.forEach(function(element) {
             element.addEventListener("click", function() {
+                const ws = new SockJS('[[@{/chat/list}]]'); // 한 사용자당 하나 // 채팅을 시작할 때마다 할당되고 디비에 소켓 아이디가 저장된다. // 클라이언트에서 소켓 리스너랑 소켓 센더
+                stompClient = Stomp.over(ws);
+
+                // if(mySubscription != null) {
+                //     mySubscription.disconnect();
+                //     mySubscription = null;
+                // }
+                // 모든 clickableElements에서 active_chat 클래스를 빼고
                 clickableElements.forEach(function(el) {
                     el.classList.remove("active_chat");
                 });
@@ -167,20 +180,58 @@
 
                 var productId = element.getAttribute("data-product-id");
                 $chatRoomId = element.getAttribute("data-chat-room-id");
+                url = `/sub/${$chatRoomId}`;
                 console.log(productId);
                 console.log($chatRoomId);
 
+                // location.href = `[[@{/chat/${productId}}]]`;
                 $.ajax({
-                    url : `[[@{/chat/${productId}}]]`, // 실제 사용할 URL 패턴에 맞게 조정 필요
+                    url : `[[@{/chat/${productId}}]]`,
                     method : 'get', // 기본값
                     dataType : 'json', // 기대하는 응답 MIME
                     success: function(data) {
                         displayChatMessages(data, id);
-
                     },
                     error: function(xhr, status, error) {
+                        console.error('Error fetching chat:', status, error);
                     }
                 })
+                stompClient.connect(
+                    {},
+                    (frame) => {
+                        stompClient.subscribe(
+                            url,
+                            (frame) => {
+                                console.log(url + "을 구독하였습니다");
+                                const data = JSON.parse(frame.body);
+                                const $container = document.querySelector("#target");
+                                const {chatMsgId, memberId, message, createdAt, status} = data;
+                                if (memberId == id) { // 만약 내가 보낸 거면
+                                    $container.insertAdjacentHTML('beforeend',
+                                        `<div class="outgoing_msg">
+                            <div class="sent_msg">
+                                <p>${message}</p>
+                                <span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
+                        </div>`)
+                                } else {
+                                    $container.insertAdjacentHTML('beforeend',
+                                        `<div class="incoming_msg">
+                            <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
+                            <div class="received_msg">
+                            <div class="received_withd_msg">
+                                <p>${message}</p>
+                                <span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
+                            </div>
+                        </div>`)
+                                }
+                            }
+                        )
+                    }
+                )
+                function unsubscribeAndLog() {
+                    stompClient.unsubscribe();
+                    console.log("구독해지되었습니다.");
+                }
             });
         });
     });
@@ -241,7 +292,7 @@
                     <div class="chat_list" th:each="chatRoom, stat : ${chatRoomList}" th:object="${chatRoom}" th:attr="data-product-id=${chatRoom.productId}, data-chat-room-id=${chatRoom.id}">
                         <div class="chat_people">
                             <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                            <div class="chat_ib">
+                            <div class="chat_ib" id="chat_ib" th:attr="data-chat-room-id=${chatRoom.id}">
                                 <h5 th:text="*{productId}">Sunil Rajput</h5> <span class="chat_date" th:text="*{id}">Dec 25</span>
                                 <p th:text="*{chatRoomMembers}">Test, which is a new approach to have all solutions
                                     astrology under one roof.</p>
@@ -284,54 +335,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js" integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
-    const ws = new SockJS('[[@{/chat/list}]]'); // 한 사용자당 하나 // 채팅을 시작할 때마다 할당되고 디비에 소켓 아이디가 저장된다. // 클라이언트에서 소켓 리스너랑 소켓 센더
-    // var url = `/sub/${productId}`;
-    const stompClient = Stomp.over(ws);
-    stompClient.connect(
-        {},
-        (frame) => {
-            stompClient.subscribe(
-                "/sub/foo",
-                (frame) => {
-                    const data = JSON.parse(frame.body);
-                    const $container = document.querySelector("#target");
-                    const {chatMsgId, memberId, message, createdAt, status} = data;
-                    if (memberId == id) { // 만약 내가 보낸 거면
-                        $container.insertAdjacentHTML('beforeend',
-                        `<div class="outgoing_msg">
-                            <div class="sent_msg">
-                                <p>${message}</p>
-                                <span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
-                        </div>`)
-                    } else {
-                        $container.insertAdjacentHTML('beforeend',
-                        `<div class="incoming_msg">
-                            <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                            <div class="received_msg">
-                            <div class="received_withd_msg">
-                                <p>${message}</p>
-                                <span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
-                            </div>
-                        </div>`)
-                    }
-                }
-            )
-        }
-    )
     const $message = document.querySelector("#message");
     document.querySelector("#send").addEventListener('click', (e) => {
         const message = {
-            id: null,
+            id :null,
             chatRoomId: $chatRoomId,
             memberId: id,
             message: $message.value,
             createdAt: Date.now(),
-            status: '000'
-            // 000 : !id 안읽음(0) id 안숨김(0) !id 안숨김(0)
-            // 110 : !id 읽음(1) id 숨김(1) !id 안숨김(0)
-            // 111 : !id 읽음(1) id 숨김(1) !id 숨김(1)
+            status: 0
+            // 000 : !id 안읽음(0) id 안숨김(0) !id 안숨김(0) => 0
+            // 110 : !id 읽음(1) id 숨김(1) !id 안숨김(0) => 5
+            // 111 : !id 읽음(1) id 숨김(1) !id 숨김(1) => 6
         };
-        stompClient.send(`/pub/foo`, {}, JSON.stringify(message));
+        stompClient.send(`/pub/${$chatRoomId}`, {}, JSON.stringify(message));
         // stompClient.send(`/pub/${productId}`, {}, JSON.stringify(message));
         $message.value = "";
     });

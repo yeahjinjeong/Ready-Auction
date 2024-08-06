@@ -3,10 +3,15 @@ package com.readyauction.app.chat.controller;
 import com.readyauction.app.chat.dto.ChatRoomDto;
 import com.readyauction.app.chat.dto.MessageDto;
 import com.readyauction.app.chat.service.ChatService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,11 +25,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatController {
     private final ChatService chatService;
-
-    @MessageMapping("foo") // pub/foo
-    @SendTo("/sub/foo") //
-    public MessageDto chatting(MessageDto messageDto) {
+    @MessageMapping("{chatRoomId}") // pub/{productId}
+    @SendTo("/sub/{chatRoomId}")
+    public MessageDto chatting(@DestinationVariable("chatRoomId") String chatRoomId,
+                               MessageDto messageDto) {
         log.debug("message = {}", messageDto);
+        log.info("chatRoomId = {}", chatRoomId);
         chatService.save(messageDto);
         return messageDto;
     }
