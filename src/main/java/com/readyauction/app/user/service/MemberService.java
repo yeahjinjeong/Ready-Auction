@@ -1,12 +1,14 @@
 package com.readyauction.app.user.service;
 
 import com.readyauction.app.user.dto.MemberDTO;
-import com.readyauction.app.user.entity.Gender;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.entity.User;
 import com.readyauction.app.user.entity.UserStatus;
 import com.readyauction.app.user.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +22,15 @@ public class MemberService {
     @Autowired
     private MemberRepository memberRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
     @Transactional
     public void save(MemberDTO memberDTO) {
         // 1. dto -> entity 변환
         // 2. repository의 save 메서드 호출
         Member memberEntity = Member.toMember(memberDTO);
         memberEntity.setUserStatus(UserStatus.active);
-//        memberEntity.setGender(Gender.M);
         memberEntity.setMannerScore(0);
         memberEntity.setProfilePicture("https://kr.object.ncloudstorage.com/ready-auction-bucket/sample-folder/87133e3b-797b-4894-b0bd-59f0d5b3b712.jpeg");
         // repository의 save메서드 호출 (조건. entity객체를 넘겨줘야 함)
@@ -36,26 +40,33 @@ public class MemberService {
     public User findMemberByEmail(String email){
         return memberRepository.findByEmail(email);
     }
+
     public MemberDTO login(MemberDTO memberDTO) {
         /*
             1. 회원이 입력한 이메일로 DB에서 조회를 함
             2. DB에서 조회한 비밀번호와 사용자가 입력한 비밀번호가 일치하는지 판단
          */
+        System.out.println("로그인 디비 조회중");
         Member memberEntity = memberRepository.findByEmail(memberDTO.getEmail());
+        System.out.println(memberEntity.toString());
         if (memberEntity != null) {
             // 조회 결과가 있다(해당 이메일을 가진 회원 정보가 있다)
+            if (passwordEncoder.matches(memberDTO.getPassword(), memberEntity.getPassword()) == true) {
+//            if (memberDTO.getPassword().equals(memberEntity.getPassword()) == true) {
 
-            if (memberEntity.getPassword().equals(memberDTO.getPassword())) {
+                System.out.println("비밀번호 일치");
                 // 비밀번호 일치
                 // entity -> dto 변환 후 리턴
                 MemberDTO dto = MemberDTO.toMemberDTO(memberEntity);
                 return dto;
             } else {
                 // 비밀번호 불일치(로그인실패)
+                System.out.println("불일치 ");
                 return null;
             }
         } else {
             // 조회 결과가 없다(해당 이메일을 가진 회원이 없다)
+            System.out.println("회원 없음");
             return null;
         }
     }
