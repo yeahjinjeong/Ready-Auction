@@ -43,10 +43,11 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public String login(@ModelAttribute MemberDTO memberDTO, HttpSession session) {
+    public String login(@ModelAttribute MemberDTO memberDTO, HttpSession session, Model model) {
         MemberDTO loginResult = memberService.login(memberDTO);
         if (loginResult != null) {
             // login 성공
+//            session.setAttribute("loginResult", loginResult);
             session.setAttribute("email", loginResult.getEmail());
             session.setAttribute("name", loginResult.getName());
             return "index";

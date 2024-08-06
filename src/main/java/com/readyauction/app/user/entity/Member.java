@@ -32,15 +32,18 @@ public class Member extends User {
         Member.setProfilePicture(memberDTO.getProfilePicture());
         Member.setCreatedAt(memberDTO.getCreatedAt());
         Member.setUserStatus(memberDTO.getUserStatus());
+        Member.setGender(memberDTO.getGender());
+//        Member.setUpdatedAt(memberDTO.getUpdatedAt());
+        Member.setMannerScore(memberDTO.getMannerScore());
         return Member;
     }
 
-    public static Member toUpdateMember(MemberDTO memberDTO) {
-        Member Member = new Member();
-        Member.setId(memberDTO.getId());
-        Member.setEmail(memberDTO.getEmail());
-        Member.setPassword(memberDTO.getPassword());
-        Member.setName(memberDTO.getName());
-        return Member;
-    }
+//    public static Member toUpdateMember(MemberDTO memberDTO) {
+//        Member Member = new Member();
+//        Member.setId(memberDTO.getId());
+//        Member.setEmail(memberDTO.getEmail());
+//        Member.setPassword(memberDTO.getPassword());
+//        Member.setName(memberDTO.getName());
+//        return Member;
+//    }
 }

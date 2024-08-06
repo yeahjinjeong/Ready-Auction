@@ -26,9 +26,11 @@ public class MemberService {
         // 2. repository의 save 메서드 호출
         Member memberEntity = Member.toMember(memberDTO);
         memberEntity.setUserStatus(UserStatus.active);
-        memberEntity.setGender(Gender.M);
-        memberRepository.save(memberEntity);
+//        memberEntity.setGender(Gender.M);
+        memberEntity.setMannerScore(0);
+        memberEntity.setProfilePicture("https://kr.object.ncloudstorage.com/ready-auction-bucket/sample-folder/87133e3b-797b-4894-b0bd-59f0d5b3b712.jpeg");
         // repository의 save메서드 호출 (조건. entity객체를 넘겨줘야 함)
+        memberRepository.save(memberEntity);
     }
 
     public MemberDTO login(MemberDTO memberDTO) {
