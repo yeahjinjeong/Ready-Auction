@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -65,6 +66,12 @@ public abstract class User {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
+
+    @ElementCollection(targetClass = Authority.class, fetch = FetchType.EAGER)
+//    @CollectionTable(name = "user", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "authority")
+    @Enumerated(EnumType.STRING)
+    private Set<Authority> authorities;
 
 //    // 부모 클래스의 빌더
 //    @Builder
