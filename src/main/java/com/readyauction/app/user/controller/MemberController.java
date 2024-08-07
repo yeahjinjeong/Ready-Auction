@@ -2,7 +2,6 @@ package com.readyauction.app.user.controller;
 
 import com.readyauction.app.user.dto.MemberDTO;
 import com.readyauction.app.user.service.MemberService;
-import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -20,13 +20,10 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
     // 회원가입 페이지 출력 요청
     @GetMapping("/save")
     public String saveForm() {
-        return "/member/register";
+        return "register";
     }
 
     @PostMapping("/save")
@@ -34,29 +31,29 @@ public class MemberController {
 //        System.out.println("MemberController.save");
 //        System.out.println("memberDTO = " + memberDTO);
         // 비밀번호 암호화해서 저장
-//        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        memberDTO.setPassword(passwordEncoder.encode(memberDTO.getPassword()));
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        memberDTO.setPassword(encoder.encode(memberDTO.getPassword()));
         memberService.save(memberDTO);
-        return "/member/login";
+        return "login";
     }
 
     @GetMapping("/login")
-    public void loginForm() {
+    public String loginForm() {
+        return "login";
     }
 
-    @PostMapping("/login-post")
-    public String loginPost(@ModelAttribute MemberDTO memberDTO, HttpSession session, Model model) {
-        System.out.println("로그인중");
+    @PostMapping("/login")
+    public String login(@ModelAttribute MemberDTO memberDTO, HttpSession session, Model model) {
         MemberDTO loginResult = memberService.login(memberDTO);
         if (loginResult != null) {
             // login 성공
+//            session.setAttribute("loginResult", loginResult);
             session.setAttribute("email", loginResult.getEmail());
             session.setAttribute("name", loginResult.getName());
-            return "redirect:/auction/auction";
+            return "index";
         } else {
             // login 실패
-            System.out.println("실패함");
-            return "redirect:/member/login";
+            return "login";
         }
     }
 
