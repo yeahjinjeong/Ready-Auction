@@ -5,6 +5,13 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
+import com.readyauction.app.user.dto.MemberUpdateRequestDto;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @DiscriminatorValue("mem") // Member타입 구분하는 값을 mem로 지정 (기본값: Member)
@@ -34,5 +41,25 @@ public class Member extends User {
 
     public void changeName(String name) {
         this.setName(name);
+    }
+
+    public static Member toUpdateMember(MemberUpdateRequestDto dto) {
+        Member Member = new Member();
+        Member.setId(dto.getId());
+        Member.setEmail(dto.getEmail());
+        Member.setPassword(dto.getPassword());
+        Member.setAddress(dto.getAddress());
+        Member.setBirth(dto.getBirth());
+        Member.setCreatedAt(dto.getCreatedAt());
+        Member.setDeletedAt(dto.getDeletedAt());
+        Member.setGender(dto.getGender());
+        Member.setName(dto.getName());
+        Member.setNickname(dto.getNickname());
+        Member.setPhone(dto.getPhone());
+        Member.setProfilePicture(dto.getProfilePicture());
+        Member.setUpdatedAt(dto.getUpdatedAt());
+        Member.setUserStatus(dto.getUserStatus());
+        Member.setMannerScore(dto.getMannerScore());
+        return Member;
     }
 }

@@ -16,7 +16,11 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 //       where
 //            m.email = :email
 //       """)
-//    Optional<Member> findByEmail(String email);
 
-    Member findMemberByEmail(String email);
+    Member findByEmail(String email);
+
+    Optional<Member> findMemberByEmail(String email);
+
+    // 닉네임이 존재하는지 확인하는 메소드
+//    boolean existsByNickname(String nickname);
 }
