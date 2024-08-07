@@ -110,7 +110,7 @@ z
                     contentType: false, // prevent jQuery from overriding the content type
                     beforeSend: function(xhr) {
                         // 요청 헤더에 email 추가
-                        xhr.setRequestHeader("email", "member1@example.com"); // 세션에서 가져오기
+                        xhr.setRequestHeader("email", "ssg@gmail.com"); // 세션에서 가져오기
                     },
                     success: function(response) {
                         console.log('Image uploaded successfully:', response);
@@ -154,7 +154,7 @@ z
                     data: JSON.stringify(productData), // JSON 직렬화
                     beforeSend: function(xhr) {
                         // 요청 헤더에 email 추가
-                        xhr.setRequestHeader("email", "member1@example.com");
+                        xhr.setRequestHeader("email", "ssg@gmail.com"); // 세션에서 가져오기
                     },
                     success: function(data) {
                         alert('상품이 성공적으로 등록되었습니다.');
