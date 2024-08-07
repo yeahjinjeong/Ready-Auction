@@ -23,22 +23,32 @@
                 <div class="col">
                     <div class="winner-gamma">
                         <div class="winner-image">
-                            <img src="../assets/images/winner/winner-b1.png" alt="Profile Image">
+<!--                            <img src="../assets/images/winner/winner-b1.png" alt="Profile Image">-->
+                            <img onclick="" th:src="${member.profilePicture != null ? member.profilePicture : '../assets/images/profile/basic-profile.png'}" alt="Profile Image">
                         </div>
                     </div>
                 </div>
             </div>
             <div class="single-widget">
-                <h5 class="wdget-title">My Profile</h5>
-                <ul class="widget-list">
-                    <li><span>닉네임 :</span><span>Convertible</span></li>
-                    <li><span>내 동네 :</span><span>6-Speed Manual</span></li>
-                    <li><span>매너지수 :</span><span>Rear Wheel Drive</span></li>
-                </ul>
-                <a th:href="@{/mypage}" class="alpha-btn-md-dark">Complete</a>
+                <form class="qsn-form" th:action="@{/mypage/profile-update}" method="post" onsubmit="return submitForm();">
+                    <h5 class="wdget-title">My Profile</h5>
+                    <ul class="widget-list">
+<!--                        <li><label>닉네임 :</label><input type="text" name="nickname" placeholder="Nickname"></li>-->
+                        <li><label>닉네임 :</label><input type="text" name="nickname" th:placeholder="${member.nickname}"></li>
+                    </ul>
+                    <button type="submit" class="alpha-btn-md-dark" onclick="alert('프로필 수정 완료'); console.log('프로필 수정 완료')">Complete</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    function submitForm() {
+        alert("Profile updated successfully!");
+        window.location.href = "/mypage";
+        return false; // 폼 제출 방지
+    }
+</script>
 </body>
 </html>
