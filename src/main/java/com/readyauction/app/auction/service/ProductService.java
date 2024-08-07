@@ -127,4 +127,27 @@ public class ProductService {
                 product.getImage()
         )).collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<ProductDto> searchProducts(String query) {
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(query);
+        return products.stream().map(product -> new ProductDto(
+                product.getId(),
+                product.getName(),
+                product.getCategory(),
+                product.getBidUnit(),
+                product.getEndTime(),
+                product.getCurrentPrice(),
+                product.getImmediatePrice(),
+                product.getImage()
+        )).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getSuggestions(String query) {
+        return productRepository.findByNameContainingIgnoreCase(query)
+                .stream()
+                .map(Product::getName)
+                .collect(Collectors.toList());
+    }
 }
