@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, String> {
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
 //    @Query("""
 //       select
@@ -16,7 +16,6 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 //       where
 //            m.email = :email
 //       """)
-
     Member findByEmail(String email);
 
     Optional<Member> findMemberByEmail(String email);

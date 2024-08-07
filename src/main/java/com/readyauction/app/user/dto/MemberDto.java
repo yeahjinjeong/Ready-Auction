@@ -31,7 +31,7 @@ public class MemberDto {
     private UserStatus userStatus;
 
 
-    public static MemberDto toMemberDTO(Member memberEntity) {
+    public static MemberDto toMemberDto(Member memberEntity) {
         MemberDto memberDTO = new MemberDto();
         memberDTO.setId(memberEntity.getId());
         memberDTO.setEmail(memberEntity.getEmail());

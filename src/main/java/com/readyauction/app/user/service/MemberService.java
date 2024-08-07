@@ -36,7 +36,7 @@ public class MemberService {
 
     public Member findMemberByEmail(String email) {
         Member member = memberRepository.findByEmail(email);
-        MemberDto memberDTO = MemberDto.toMemberDTO(member);
+        MemberDto memberDTO = MemberDto.toMemberDto(member);
         System.out.println(memberDTO);
         return member;
     }
@@ -45,24 +45,24 @@ public class MemberService {
         List<Member> memberEntityList = memberRepository.findAll();
         List<MemberDto> memberDtoList = new ArrayList<>();
         for (Member memberEntity: memberEntityList) {
-            memberDtoList.add(MemberDto.toMemberDTO(memberEntity));
-//            MemberDto memberDTO = MemberDto.toMemberDTO(memberEntity);
-//            memberDtoList.add(memberDTO);
+            memberDtoList.add(MemberDto.toMemberDto(memberEntity));
+            MemberDto memberDTO = MemberDto.toMemberDto(memberEntity);
+            memberDtoList.add(memberDTO);
         }
         return memberDtoList;
     }
 
-//    public MemberDto findById(Long id) {
-//        Optional<Member> optionalMemberEntity = memberRepository.findById(id);
-//        if (optionalMemberEntity.isPresent()) {
-////            MemberEntity memberEntity = optionalMemberEntity.get();
-////            MemberDto memberDto = MemberDto.toMemberDTO(memberEntity);
-////            return memberDTO;
-//            return MemberDto.toMemberDTO(optionalMemberEntity.get());
-//        } else {
-//            return null;
-//        }
-//    }
+    public MemberDto findById(Long id) {
+        Optional<Member> optionalMemberEntity = memberRepository.findById(id);
+        if (optionalMemberEntity.isPresent()) {
+//            MemberEntity memberEntity = optionalMemberEntity.get();
+//            MemberDto memberDto = MemberDto.toMemberDto(memberEntity);
+//            return memberDTO;
+            return MemberDto.toMemberDto(optionalMemberEntity.get());
+        } else {
+            return null;
+        }
+    }
 
     @Transactional(readOnly = true)
     public Member findByEmail(String email) {
@@ -73,7 +73,7 @@ public class MemberService {
     public MemberDto updateForm(String myEmail) {
         Member optionalMemberEntity = memberRepository.findByEmail(myEmail);
         if (optionalMemberEntity != null) {
-            return MemberDto.toMemberDTO(optionalMemberEntity);
+            return MemberDto.toMemberDto(optionalMemberEntity);
         } else {
             return null;
         }
@@ -106,10 +106,10 @@ public class MemberService {
 //        return memberRepository.save(existingMember);
 //    }
 
-//    @Transactional
-//    public void deleteById(Long id) {
-//        memberRepository.deleteById(id);
-//    }
+    @Transactional
+    public void deleteById(Long id) {
+        memberRepository.deleteById(id);
+    }
 
     public String emailCheck(String memberEmail) {
         Member byMemberEmail = memberRepository.findByEmail(memberEmail);
