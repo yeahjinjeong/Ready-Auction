@@ -189,6 +189,7 @@
                     method : 'get', // 기본값
                     dataType : 'json', // 기대하는 응답 MIME
                     success: function(data) {
+                        console.log(data)
                         displayChatProfiles(data, id);
                     },
                     error: function(xhr, status, error) {
@@ -249,15 +250,29 @@
         const profileBox = document.getElementById('profile-target');
         profileBox.innerHTML = '';
         console.log(infos);
-        var profileHTML =
-            `<div className="card-header">판매자 : ${infos.sellerId}</div>
+        var sellerProfileHTML =
+            `<img src="${infos.profile.sellerProfilePicture}" alt="user"></div>
+             <div className="card-header">판매자 : ${infos.profile.sellerNickName}</div>
              <div className="card-body">
-                <h5 className="card-title">상품명 : ${infos.productName}</h5>
-                <p className="card-text">낙찰가 : ${infos.price}</p>
+                <h5 className="card-title">상품명 : ${infos.product.productName}</h5>
+                <p className="card-text">낙찰가 : ${infos.product.price}</p>
+                <p className="card-text">매너점수 : ${infos.profile.sellerMannerScore}</p>
                 <a href="#" className="btn btn-primary">경매 상품 보러가기</a>
-             </div>
-             <div className="card-footer text-body-secondary">2 days ago</div>`;
-        profileBox.innerHTML += profileHTML;
+                <a href="#" className="btn btn-primary">구매확정</a>
+             </div>`;
+        var winnerProfileHTML =
+            `<img src="${infos.product.image}" alt="user"></div>
+             <div className="card-header">구매자 : ${infos.profile.winnerNickName}</div>
+             <div className="card-body">
+                <h5 className="card-title">상품명 : ${infos.product.productName}</h5>
+                <p className="card-text">낙찰가 : ${infos.product.price}</p>
+                <p className="card-text">매너점수 : ${infos.profile.winnerMannerScore}</p>
+                <a href="#" className="btn btn-primary">경매 상품 보러가기</a>
+             </div>`;
+        if (currentMemberId === `${infos.profile.sellerId}`)
+            profileBox.innerHTML += winnerProfileHTML;
+        else
+            profileBox.innerHTML += sellerProfileHTML;
     }
 
     function displayChatMessages(messages, currentMemberId) {

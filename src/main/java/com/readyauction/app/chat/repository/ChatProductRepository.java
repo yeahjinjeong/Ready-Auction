@@ -15,12 +15,4 @@ public interface ChatProductRepository extends JpaRepository<Product, Long> {
 
     Product findProductById(Long productId);
 
-    // 아니 winner가 한명이 아니야
-//    @Query("""
-//        select
-//            w
-//        from
-//            Product p left join Winner w on p.id = w.productId
-//        """)
-//    Winner findWinnerByProductId(Long productId);
 }
