@@ -36,19 +36,18 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
+
     @Transactional
-    public ProductRepDto createProduct(HttpServletRequest request,ProductReqDto productReqDto) {
+    public ProductRepDto createProduct(HttpServletRequest request, ProductReqDto productReqDto) {
         // Create and save the Product entity
         Long userId = 0L;
         try {
-         userId = memberService.findMemberByEmail(request.getHeader("email")).getId();
-        log.info("유저아이디 " + userId);
+            userId = memberService.findMemberByEmail(request.getHeader("email")).getId();
+            log.info("유저아이디 " + userId);
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
-        }
-
-        finally {
+        } finally {
             Timestamp timestamp = new Timestamp(System.currentTimeMillis());
             System.out.println("Current Timestamp: " + timestamp);
             Product product = Product.builder()
@@ -81,7 +80,7 @@ public class ProductService {
             return productRepDto;
 
         }
-       }
+    }
 
     @Transactional
     public String uploadFile(HttpServletRequest request, MultipartFile multipartFile) {
@@ -103,35 +102,36 @@ public class ProductService {
 
         return filePath;
     }
-@Transactional
+
+    @Transactional
     public ProductRepDto productDetail(Long productId) {
-    System.out.println("상품 검색중");
+        System.out.println("상품 검색중");
         //상품검색
-    Optional<Product> productOptional = productRepository.findById(productId);
-    // 2. 상품 검증
-    if (productOptional.isEmpty()) {
-        throw new IllegalStateException("상품을 찾을 수 없습니다.");
+        Optional<Product> productOptional = productRepository.findById(productId);
+        // 2. 상품 검증
+        if (productOptional.isEmpty()) {
+            throw new IllegalStateException("상품을 찾을 수 없습니다.");
+        }
+
+        Product product = productOptional.get();
+
+        // 3. DTO 변환
+        ProductRepDto productRepDto = ProductRepDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .category(product.getCategory())
+                .description(product.getDescription())
+                .bidUnit(product.getBidUnit())
+                .endTime(product.getEndTime())
+                .startTime(product.getStartTime())
+                .currentPrice(product.getCurrentPrice())
+                .immediatePrice(product.getImmediatePrice())
+                .imgUrl(product.getImage())
+                .build();
+
+        // 4. 결과 반환
+        return productRepDto;
     }
-
-    Product product = productOptional.get();
-
-    // 3. DTO 변환
-    ProductRepDto productRepDto = ProductRepDto.builder()
-            .id(product.getId())
-            .name(product.getName())
-            .category(product.getCategory())
-            .description(product.getDescription())
-            .bidUnit(product.getBidUnit())
-            .endTime(product.getEndTime())
-            .startTime(product.getStartTime())
-            .currentPrice(product.getCurrentPrice())
-            .immediatePrice(product.getImmediatePrice())
-            .imgUrl(product.getImage())
-            .build();
-
-    // 4. 결과 반환
-    return productRepDto;
-}
 
     @Transactional(readOnly = true)
     public List<ProductDto> getAllProducts() {
@@ -147,6 +147,30 @@ public class ProductService {
                 product.getImage()
         )).collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<ProductDto> searchProducts(String query) {
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(query);
+        return products.stream().map(product -> new ProductDto(
+                product.getId(),
+                product.getName(),
+                product.getCategory(),
+                product.getBidUnit(),
+                product.getEndTime(),
+                product.getCurrentPrice(),
+                product.getImmediatePrice(),
+                product.getImage()
+        )).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> getSuggestions(String query) {
+        return productRepository.findByNameContainingIgnoreCase(query)
+                .stream()
+                .map(Product::getName)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public Boolean updateBidPrice(Product product, Integer bidPrice) { // 여기서 동시성 처리 필요함
         try {
@@ -159,6 +183,7 @@ public class ProductService {
             return false;
         }
     }
+
     @Transactional
     public Optional<Product> findById(Long productId) {
         return productRepository.findById(productId);
@@ -180,8 +205,6 @@ public class ProductService {
     }
 
 
-
-
     @Transactional
     public void startWinnerProcess(HttpServletRequest request, WinnerReqDto winnerReqDto) {
         Long userId = memberService.findMemberByEmail(request.getHeader("email")).getId();
@@ -197,9 +220,10 @@ public class ProductService {
 
         }
 
-        }
+    }
+
     @Transactional
-    public boolean createWinner(Long userId, Product product,WinnerReqDto winnerReqDto) {
+    public boolean createWinner(Long userId, Product product, WinnerReqDto winnerReqDto) {
         product.getWinner().setMemberId(userId);
         product.getWinner().setStatus(PurchaseStatus.CONFIRMED);
         product.getWinner().setPrice(winnerReqDto.getBuyPrice());
@@ -210,6 +234,8 @@ public class ProductService {
         return true;
     }
 }
+
+
 
 
 
