@@ -4,7 +4,11 @@ package com.readyauction.app.auction.service;
 import com.readyauction.app.auction.dto.ProductDto;
 import com.readyauction.app.auction.dto.ProductRepDto;
 import com.readyauction.app.auction.dto.ProductReqDto;
+import com.readyauction.app.auction.dto.WinnerReqDto;
+import com.readyauction.app.auction.entity.AuctionStatus;
 import com.readyauction.app.auction.entity.Product;
+import com.readyauction.app.auction.entity.PurchaseStatus;
+import com.readyauction.app.auction.entity.Winner;
 import com.readyauction.app.auction.repository.ProductRepository;
 import com.readyauction.app.file.model.dto.FileDto;
 import com.readyauction.app.file.model.service.NcpObjectStorageService;
@@ -58,6 +62,7 @@ public class ProductService {
                     .currentPrice(productReqDto.getCurrentPrice())
                     .immediatePrice(productReqDto.getImmediatePrice())
                     .image(productReqDto.getImgUrl())
+                    .auctionStatus(AuctionStatus.START)
                     .build();
             product = productRepository.save(product);
 
@@ -158,4 +163,54 @@ public class ProductService {
     public Optional<Product> findById(Long productId) {
         return productRepository.findById(productId);
     }
+
+    // 스테이터스 변경 할 때
+    @Transactional
+    public boolean statusUpdate(HttpServletRequest request, Long productId, PurchaseStatus purchaseStatus) {
+        Long userId = memberService.findMemberByEmail(request.getHeader("email")).getId();
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        if (!optionalProduct.isPresent()) {
+            log.error("Product not found with ID: " + productId);
+            return false;
+        }
+        Product product = optionalProduct.get();
+        product.getWinner().setStatus(purchaseStatus);
+        productRepository.save(product);
+        return true;
+    }
+
+
+
+
+    @Transactional
+    public void startWinnerProcess(HttpServletRequest request, WinnerReqDto winnerReqDto) {
+        Long userId = memberService.findMemberByEmail(request.getHeader("email")).getId();
+        Optional<Product> productOptional = productRepository.findById(winnerReqDto.getProductId());
+        Product product = productOptional.get();
+
+        if (product.getWinner() != null) {
+            // The winner exists, so do something with the winner
+            System.out.println("The winner is present: " + product.getWinner().getMemberId());
+        } else {
+            // The winner does not exist
+            createWinner(userId, product, winnerReqDto);
+
+        }
+
+        }
+    @Transactional
+    public boolean createWinner(Long userId, Product product,WinnerReqDto winnerReqDto) {
+        product.getWinner().setMemberId(userId);
+        product.getWinner().setStatus(PurchaseStatus.CONFIRMED);
+        product.getWinner().setPrice(winnerReqDto.getBuyPrice());
+        product.getWinner().setWinnerTime(winnerReqDto.getBuyTime());
+        product.setAuctionStatus(AuctionStatus.END);
+        productRepository.save(product);
+        log.info("Winner created successfully for product ID: " + product.getId());
+        return true;
+    }
 }
+
+
+
+

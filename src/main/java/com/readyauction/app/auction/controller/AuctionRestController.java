@@ -6,7 +6,6 @@ import com.readyauction.app.auction.dto.ProductReqDto;
 import com.readyauction.app.auction.dto.WinnerReqDto;
 import com.readyauction.app.auction.service.BidService;
 import com.readyauction.app.auction.service.ProductService;
-import com.readyauction.app.auction.service.WinnerService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuctionRestController {
     final ProductService productService;
     final BidService bidService;
-    final WinnerService winnerService;
 
     @PostMapping("/create")
         public ResponseEntity<ProductRepDto> createAuction(HttpServletRequest request,@RequestBody ProductReqDto productReqDto) {
@@ -63,7 +61,7 @@ public class AuctionRestController {
         try{
             System.out.println("즉시구매중" + winnerReqDto);
 
-            winnerService.startWinnerProcess(request,winnerReqDto);
+            productService.startWinnerProcess(request,winnerReqDto);
             return ResponseEntity.ok(winnerReqDto);
         }
         catch (RuntimeException e) {

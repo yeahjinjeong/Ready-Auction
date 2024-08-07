@@ -1,7 +1,5 @@
 package com.readyauction.app.auction.entity;
 
-// Getters and Setters
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,6 +12,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @Builder
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,5 +37,10 @@ public class Product {
     private Integer immediatePrice;
 
     private String image;
-    // Getters and Setters
+
+    @Enumerated(EnumType.STRING)
+    private AuctionStatus auctionStatus;
+    // Winner를 임베디드 객체로 선언
+    @Embedded
+    private Winner winner;
 }
