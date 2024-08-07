@@ -11,6 +11,10 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@SecondaryTable(
+        name = "winner",
+        pkJoinColumns = @PrimaryKeyJoinColumn(name = "product_id")
+)
 public class Product {
 
     @Id
