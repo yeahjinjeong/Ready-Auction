@@ -20,7 +20,7 @@ public class WebSecurityConfig {
      */
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**");
+        return (web) -> web.ignoring().requestMatchers("/css/**", "/js/**", "/images/**");
     }
 
     @Bean
@@ -44,29 +44,29 @@ public class WebSecurityConfig {
 //                    .requestMatchers("/admin/**").hasRole("ADMIN")  // ROLE_ADMIN 권한이 있는 사용자만 허용
                     .anyRequest().authenticated();
         });
-//        /**
-//         * 폼로그인 설정
-//         */
-//        http.formLogin(configurer -> {
-//            configurer.loginPage("/member/login") // GET 로그인폼 요청 url (핸들러 작성 필요)
-//                    .loginProcessingUrl("/member/login") // POST 로그인처리 url
-//                    .usernameParameter("username") // name="username"인 아닌 경우 작성필요
-//                    .passwordParameter("password") // name="password"가 아닌 경우 작성필요
-//                    .permitAll();
-//        });
-//        /**
-//         * 로그아웃설정 - POST요청만 가능하다.
-//         */
-//        http.logout(configurer -> {
-//            configurer.logoutUrl("/auth/logout")
+        /**
+         * 폼로그인 설정
+         */
+        http.formLogin(configurer -> {
+            configurer.loginPage("/auth/login") // GET 로그인폼 요청 url (핸들러 작성 필요)
+                    .loginProcessingUrl("/auth/login") // POST 로그인처리 url
+                    .usernameParameter("email") // name="username"인 아닌 경우 작성필요
+                    .passwordParameter("password") // name="password"가 아닌 경우 작성필요
+                    .permitAll();
+        });
+        /**
+         * 로그아웃설정 - POST요청만 가능하다.
+         */
+        http.logout(configurer -> {
+            configurer.logoutUrl("/auth/logout");
 //                    .logoutSuccessUrl("/"); // 로그아웃후 리다이렉트 url (기본값은 로그인페이지)
-//        });
+        });
 
         return http.build();
     }
     
     @Bean 
-    public BCryptPasswordEncoder  passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

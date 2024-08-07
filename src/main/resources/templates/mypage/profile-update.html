@@ -24,13 +24,14 @@
                     <div class="winner-gamma">
                         <div class="winner-image">
 <!--                            <img src="../assets/images/winner/winner-b1.png" alt="Profile Image">-->
-                            <img onclick="" th:src="${member.profilePicture != null ? member.profilePicture : '../assets/images/profile/basic-profile.png'}" alt="Profile Image">
+                            <img onclick="previewImage(event)" th:src="${member.profilePicture != null ? member.profilePicture : '../assets/images/profile/basic-profile.png'}" alt="Profile Image">
+                            <img id="imagePreview" alt="Profile Image" style="display:none; max-width: 100%; height: auto; margin-top: 10px;">
                         </div>
                     </div>
                 </div>
             </div>
             <div class="single-widget">
-                <form class="qsn-form" th:action="@{/mypage/profile-update}" method="post" onsubmit="return submitForm();">
+                <form class="qsn-form" th:action="@{/mypage/profile-update}" method="post">
                     <h5 class="wdget-title">My Profile</h5>
                     <ul class="widget-list">
 <!--                        <li><label>닉네임 :</label><input type="text" name="nickname" placeholder="Nickname"></li>-->
@@ -44,11 +45,7 @@
 </div>
 
 <script>
-    function submitForm() {
-        alert("Profile updated successfully!");
-        window.location.href = "/mypage";
-        return false; // 폼 제출 방지
-    }
+
 </script>
 </body>
 </html>

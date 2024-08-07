@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MemberDTO {
+public class MemberDto {
     private Long id;
     private String email;
     private String password;
@@ -31,8 +31,8 @@ public class MemberDTO {
     private UserStatus userStatus;
 
 
-    public static MemberDTO toMemberDTO(Member memberEntity) {
-        MemberDTO memberDTO = new MemberDTO();
+    public static MemberDto toMemberDTO(Member memberEntity) {
+        MemberDto memberDTO = new MemberDto();
         memberDTO.setId(memberEntity.getId());
         memberDTO.setEmail(memberEntity.getEmail());
         memberDTO.setPassword(memberEntity.getPassword());
