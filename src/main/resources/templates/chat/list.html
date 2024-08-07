@@ -148,12 +148,27 @@
             height: auto;
             word-wrap: break-word;
         }
+
+        /*#profile-target{*/
+        /*    width: 100px;*/
+        /*    height: 100px;*/
+        /*    overflow: hidden;*/
+        /*    position: relative;*/
+        /*}*/
+        #profile-target > img{
+            position: absolute;
+            width: 20%;
+            top: 60%;
+            left: 25%;
+            transform: translate(-50%,-50%);
+        }
     </style>
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script>
-    let id = Math.floor(Math.random() * 4);
+    // let id = Math.floor(Math.random() * 4);
+    let id = 0;
     let $chatRoomId;
     let stompClient;
     let mySubscription = null;
@@ -178,6 +193,9 @@
                 // 새롭게 클릭된 요소에 'active_chat' 클래스 추가
                 element.classList.add("active_chat");
 
+                const profileBox = document.getElementById('profile-target');
+                profileBox.innerHTML = '';
+
                 const productId = element.getAttribute("data-product-id");
                 $chatRoomId = element.getAttribute("data-chat-room-id");
                 const url = `/sub/${$chatRoomId}`;
@@ -189,7 +207,7 @@
                     method : 'get', // 기본값
                     dataType : 'json', // 기대하는 응답 MIME
                     success: function(data) {
-                        console.log(data)
+                        console.log(data);
                         displayChatProfiles(data, id);
                     },
                     error: function(xhr, status, error) {
@@ -251,7 +269,7 @@
         profileBox.innerHTML = '';
         console.log(infos);
         var sellerProfileHTML =
-            `<img src="${infos.profile.sellerProfilePicture}" alt="user"></div>
+            `<img src="${infos.product.image}" alt="user"></div>
              <div className="card-header">판매자 : ${infos.profile.sellerNickName}</div>
              <div className="card-body">
                 <h5 className="card-title">상품명 : ${infos.product.productName}</h5>
@@ -269,8 +287,10 @@
                 <p className="card-text">매너점수 : ${infos.profile.winnerMannerScore}</p>
                 <a href="#" className="btn btn-primary">경매 상품 보러가기</a>
              </div>`;
-        if (currentMemberId === `${infos.profile.sellerId}`)
+        console.log(`${infos.profile.sellerId}`);
+        if (currentMemberId === Number(infos.profile.sellerId)) {
             profileBox.innerHTML += winnerProfileHTML;
+        }
         else
             profileBox.innerHTML += sellerProfileHTML;
     }
