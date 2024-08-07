@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 @Embeddable
 public class Winner {
 
+    @Column(name = "winner_member_id") // 열 이름을 명시적으로 지정
     private Long memberId;
 
     private Integer price;
