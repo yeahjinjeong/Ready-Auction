@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 @Builder
 @SecondaryTable(
         name = "winner",
-        pkJoinColumns = @PrimaryKeyJoinColumn(name = "product_id")
+        pkJoinColumns = @PrimaryKeyJoinColumn(name = "product_id",referencedColumnName = "id")
 )
 public class Product {
 
