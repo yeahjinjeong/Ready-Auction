@@ -1,9 +1,10 @@
 package com.readyauction.app.user.service;
 
+import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.user.dto.MemberDTO;
+import com.readyauction.app.user.dto.MemberUpdateRequestDto;
 import com.readyauction.app.user.entity.Gender;
 import com.readyauction.app.user.entity.Member;
-import com.readyauction.app.user.entity.User;
 import com.readyauction.app.user.entity.UserStatus;
 import com.readyauction.app.user.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,15 @@ public class MemberService {
         memberRepository.save(memberEntity);
     }
 
-    public User findMemberByEmail(String email){
-        return memberRepository.findByEmail(email);
+//    public User findMemberByEmail(String email){
+//        return memberRepository.findByEmail(email);
+//    }
+
+    public Member findMemberByEmail(String email) {
+        Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
+        return memberOptional.orElseThrow(() -> new UserNotFoundException(email));
     }
+
     public MemberDTO login(MemberDTO memberDTO) {
         /*
             1. 회원이 입력한 이메일로 DB에서 조회를 함
@@ -99,15 +106,28 @@ public class MemberService {
         }
     }
 
+    // Profile 데이터 수정
+    @Transactional
+    public void updateProfile(MemberUpdateRequestDto dto) {
+//        Member member = memberRepository.findByEmail(dto.getEmail());
+        Member member = memberRepository.findByEmail("ssg@gmail.com");
+        if (member == null) {
+            // 예외를 던지거나 로그를 남기고 종료
+            throw new UserNotFoundException("Member not found with email: " + dto.getEmail());
+        }
+        member.setNickname(dto.getNickname());
+        member.setProfilePicture(dto.getProfilePicture());
+    }
+
+    // Member 데이터 수정
 //    @Transactional
 //    public Member updateMember(Member member) {
 //        Member existingMember = memberRepository.findById(member.getId())
 //                .orElseThrow(() -> new IllegalArgumentException("Member not found with id: " + member.getId()));
 //        existingMember.setNickname(member.getNickname());
-//        existingMember.setPicture(member.getPicture());
+//        existingMember.setProfilePicture(member.getProfilePicture());
 //        existingMember.setAddress(member.getAddress());
-//        existingMember.setMannersScore(member.getMannersScore());
-//        existingMember.setCashPoint(member.getCashPoint());
+//        existingMember.setMannerScore(member.getMannerScore());
 //        return memberRepository.save(existingMember);
 //    }
 

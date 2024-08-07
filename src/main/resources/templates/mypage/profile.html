@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<body>
+<div layout:fragment="content1">
+    <div class="breadcrumb breadcrumb-style-one mb-0 ">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">My Page</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">My Page</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="auction-winner-wrapper pt-110">
+        <div class="container">
+            <div class="row row-cols-xl-6 row-cols-lg-5 row-cols-md-4 row-cols-sm-3 row-cols-2 gy-5">
+                <div class="col">
+                    <div class="winner-gamma">
+                        <div class="winner-image">
+                            <img th:src="${member.profilePicture != null ? member.profilePicture : 'assets/images/profile/basic-profile.png'}" alt="Profile Image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="single-widget">
+                <h5 class="wdget-title">My Profile</h5>
+                <ul class="widget-list">
+                    <li><span>닉네임 :</span><span th:text="${member.nickname}"></span></li>
+                    <li><span>내 동네 :</span><span th:text="${member.address}"></span></li>
+                    <!--    <li><span>내 동네 :</span><span th:text="${processedAddress}"></span></li>-->
+                    <li><span>매너지수 :</span><span th:text="${member.mannerScore}"></span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
