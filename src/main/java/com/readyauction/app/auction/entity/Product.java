@@ -47,4 +47,8 @@ public class Product {
     // Winner를 임베디드 객체로 선언
     @Embedded
     private Winner winner;
+
+    public boolean hasWinner() {
+        return winner != null;
+    }
 }
