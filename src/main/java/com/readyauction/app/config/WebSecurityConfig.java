@@ -19,7 +19,7 @@ public class WebSecurityConfig {
      */
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/css/**", "/js/**", "/images/**", "/assets/**");
+        return (web) -> web.ignoring().requestMatchers("/css/**", "/js/**", "/images/**");
     }
 
     @Bean
@@ -34,35 +34,35 @@ public class WebSecurityConfig {
          */
         http.authorizeHttpRequests((registry) -> {
             // 특수한 경우부터 보편적인 경우순으로 작성
-            registry.requestMatchers("/", "/index.html", "auction/auction", "/member/save", "/member/login","/member/login-post").permitAll() // 누구나 허용
-                    .requestMatchers( "/member/save", "/member/login").anonymous()
-//                    .requestMatchers("/board/**").authenticated()   // 인증된 사용자만 허용
-//                    .requestMatchers("/admin/**").hasRole("ADMIN")  // ROLE_ADMIN 권한이 있는 사용자만 허용
+            registry.requestMatchers("**", "/", "/index").permitAll() // 누구나 허용
+                    .requestMatchers("/member/register").anonymous()
+                    .requestMatchers("/board/**").authenticated()   // 인증된 사용자만 허용
+                    .requestMatchers("/admin/**").hasRole("ADMIN")  // ROLE_ADMIN 권한이 있는 사용자만 허용
                     .anyRequest().authenticated();
         });
-//        /**
-//         * 폼로그인 설정
-//         */
-//        http.formLogin(configurer -> {
-//            configurer.loginPage("/member/login") // GET 로그인폼 요청 url (핸들러 작성 필요)
-//                    .loginProcessingUrl("/member/login") // POST 로그인처리 url
-//                    .usernameParameter("username") // name="username"인 아닌 경우 작성필요
-//                    .passwordParameter("password") // name="password"가 아닌 경우 작성필요
-//                    .permitAll();
-//        });
-//        /**
-//         * 로그아웃설정 - POST요청만 가능하다.
-//         */
-//        http.logout(configurer -> {
-//            configurer.logoutUrl("/auth/logout")
+        /**
+         * 폼로그인 설정
+         */
+        http.formLogin(configurer -> {
+            configurer.loginPage("/auth/login") // GET 로그인폼 요청 url (핸들러 작성 필요)
+                    .loginProcessingUrl("/auth/login") // POST 로그인처리 url
+                    .usernameParameter("email") // name="username"인 아닌 경우 작성필요
+                    .passwordParameter("password") // name="password"가 아닌 경우 작성필요
+                    .permitAll();
+        });
+        /**
+         * 로그아웃설정 - POST요청만 가능하다.
+         */
+        http.logout(configurer -> {
+            configurer.logoutUrl("/auth/logout");
 //                    .logoutSuccessUrl("/"); // 로그아웃후 리다이렉트 url (기본값은 로그인페이지)
-//        });
+        });
 
         return http.build();
     }
     
     @Bean 
-    public BCryptPasswordEncoder  passwordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

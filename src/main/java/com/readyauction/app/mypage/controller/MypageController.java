@@ -30,12 +30,12 @@ public class MypageController {
             model.addAttribute("error", "User Email is required.");
             return "error/404"; // 404 오류 페이지로 이동
         }
-
-        Member member = memberService.findMemberByEmail(email);
-        log.debug("member: {}", member);
-        model.addAttribute("member", member);
-        return "mypage/mypage";
-    }
+//
+//        Member member = memberService.findMemberByEmail(email);
+//        log.debug("member: {}", member);
+//        model.addAttribute("member", member);
+//        return "mypage/mypage";
+//    }
 
     // 마이페이지 - 세션
 //    @GetMapping("")
@@ -57,56 +57,56 @@ public class MypageController {
 //        return "mypage/mypage";
 //    }
 
-    // 프로필 수정
-    @GetMapping("/profile-update")
-    public void updateProfile(/*HttpSession session,*/ Model model) {
-        log.info("GET /mypage/profile-update");
-        String email = "ssg@gmail.com";
-//        String email = (String) session.getAttribute("email");
-//        if (email == null) {
-//            return "redirect:/login";
-//        }
-        Member member = memberService.findMemberByEmail(email);
-        log.debug("member: {}", member);
-        model.addAttribute("member", member);
-    }
-
-    // 프로필 수정
-    @PostMapping("/profile-update")
-    public String updateProfile(@ModelAttribute MemberUpdateRequestDto dto, RedirectAttributes redirectAttributes) {
-        log.info("POST /mypage/profile-update");
-        memberService.updateProfile(dto);
-        redirectAttributes.addFlashAttribute("message", "프로필을 수정했습니다.");
-//        return "redirect:/mypage/mypage?email=" + dto.getEmail();
-        return "redirect:/mypage?email=" + "ssg@gmail.com";
-    }
-
-    // 닉네임 중복 검사
-//    @PostMapping("/check-nickname")
-//    @ResponseBody
-//    public Map<String, Object> checkNickname(@RequestBody Map<String, String> request) {
-//        String nickname = request.get("nickname");
-//        boolean isAvailable = mypageService.isNicknameAvailable(nickname); // 닉네임 중복 확인 로직
-//
-//        Map<String, Object> response = new HashMap<>();
-//        if (isAvailable) {
-//            response.put("success", true);
-//            response.put("email", mypageService.getCurrentUserEmail()); // 현재 사용자의 이메일
-//        } else {
-//            response.put("success", false);
-//        }
-//        return response;
+//    // 프로필 수정
+//    @GetMapping("/profile-update")
+//    public void updateProfile(/*HttpSession session,*/ Model model) {
+//        log.info("GET /mypage/profile-update");
+//        String email = "ssg@gmail.com";
+////        String email = (String) session.getAttribute("email");
+////        if (email == null) {
+////            return "redirect:/login";
+////        }
+//        Member member = memberService.findMemberByEmail(email);
+//        log.debug("member: {}", member);
+//        model.addAttribute("member", member);
 //    }
-
-    // 캐쉬 충전
-    @GetMapping("/charge")
-    public String chargeCash() {
-        return "mypage/charge";
-    }
-
-    // 회원정보 수정
-    @GetMapping("/userInfo-edit")
-    public String editUserInfo() {
+//
+//    // 프로필 수정
+//    @PostMapping("/profile-update")
+//    public String updateProfile(@ModelAttribute MemberUpdateRequestDto dto, RedirectAttributes redirectAttributes) {
+//        log.info("POST /mypage/profile-update");
+//        memberService.updateProfile(dto);
+//        redirectAttributes.addFlashAttribute("message", "프로필을 수정했습니다.");
+////        return "redirect:/mypage/mypage?email=" + dto.getEmail();
+//        return "redirect:/mypage?email=" + "ssg@gmail.com";
+//    }
+//
+//    // 닉네임 중복 검사
+////    @PostMapping("/check-nickname")
+////    @ResponseBody
+////    public Map<String, Object> checkNickname(@RequestBody Map<String, String> request) {
+////        String nickname = request.get("nickname");
+////        boolean isAvailable = mypageService.isNicknameAvailable(nickname); // 닉네임 중복 확인 로직
+////
+////        Map<String, Object> response = new HashMap<>();
+////        if (isAvailable) {
+////            response.put("success", true);
+////            response.put("email", mypageService.getCurrentUserEmail()); // 현재 사용자의 이메일
+////        } else {
+////            response.put("success", false);
+////        }
+////        return response;
+////    }
+//
+//    // 캐쉬 충전
+//    @GetMapping("/charge")
+//    public String chargeCash() {
+//        return "mypage/charge";
+//    }
+//
+//    // 회원정보 수정
+//    @GetMapping("/userInfo-edit")
+//    public String editUserInfo() {
         return "mypage/userInfo-edit";
     }
 }
