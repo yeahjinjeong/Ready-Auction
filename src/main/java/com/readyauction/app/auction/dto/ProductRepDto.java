@@ -12,7 +12,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProductReqDto {
+public class ProductRepDto {
+    private Long id;
     private String name;
     private Category category;
     private String description;
