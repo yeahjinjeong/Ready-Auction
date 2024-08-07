@@ -1,6 +1,7 @@
 package com.readyauction.app.auction.controller;
 
 import com.readyauction.app.auction.dto.ProductDto;
+import com.readyauction.app.auction.dto.ProductRepDto;
 import com.readyauction.app.auction.dto.ProductReqDto;
 import com.readyauction.app.auction.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class AuctionController {
     public String getProductDetail(@PathVariable("id") Long id, Model model) {
         try {
             System.out.println("실행중");
-            ProductReqDto productDetail = productService.productDetail(id);
+            ProductRepDto productDetail = productService.productDetail(id);
             if (productDetail != null) {
                 model.addAttribute("productDetail", productDetail);
                 return "auction/auctionDetails"; // 여기 수정

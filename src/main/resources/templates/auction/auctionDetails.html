@@ -2,7 +2,77 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/default}">
+<head>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const bidForm = document.getElementById('bidForm');
+            const buyForm = document.getElementById('buyForm');
 
+            bidForm.addEventListener('submit', function (event) {
+                event.preventDefault(); // 기본 폼 제출 방지
+
+                const currentPrice = document.getElementById('currentPrice').value;
+                console.log("현재가격"+currentPrice)
+                const productId = document.getElementById('productId').value;
+                const currentTime = new Date().toISOString(); // 현재 시각 ISO 형식
+                const bidDto = {
+                    bidPrice: currentPrice,
+                    productId: productId,
+                    bidTime: currentTime
+                };
+                $.ajax({
+                    url: '[[@{/auction-api/bid}]]',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(bidDto),
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("email", "jkl@naver.com");
+                    },
+                    success: function(data) {
+                        console.log('Bid successful:', data);
+                        alert('Bid placed successfully!');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error placing bid:', error);
+                        alert('Failed to place bid. Please try again.');
+                    }
+                });
+            });
+
+            buyForm.addEventListener('submit', function (event) {
+                event.preventDefault(); // 기본 폼 제출 방지
+
+                const immediatePrice = document.getElementById('immediatePrice').value;
+                console.log("즉시 구매 가격"+immediatePrice)
+                const productId = document.getElementById('productId2').value;
+                const currentTime = new Date().toISOString(); // 현재 시각 ISO 형식
+                // 여기부터 백단 부터 짜야함
+                const winnerReqDto = {
+                    buyPrice: immediatePrice,
+                    productId: productId,
+                    buyTime: currentTime
+                };
+                $.ajax({
+                    url: '[[@{/auction-api/buy}]]',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(winnerReqDto),
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("email", "ssg@gmail.com");
+                    },
+                    success: function(data) {
+                        console.log('Bid successful:', data);
+                        alert('immediate buy placed successfully!');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error placing bid:', error);
+                        alert('Failed to place immediate buy. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
 <body>
 <div layout:fragment="content1">
     <div class="breadcrumb breadcrumb-style-one mb-0">
@@ -139,20 +209,25 @@
                             </ul>
                         </div>
                         <div class="single-widget">
-                            <h5 class="wdget-title wdget-title2">Bid Now</h5>
-                            <p class="widget-subtitle">Bid Amount : Minimum Bid 20.00$</p>
-                            <form class="widget-form">
+                            <form class="widget-form" id="bidForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
-                                    <input type="text" placeholder="$00.00">
-                                    <button class="widget-btn">Place Bid</button>
+                                    <!-- 현재 가격을 보여주는 입력 필드 -->
+                                    <input type="text" readonly class="form-control" placeholder="Current Price" th:value="${productDetail.currentPrice}" id="currentPrice" name ="currentPrice">
+                                    <!-- 상품 ID를 숨긴 필드에 저장 -->
+                                    <input type="hidden" th:value="${productDetail.id}" name="productId" id="productId">
+                                    <button type="submit" class="widget-btn">Place Bid</button>
                                 </div>
                             </form>
                         </div>
+
                         <div class="single-widget">
-                            <h5 class="wdget-title">Bidding History</h5>
-                            <div class="bidding-item gap-sm-4 gap-2">
-                                <div class="bidding-img">
-                                    <img src="assets/images/buyer/bid-histo1.png" alt="">
+                            <form class="widget-form" id="buyForm">
+                                <div class="form-group d-flex justify-content-center align-items-center">
+                                    <!-- 현재 가격을 보여주는 입력 필드 -->
+                                    <input type="text" readonly class="form-control" placeholder="Immediate Price" th:value="${productDetail.immediatePrice}" id="immediatePrice" name ="immediatePrice">
+                                    <!-- 상품 ID를 숨긴 필드에 저장 -->
+                                    <input type="hidden" th:value="${productDetail.id}" name="productId2" id="productId2">
+                                    <button type="submit" class="widget-btn2">Place buy</button>
                                 </div>
                                 <div class="bidding-content">
                                     <h6><a href="../winner.html">Robart FOX</a></h6>
