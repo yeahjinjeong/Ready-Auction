@@ -1,5 +1,7 @@
 package com.readyauction.app.chat.controller;
 
+import com.readyauction.app.auction.dto.ProductDto;
+import com.readyauction.app.chat.dto.ChatProductDto;
 import com.readyauction.app.chat.dto.ChatRoomDto;
 import com.readyauction.app.chat.dto.MessageDto;
 import com.readyauction.app.chat.service.ChatService;
@@ -30,5 +32,13 @@ public class ChatMessageController {
         // 그 중 내가 보낸 메시지들만 오른쪽으로 정렬하고
         // 내가 보내지 않은 메시지들은 왼쪽으로 정렬한다.
         return messageDtos;
+    }
+
+    @GetMapping("chat/profile/{productId}")
+    public ChatProductDto findProfiles(@PathVariable Long productId
+    ) {
+        ChatProductDto chatProductDto = chatService.findProductAndWinnerByProductId(productId);
+        log.debug(chatProductDto.toString());
+        return chatProductDto;
     }
 }
