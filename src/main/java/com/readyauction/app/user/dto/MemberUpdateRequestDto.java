@@ -2,6 +2,7 @@ package com.readyauction.app.user.dto;
 
 import com.readyauction.app.user.entity.Gender;
 import com.readyauction.app.user.entity.UserStatus;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,9 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberUpdateRequestDto {
+    @NotBlank
     private Long id;
+    @NotBlank
     private String email;
     private String password;
     private String name;

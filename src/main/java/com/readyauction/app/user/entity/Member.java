@@ -1,48 +1,38 @@
 package com.readyauction.app.user.entity;
 
-import com.readyauction.app.user.dto.MemberDTO;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import java.util.Set;
 
 @Entity
 @DiscriminatorValue("mem") // Member타입 구분하는 값을 mem로 지정 (기본값: Member)
-@Data
+@Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = true)
+@Data
+@SuperBuilder
 public class Member extends User {
     private Integer mannerScore; // 매너지수
     // Getters and Setters
 
-    public static Member toMember(MemberDTO memberDTO) {
-        Member Member = new Member();
-        Member.setId(memberDTO.getId());
-        Member.setEmail(memberDTO.getEmail());
-        Member.setPassword(memberDTO.getPassword());
-        Member.setName(memberDTO.getName());
-        Member.setPhone(memberDTO.getPhone());
-        Member.setAddress(memberDTO.getAddress());
-        Member.setBirth(memberDTO.getBirth());
-        Member.setNickname(memberDTO.getNickname());
-        Member.setProfilePicture(memberDTO.getProfilePicture());
-        Member.setCreatedAt(memberDTO.getCreatedAt());
-        Member.setUserStatus(memberDTO.getUserStatus());
-        Member.setGender(memberDTO.getGender());
-//        Member.setUpdatedAt(memberDTO.getUpdatedAt());
-        Member.setMannerScore(memberDTO.getMannerScore());
-        return Member;
+//    @Enumerated(EnumType.STRING)
+////    @ElementCollection(fetch = FetchType.EAGER) // MemberEntity 조회시 조인쿼리를 이용해서 Authority도 함께 조회
+//    @ElementCollection(fetch = FetchType.LAZY) // (기본값) Member 우선 조회, authorities는 proxy처리해두고, 필요할때 조회
+//    // LAZY전략은 영속성컨텍스트 밖에서 proxy에 대한 조회를 시도하면, LazyInitializationException을 유발!
+//    @CollectionTable(
+//            name = "tbl_authority",
+//            joinColumns = @JoinColumn(name = "user_id")
+//    )
+//    private Set<Authority> authorities;
+
+    public void setDefaultAuthorities() {
+        this.setAuthorities(Set.of(Authority.ROLE_USER));
     }
 
-//    public static Member toUpdateMember(MemberDTO memberDTO) {
-//        Member Member = new Member();
-//        Member.setId(memberDTO.getId());
-//        Member.setEmail(memberDTO.getEmail());
-//        Member.setPassword(memberDTO.getPassword());
-//        Member.setName(memberDTO.getName());
-//        return Member;
-//    }
+    public void changeName(String name) {
+        this.setName(name);
+    }
 }
