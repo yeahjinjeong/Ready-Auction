@@ -23,7 +23,7 @@
    <div class="col">
     <div class="winner-gamma">
      <div class="winner-image">
-      <img th:src="${user.profilePicture != null ? user.profilePicture : 'assets/images/profile/basic-profile.png'}" alt="Profile Image">
+      <img th:src="${member.profilePicture != null ? member.profilePicture : 'assets/images/profile/basic-profile.png'}" alt="Profile Image">
      </div>
     </div>
    </div>
@@ -31,14 +31,21 @@
   <div class="single-widget">
    <h5 class="wdget-title">My Profile</h5>
    <ul class="widget-list">
-    <li><span>닉네임 :</span><span th:text="${user.nickname}"></span></li>
-    <li><span>내 동네 :</span><span th:text="${user.address}"></span></li>
-    <li><span>매너지수 :</span><span th:text="${user.mannerScore}"></span></li>
+    <li><span>닉네임 :</span><span th:text="${member.nickname}"></span></li>
+    <li><span>내 동네 :</span><span th:text="${member.address}"></span></li>
+<!--    <li><span>내 동네 :</span><span th:text="${processedAddress}"></span></li>-->
+    <li><span>매너지수 :</span><span th:text="${member.mannerScore}"></span></li>
    </ul>
-   <a th:href="@{/mypage/profile-edit}" class="alpha-btn-md-dark">Edit</a>
+   <a th:href="@{/mypage/profile-update}" class="alpha-btn-md-dark">Edit</a>
   </div>
  </div>
 </div>
 </div>
+
+<!--<script>-->
+<!-- // 페이지가 로드된 후 쿼리 파라미터를 숨기기 위해 replaceState를 사용-->
+<!-- history.replaceState({}, null, location.pathname);-->
+<!--</script>-->
+
 </body>
 </html>
