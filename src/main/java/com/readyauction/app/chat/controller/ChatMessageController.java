@@ -2,17 +2,20 @@ package com.readyauction.app.chat.controller;
 
 import com.readyauction.app.auction.dto.ProductDto;
 import com.readyauction.app.chat.dto.ChatProductDto;
+import com.readyauction.app.chat.dto.ChatProfileDto;
 import com.readyauction.app.chat.dto.ChatRoomDto;
 import com.readyauction.app.chat.dto.MessageDto;
 import com.readyauction.app.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -34,11 +37,24 @@ public class ChatMessageController {
         return messageDtos;
     }
 
+//    @GetMapping("chat/profile/{productId}")
+//    public ChatProductDto findProfiles_(@PathVariable Long productId
+//    ) {
+//        ChatProductDto chatProductDto = chatService.findProductById(productId);
+//        log.debug(chatProductDto.toString());
+//        return chatProductDto;
+//    }
+
     @GetMapping("chat/profile/{productId}")
-    public ChatProductDto findProfiles(@PathVariable Long productId
+    public ResponseEntity<?> findProfiles(@PathVariable Long productId
     ) {
-        ChatProductDto chatProductDto = chatService.findProductAndWinnerByProductId(productId);
-        log.debug(chatProductDto.toString());
-        return chatProductDto;
+        ChatProductDto chatProductDto = chatService.findProductById(productId);
+        log.info("{}", chatProductDto);
+        ChatProfileDto chatProfileDto = chatService.findMembers(chatProductDto.getSellerId(), chatProductDto.getWinnerId());
+        log.info("{}", chatProfileDto);
+        return ResponseEntity.ok(Map.of(
+                "profile", chatProfileDto,
+                "product", chatProductDto
+        ));
     }
 }

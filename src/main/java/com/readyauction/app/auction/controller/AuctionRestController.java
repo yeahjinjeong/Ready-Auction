@@ -47,7 +47,7 @@ public class AuctionRestController {
     @PostMapping("/bid")
     public ResponseEntity<?> bid(HttpServletRequest request, @RequestBody BidDto bidDto) {
         try {
-            System.out.println(" 입찰중 ");
+            System.out.println(" 입찰중 " + request.getHeader("email"));
             bidService.startBid(request, bidDto);
             System.out.println(bidDto);
             return ResponseEntity.ok(bidDto); // 성공적으로 처리되면, 200 OK와 함께 bidDto를 반환
