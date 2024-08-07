@@ -2,52 +2,28 @@ package com.readyauction.app.auction.entity;
 
 import com.readyauction.app.auction.entity.PurchaseStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.sql.Timestamp;
 
 @Embeddable
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Winner {
 
-    @Column(name = "winner_member_id") // 열 이름을 명시적으로 지정
+
+    @Column(name = "winner_member_id", table = "winner") // 열 이름을 명시적으로 지정
     private Long memberId;
-
+    @Column(table = "winner")
     private Integer price;
-
+    @Column(table = "winner")
     private Timestamp winnerTime;
 
+    @Column(table = "winner")
     @Enumerated(EnumType.STRING)
     private PurchaseStatus status; // 구매 대기, 거래중, 구매확정
 
-    // Getters and Setters
-
-    public Long getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(Long memberId) {
-        this.memberId = memberId;
-    }
-
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
-
-    public Timestamp getWinnerTime() {
-        return winnerTime;
-    }
-
-    public void setWinnerTime(Timestamp winnerTime) {
-        this.winnerTime = winnerTime;
-    }
-
-    public PurchaseStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(PurchaseStatus status) {
-        this.status = status;
-    }
 }

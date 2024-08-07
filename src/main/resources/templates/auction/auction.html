@@ -64,7 +64,7 @@
    <div class="col-lg-12 text-center">
     <h1 class="breadcrumb-title">경매 목록</h1>
     <ul class="d-flex justify-content-center breadcrumb-items">
-     <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/index.html}">메인화면으로</a></li>
+     <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/index}">Home | </a></li>
      <li class="breadcrumb-item active">경매 목록</li>
     </ul>
    </div>
@@ -91,7 +91,7 @@
     <div class="col-lg-4 col-md-6" th:each="product : ${products}" th:attr="data-category=${product.category}">
      <div class="product-card product-beta-md" style="min-width: 300px; max-width: 350px;">
       <div class="product-header">
-       <h5 class="product-title"><a th:href="@{/auction-details.html}">[[${product.name}]]</a></h5>
+       <h5 class="product-title"><a th:href="@{/auction/product/{productId}(productId=${product.id})}">[[${product.name}]]</a></h5>
        <h4 class="price">₩[[${product.immediatePrice}]]</h4>
       </div>
       <div class="product">
@@ -109,8 +109,7 @@
          <span>경매 마감 시간</span>
         </div>
        </div>
-       <a th:href="@{/auction/product/{id}(id=${product.id})}" class="bid-btn">입찰하기</a>
-
+       <a th:href="@{/auction/product/{productId}(productId=${product.id})}" class="bid-btn">입찰하기</a>
       </div>
      </div>
     </div>
