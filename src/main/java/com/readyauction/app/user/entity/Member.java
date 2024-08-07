@@ -26,7 +26,7 @@ public class Member extends User {
         Member.setName(memberDTO.getName());
         Member.setPhone(memberDTO.getPhone());
         Member.setAddress(memberDTO.getAddress());
-        Member.setBirth(memberDTO.getBirthday());
+        Member.setBirth(memberDTO.getBirth());
         Member.setNickname(memberDTO.getNickname());
         Member.setProfilePicture(memberDTO.getProfilePicture());
         Member.setCreatedAt(memberDTO.getCreatedAt());

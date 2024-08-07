@@ -15,7 +15,7 @@
 
     var days = Math.floor(distance / (1000 * 60 * 60 * 24));
     var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var minutes = Math.floor((distance % (1000 * 60)) / (1000 * 60));
     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
     document.getElementById(elementId).innerHTML = days + "일 " + hours + "시 "
@@ -29,9 +29,6 @@
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-   /* [[${products}]]를 자바스크립트에서 접근 가능하게 하기 위해 th:inline="javascript" 사용 */
-   /* 이를 통해 [[${products}]]를 JSON 형태로 JavaScript 변수에 저장 */
-   /* thymeleaf 내에서 th:each 반복문으로 products를 JSON.stringify를 이용해 JS 변수로 변환 */
    var products = /*[[${products}]]*/ [];
    products.forEach(product => {
     let endTime = product.endTime;
@@ -39,6 +36,25 @@
     startCountdown(endTime, elementId);
    });
   });
+
+  function setCategory(category) {
+   document.getElementById('categoryInput').value = category;
+   filterProducts();
+  }
+
+  function filterProducts() {
+   var category = document.getElementById('categoryInput').value;
+   var products = document.getElementById('productList').getElementsByClassName('col-lg-4 col-md-6');
+
+   for (var i = 0; i < products.length; i++) {
+    var productCategory = products[i].getAttribute('data-category');
+    if (category === "ALL" || category === productCategory) {
+     products[i].style.display = "";
+    } else {
+     products[i].style.display = "none";
+    }
+   }
+  }
  </script>
 </head>
 <body>
@@ -55,10 +71,24 @@
   </div>
  </div>
 
+ <!-- Filter Section -->
+ <div class="blog-widget widget-categories">
+  <h5 class="widget-title">Sports Categories</h5>
+  <ul class="sidebar-tag-list">
+   <li><a href="javascript:void(0);" onclick="setCategory('ALL')">전체</a></li>
+   <li><a href="javascript:void(0);" onclick="setCategory('SOCCER')">축구</a></li>
+   <li><a href="javascript:void(0);" onclick="setCategory('BASKETBALL')">농구</a></li>
+   <li><a href="javascript:void(0);" onclick="setCategory('BASEBALL')">야구</a></li>
+   <li><a href="javascript:void(0);" onclick="setCategory('ESPORTS')">e스포츠</a></li>
+   <li><a href="javascript:void(0);" onclick="setCategory('OTHER')">기타</a></li>
+  </ul>
+ </div>
+ <input type="hidden" name="category" id="categoryInput" value="ALL">
+
  <div class="auction-wrapper pt-110">
   <div class="container">
-   <div class="row g-4">
-    <div class="col-lg-4 col-md-6" th:each="product : ${products}">
+   <div class="row g-4" id="productList">
+    <div class="col-lg-4 col-md-6" th:each="product : ${products}" th:attr="data-category=${product.category}">
      <div class="product-card product-beta-md" style="min-width: 300px; max-width: 350px;">
       <div class="product-header">
        <h5 class="product-title"><a th:href="@{/auction-details.html}">[[${product.name}]]</a></h5>
@@ -96,5 +126,6 @@
   </div>
  </div>
 </div>
+
 </body>
 </html>
