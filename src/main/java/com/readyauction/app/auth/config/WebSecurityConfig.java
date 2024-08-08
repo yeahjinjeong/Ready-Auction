@@ -62,7 +62,7 @@ public class WebSecurityConfig {
          */
         http.logout(configurer -> {
             configurer.logoutUrl("/auth/logout")
-                    .logoutSuccessUrl("/auction/auction"); // 로그아웃후 리다이렉트 url (기본값은 로그인페이지)
+                    .logoutSuccessUrl("/auction/auction"); // 로그아웃 후 리다이렉트 url (기본값은 로그인페이지)
         });
 
         return http.build();
