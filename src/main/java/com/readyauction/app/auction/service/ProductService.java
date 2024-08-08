@@ -33,7 +33,6 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
-
     @Transactional
     public ProductRepDto createProduct(HttpServletRequest request, ProductReqDto productReqDto) {
         Long userId = getUserIdFromRequest(request);
