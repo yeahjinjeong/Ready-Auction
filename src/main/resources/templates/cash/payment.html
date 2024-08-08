@@ -82,12 +82,46 @@
                                       <button type="submit" class="widget-btn">결제 하기</button>
                                 </div>
                             </form>
+                            <script>
+                                $(document).ready(function() {
+                                    $('#PaymentForm').on('submit', function(event) {
+                                        event.preventDefault(); // 폼의 기본 제출 동작을 막습니다.
+                                        // 요청에 보낼 데이터 (PaymentReqDto에 해당하는 데이터 구성)
+                                        var paymentData = {
+                                            productId: [[${productDetail.id}]],  // 상품 ID
+                                            amount: [[${productDetail.immediatePrice}]],  // 즉시 구매가
+                                            payTime: new Date().toISOString()  // 현재 시간을 ISO 8601 형식으로 설정
+                                        };
+
+                                        $.ajax({
+                                            url: '[[@{/cash-api/payment}]]',
+                                            type: 'POST',
+                                            contentType: 'application/json',
+                                            dataType: 'json',
+                                            data: JSON.stringify(paymentData),
+                                            success: function(response) {
+                                                // 성공적으로 응답을 받은 경우 실행됩니다.
+                                                console.log('Payment created successfully:', response);
+                                                alert('결제가 성공적으로 처리되었습니다!');
+                                                // 필요에 따라 페이지 리다이렉션, 메시지 표시 등을 수행할 수 있습니다.
+                                            },
+                                            error: function(xhr, status, error) {
+                                                // 요청이 실패한 경우 실행됩니다.
+                                                console.error('Error occurred while creating payment:', error);
+                                                alert('결제 중 오류가 발생했습니다. 다시 시도해주세요.');
+                                            }
+                                        });
+                                    });
+                                });
+                            </script>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+        </section>
+
 </div>
 </body>
 </html>

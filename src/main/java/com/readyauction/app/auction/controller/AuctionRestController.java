@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,8 +28,10 @@ public class AuctionRestController {
         public ResponseEntity<ProductRepDto> createAuction(HttpServletRequest request,@RequestBody ProductReqDto productReqDto) {
         log.info(request.getHeader("email")+"이메일");
         log.info(productReqDto.toString());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
 
-        ProductRepDto createdProduct = productService.createProduct(request,productReqDto);
+        ProductRepDto createdProduct = productService.createProduct(email,productReqDto);
         if (createdProduct == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -40,17 +44,23 @@ public class AuctionRestController {
     }
 
     @PostMapping("/img-upload")
-    public String uploadImg(HttpServletRequest request, @RequestParam("file") MultipartFile file) {
+    public String uploadImg(@RequestParam("file") MultipartFile file) {
         System.out.println("사진 올라감");
-        return productService.uploadFile(request,file);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        return productService.uploadFile(email,file);
     }
 
     @PostMapping("/bid")
-    public ResponseEntity<Integer> bid(HttpServletRequest request, @RequestBody BidDto bidDto) {
+    public ResponseEntity<Integer> bid(@RequestBody BidDto bidDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
         Integer currentPrice = productService.findCurrentPriceById(bidDto.getProductId());
         try {
-            System.out.println("입찰중 " + request.getHeader("email"));
-            currentPrice = bidService.startBid(request, bidDto);
+            System.out.println("입찰중 "+ email);
+            currentPrice = bidService.startBid(email, bidDto);
             System.out.println(bidDto);
             return ResponseEntity.ok(currentPrice); // 성공적으로 처리되면, 200 OK와 함께 bidDto를 반환
         } catch (RuntimeException e) {
@@ -60,10 +70,12 @@ public class AuctionRestController {
     }
 
     @PostMapping("/buy")
-    public ResponseEntity<?> buy(HttpServletRequest request, @RequestBody WinnerReqDto winnerReqDto) {
+    public ResponseEntity<?> buy(@RequestBody WinnerReqDto winnerReqDto) {
         try{
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String email = authentication.getName();
             System.out.println("즉시구매중" + winnerReqDto);
-            return ResponseEntity.ok(productService.startWinnerProcess(request,winnerReqDto));
+            return ResponseEntity.ok(productService.startWinnerProcess(email,winnerReqDto));
         }
         catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Bid failed: " + e.getMessage());

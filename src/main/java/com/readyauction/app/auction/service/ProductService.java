@@ -34,8 +34,8 @@ public class ProductService {
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
     @Transactional
-    public ProductRepDto createProduct(HttpServletRequest request, ProductReqDto productReqDto) {
-        Long userId = getUserIdFromRequest(request);
+    public ProductRepDto createProduct(String email, ProductReqDto productReqDto) {
+        Long userId = getUserIdFromRequest(email);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         Product product = Product.builder()
@@ -57,11 +57,9 @@ public class ProductService {
     }
 
     @Transactional
-    public String uploadFile(HttpServletRequest request, MultipartFile multipartFile) {
+    public String uploadFile(String email, MultipartFile multipartFile) {
         validateMultipartFile(multipartFile);
-
-        String pathPrefix = request.getHeader("email");
-        List<FileDto> s3Files = ncpObjectStorageService.uploadFiles(Collections.singletonList(multipartFile), pathPrefix);
+        List<FileDto> s3Files = ncpObjectStorageService.uploadFiles(Collections.singletonList(multipartFile), "productIMG/"+ email);
 
         return s3Files.stream()
                 .findFirst()
@@ -114,8 +112,8 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDto startWinnerProcess(HttpServletRequest request, WinnerReqDto winnerReqDto) {
-        Long userId = getUserIdFromRequest(request);
+    public ProductDto startWinnerProcess(String email, WinnerReqDto winnerReqDto) {
+        Long userId = getUserIdFromRequest(email);
         Product product = findProductById(winnerReqDto.getProductId());
 
         if (product.hasWinner()) {
@@ -141,9 +139,9 @@ public class ProductService {
 
     }
 
-    private Long getUserIdFromRequest(HttpServletRequest request) {
+    private Long getUserIdFromRequest(String email) {
         try {
-            return memberService.findMemberByEmail(request.getHeader("email")).getId();
+            return memberService.findMemberByEmail(email).getId();
         } catch (Exception e) {
             log.error("Failed to retrieve user ID: {}", e.getMessage());
             throw new RuntimeException("User not found", e);
