@@ -86,50 +86,6 @@
             </div>
         </div>
     </div>
-    <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            var products = /*[[${products}]]*/ [];
-
-            function startCountdown(endTime, productId) {
-                const countDownDate = new Date(endTime).getTime();
-                if (isNaN(countDownDate)) {
-                    console.error('Invalid end time:', endTime);
-                    return;
-                }
-
-                const intervalId = setInterval(function () {
-                    const now = new Date().getTime();
-                    const distance = countDownDate - now;
-
-                    // 시간 계산
-                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                    // DOM 요소 가져오기
-                    document.getElementById(`days-${productId}`).textContent = days;
-                    document.getElementById(`hours-${productId}`).textContent = hours;
-                    document.getElementById(`minutes-${productId}`).textContent = minutes;
-                    document.getElementById(`seconds-${productId}`).textContent = seconds;
-
-                    if (distance < 0) {
-                        clearInterval(intervalId);
-                        document.getElementById(`days-${productId}`).textContent = "0";
-                        document.getElementById(`hours-${productId}`).textContent = "0";
-                        document.getElementById(`minutes-${productId}`).textContent = "0";
-                        document.getElementById(`seconds-${productId}`).textContent = "0";
-                    }
-                }, 1000);
-            }
-            products.forEach(product => {
-                const endTime = new Date(product.endTime).toISOString(); // endTime을 ISO 형식으로 변환
-                const productId = product.id;
-                startCountdown(endTime, productId);
-            });
-        });
-    </script>
-
     <section class="auction-details-section pt-110">
         <div class="container">
             <div class="row gy-5">
@@ -142,12 +98,83 @@
                         <div class="auction-timer">
                             <div class="countdown">
                                 <h6>
-                                    <span id="days-[[${productDetail.id}]]"></span>D :
-                                    <span id="hours-[[${productDetail.id}]]"></span>H :
-                                    <span id="minutes-[[${productDetail.id}]]"></span>M :
-                                    <span id="seconds-[[${productDetail.id}]]"></span>S
+                                    <span th:id="|days-${productDetail.id}|">0</span>D :
+                                    <span th:id="|hours-${productDetail.id}|">0</span>H :
+                                    <span th:id="|minutes-${productDetail.id}|">0</span>M :
+                                    <span th:id="|seconds-${productDetail.id}|">0</span>S
                                 </h6>
                             </div>
+                            <script th:inline="javascript">
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    // Assuming productDetail is an array of product objects with 'endTime' and 'id' properties
+
+                                    // Assuming productDetail is a single product object with 'endTime' and 'id' properties
+                                    var product = /*[[${productDetail}]]*/ {};
+
+// Log the product object to debug
+                                    console.log("Product object:", product);
+
+// Ensure product has the necessary properties
+                                    if (product && product.endTime && product.id) {
+                                        const endTime = new Date(product.endTime).toISOString(); // Ensure valid date
+                                        const productId = product.id;
+
+                                        console.log(`Starting countdown for product ID: ${productId}`);
+                                        startCountdown(endTime, productId);
+                                    } else {
+                                        console.error("Invalid product data:", product);
+                                    }
+
+// Countdown function
+                                    function startCountdown(endTime, productId) {
+                                        const countDownDate = new Date(endTime).getTime();
+                                        if (isNaN(countDownDate)) {
+                                            console.error('Invalid end time:', endTime);
+                                            return;
+                                        }
+
+                                        const intervalId = setInterval(function () {
+                                            const now = new Date().getTime();
+                                            const distance = countDownDate - now;
+
+                                            // Time calculations
+                                            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                            console.log(productId); //2
+                                            // Update DOM elements
+                                            console.log(`days-${productId}`);
+                                            console.log(`Countdown for product ID ${productId}: ${days}d ${hours}h ${minutes}m ${seconds}s`);
+                                            const daysElem = document.getElementById(`days-${productId}`);
+                                            const hoursElem = document.getElementById(`hours-${productId}`);
+                                            const minutesElem = document.getElementById(`minutes-${productId}`);
+                                            const secondsElem = document.getElementById(`seconds-${productId}`);
+                                            console.log(daysElem+" "+hoursElem+""+ minutesElem+""+secondsElem+"ffffffff");
+                                            if (daysElem && hoursElem && minutesElem && secondsElem) {
+                                                daysElem.textContent = days;
+                                                hoursElem.textContent = hours;
+                                                minutesElem.textContent = minutes;
+                                                secondsElem.textContent = seconds;
+                                            } else {
+                                                console.error(`Countdown elements not found for product ID: ${productId}`);
+                                                clearInterval(intervalId);
+                                                return;
+                                            }
+
+                                            // Check if countdown is over
+                                            if (distance < 0) {
+                                                clearInterval(intervalId);
+                                                daysElem.textContent = "0";
+                                                hoursElem.textContent = "0";
+                                                minutesElem.textContent = "0";
+                                                secondsElem.textContent = "0";
+                                            }
+                                        }, 1000);
+                                    }
+
+                                });
+                            </script>
                         </div>
                     </div>
 
