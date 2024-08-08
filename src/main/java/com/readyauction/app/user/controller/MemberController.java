@@ -41,7 +41,7 @@ public class MemberController {
         // 2. 회원등록요청
         memberService.register(dto);
         redirectAttributes.addFlashAttribute("message", "축하합니다🎉 회원가입되었습니다.");
-        return "redirect:/member/login";
+        return "redirect:/auth/login";
     }
 
     /**
