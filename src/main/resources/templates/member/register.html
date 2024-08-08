@@ -42,49 +42,49 @@
                     <div class="right-form-area">
                         <h3>Register Your Account</h3>
 <!--                        action="[[@{/member/save}]]"-->
-                        <form class="w-100" th:action="@{/member/register}" method="post">
+                        <form class="w-100" th:action="@{/member/register}" method="post" name="memberRegisterFrm">
                             <!-- 이름 -->
                             <div class="form-inner">
                                 <label>이름</label>
-                                <input type="text" name="name" placeholder="Full Name">
+                                <input type="text" name="name" placeholder="Full Name" required>
                             </div>
                             <!-- 이메일 -->
                             <div class="form-inner">
                                 <label>이메일</label>
-                                <input type="text" name="email" placeholder="Your email">
+                                <input type="text" name="email" placeholder="Your email" required>
                             </div>
                             <!-- 비밀번호 -->
                             <div class="form-inner">
                                 <label>비밀번호</label>
-                                <input type="password" name="password" id="password" placeholder="Password"/>
+                                <input type="password" name="password" id="password" placeholder="Password" required/>
                                 <i class="bi bi-eye-slash" id="togglePassword"></i>
                             </div>
                             <!-- 비밀번호 확인 -->
                             <div class="form-inner">
                                 <label>비밀번호 확인</label>
-                                <input type="password" name="password2" id="password2" placeholder="Confirm Password"/>
+                                <input type="password" name="password2" id="password2" placeholder="Confirm Password" required/>
                                 <i class="bi bi-eye-slash" id="togglePassword2"></i>
                             </div>
                             <!-- 휴대폰 번호 -->
                             <div class="form-inner">
                                 <label>Phone</label>
-                                <input type="text" name="phone" placeholder="Phone">
+                                <input type="text" name="phone" placeholder="Phone" required>
                             </div>
                             <!-- 주소 -->
                             <div class="form-inner">
                                 <label>주소</label>
-                                <input type="text" name="address" placeholder="Address">
+                                <input type="text" name="address" placeholder="Address" required>
                             </div>
                             <!-- 닉네임 -->
                             <div class="form-inner">
                                 <label>닉네임</label>
-                                <input type="text" name="nickname" placeholder="Nickname">
+                                <input type="text" name="nickname" placeholder="Nickname" required>
                             </div>
                             <!-- 성별 -->
                             <div class="form-inner">
                                 <label>성별</label>
                                 <label>
-                                    <input type="radio" name="gender" value="M">남성 <br>
+                                    <input type="radio" name="gender" value="M" >남성 <br>
                                 </label>
                                 <label>
                                     <input type="radio" name="gender" value="F">여성 <br>
@@ -144,6 +144,12 @@
         </div>
     </section>
 
+<script>
+        document.memberRegisterFrm.onsubmit = (e) => {
+            // 폼 제출전 유효성 검사
+            // 문제가 있는 경우 e.preventDefault() 혹은 return false를 통해서 제출을 방지한다.
+        };
+</script>
 
 </div>
 </body>
