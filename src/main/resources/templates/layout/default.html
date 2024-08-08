@@ -2,17 +2,37 @@
 <html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Ready? Auction!</title>
+    <title>Ready Auction</title>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" th:href="@{/assets/images/logo.png}" type="image/gif" sizes="20x20">
+    <link rel="icon" th:href="@{/assets/images/favicon.png}" type="image/gif" sizes="20x20">
+
     <link rel="stylesheet" th:href="@{/assets/css/swiper-bundle.min.css}">
+
     <link rel="stylesheet" th:href="@{/assets/css/boxicons.min.css}">
+
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap-icons.css}">
+
     <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+
     <link rel="stylesheet" th:href="@{/assets/css/style.css}">
     <link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
 </head>
@@ -32,10 +52,8 @@
     <div class="container">
         <div class="row">
             <div class="col-11">
-                <label>무엇을 찾고 계신가요?</label>
-                <input type="text" id="search-input-mobile" placeholder="검색어를 입력하세요.">
-                <!-- 자동 완성 목록을 표시할 영역 -->
-                <div id="autocomplete-results" class="autocomplete-suggestions"></div> <!-- 추가된 부분 -->
+                <label>What are you looking for?</label>
+                <input type="text" placeholder="Search Products, Category, Brand">
             </div>
             <div class="col-1 d-flex justify-content-end align-items-center">
                 <div class="search-cross-btn">
@@ -52,9 +70,8 @@
             <div class="row">
                 <div class="col-xl-2 align-items-center d-xl-flex d-lg-block">
                     <div class="nav-logo d-flex justify-content-between align-items-center">
-                        <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" alt="logo" width="50" height="50"></a>
+                        <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" alt="logo"></a>
                         <div class="d-flex align-items-center gap-4">
-                            <span style="font-size: 16px; font-weight: bold; color: white; margin-left: 10px;">READY? AUCTION!</span>
                             <ul class="nav-actions nav-inner-actions d-flex d-xl-none">
                                 <li class="search-btn"><i class="bi bi-search"></i></li>
                             </ul>
@@ -71,25 +88,25 @@
                 <div class="col-xl-7 d-flex justify-content-center ">
                     <nav class="main-nav">
                         <div class="inner-logo d-xl-none text-center mt-4">
-                            <a href="#"><img th:src="@{/assets/images/logo.png}" width="50" height="50" alt=""></a>
+                            <a href="#"><img th:src="@{/assets/images/logo-dark.png}" alt=""></a>
                         </div>
                         <ul>
                             <li class="has-child-menu">
                                 <a th:href="@{/}">Home</a>
                             </li>
                             <li class="has-child-menu">
-                                <a href="javascript:void(0)">경매</a>
+                                <a href="javascript:void(0)">Auction</a>
                                 <i class="fl flaticon-plus">+</i>
                                 <ul class="sub-menu">
-                                    <li><a th:href="@{/auction/auction}">경매 목록 확인</a></li>
-                                    <li><a th:href="@{/auction/productUpload}">경매 물품 등록</a></li>
+                                    <li><a th:href="@{/auction.html}">auction</a></li>
+                                    <li><a th:href="@{/auction-details.html}">auction details</a></li>
                                 </ul>
                             </li>
                             <li class="has-child-menu">
                                 <a th:href="@{/mypage}">마이페이지</a>
                             </li>
                             <li class="has-child-menu">
-                                <a href="javascript:void(0)">로그인/회원가입</a>
+                                <a href="javascript:void(0)">Blog</a>
                                 <i class="fl flaticon-plus">+</i>
                                 <ul class="sub-menu">
                                     <!--                                    <li><a th:href="@{/about.html}">about</a></li>-->
@@ -97,10 +114,10 @@
                                     <li><a th:href="@{/member/register}">회원가입</a></li>
                                 </ul>
                             </li>
-                            <!--                            <li><a th:href="@{/contact.html}">contact</a></li>-->
+                            <li><a th:href="@{/contact.html}">contact</a></li>
                         </ul>
                         <div class="contact-mail inner-contact-mail mt-5 d-block d-xl-none">
-                            <span>메시지 보내기</span>
+                            <span>Message Us</span>
                             <a href="/cdn-cgi/l/email-protection#53202623233c212713362b323e233f367d303c3e"><span class="__cf_email__" data-cfemail="9ae9efeaeaf5e8eedaffe2fbf7eaf6ffb4f9f5f7">[email&#160;protected]</span></a>
                         </div>
                     </nav>
@@ -128,15 +145,88 @@
 
 <main class="main" id="main">
     <div layout:fragment="content1"></div>
-    <!-- 검색 결과가 표시될 곳 -->
-    <div id="search-results"></div>
 </main>
 
 <footer class="footer-area footer-style-one mt-110">
     <div class="container">
         <div class="footer-main">
             <div class="row gy-5 d-flex justify-content-center">
-                <!-- 푸터 내용 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-widget">
+                        <form action="#" id="subscribe_form">
+                            <h3 class="form-title">subscribe us</h3>
+                            <div class="form-wrap d-flex align-items-center">
+                                <input type="email" placeholder="Enter Your Email">
+                                <button type="submit">Send</button>
+                            </div>
+                        </form>
+                        <div class="footer-contact-links">
+                            <div class="contact-option">
+                                <div class="icon">
+                                    <i class="bi bi-telephone-plus"></i>
+                                </div>
+                                <div class="link">
+                                    <a href="tel:8801761111456">+880 176 1111 456</a>
+                                </div>
+                            </div>
+                            <div class="contact-option">
+                                <div class="icon">
+                                    <i class="bi bi-envelope"></i>
+                                </div>
+                                <div class="link">
+                                    <a href="info@example.com"><span class="__cf_email__" data-cfemail="fb92959d94bb9e839a968b979ed5989496">[email&#160;protected]</span></a>
+                                </div>
+                            </div>
+                            <div class="contact-option">
+                                <div class="icon">
+                                    <i class="bi bi-geo-alt"></i>
+                                </div>
+                                <div class="link">
+                                    <a href="tel:8801761111456">168/170, Avenue 01, ADDRESS, Bangladesh</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="footer-widget">
+                        <h5 class="widget-title">Quick Links</h5>
+                        <ul class="widget-links">
+                            <li><a th:href="@{/templates/member/login.html}">My Account</a></li>
+                            <li><a th:href="@{/about.html}">Affiliate Program</a></li>
+                            <li><a th:href="@{/contact.html}">Lawyer Consulting</a></li>
+                            <li><a href="#">Sorteo Locemses</a></li>
+                            <li><a th:href="@{/privacy.html}">Privacy Policy</a></li>
+                            <li><a href="#">Term & Condition</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="footer-widget">
+                        <h5 class="widget-title">Help Center</h5>
+                        <ul class="widget-links">
+                            <li><a th:href="@{/contact.html}">Help Center</a></li>
+                            <li><a th:href="@{/faq.html}">FAQ</a></li>
+                            <li><a href="#">Borrow</a></li>
+                            <li><a th:href="@{/contact.html}">License Agreement</a></li>
+                            <li><a href="#">Sell your Product</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-widget text-start">
+                        <div class="footer-disc">
+                            <a th:href="@{/index.html}"><img th:src="@{/assets/images/logo.png}" alt=""></a>
+                            <p>Duis luctus risus ut velit aliquam, sed fringilla odio gravida. In vitae sagittis neque, eget vestibulum enim. Pellentesque ante odio.</p>
+                        </div>
+                        <ul class="footer-social-links justify-content-start">
+                            <li><a href="https://www.facebook.com"><i class='bx bxl-facebook'></i></a></li>
+                            <li><a href="https://twitter.com"><i class='bx bxl-twitter'></i></a></li>
+                            <li><a href="https://www.pinterest.com"><i class='bx bxl-pinterest'></i></a></li>
+                            <li><a href="https://www.instagram.com"><i class='bx bxl-instagram'></i></a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="copyright row align-items-center">
@@ -159,89 +249,8 @@
 <script th:src="@{/assets/js/jquery.magnific-popup.min.js}"></script>
 <script th:src="@{/assets/js/jquery.nice-select.js}"></script>
 <script th:src="@{/assets/js/main.js}"></script>
-<script>
-    $(document).ready(function() {
-        function search() {
-            const query = $('#search-input-mobile').val();
-            if (query) {
-                $.ajax({
-                    url: '/auction-searching-api/searching',
-                    method: 'GET',
-                    data: { query: query },
-                    success: function(response) {
-                        displaySearchResults(response);
-                    },
-                    error: function(error) {
-                        console.error('검색 결과를 가져오는 중 오류 발생', error);
-                    }
-                });
-            }
-        }
 
-        function fetchSuggestions() { // 자동 완성 기능 추가
-            const query = $('#search-input-mobile').val();
-            if (query.length > 0) {
-                $.ajax({
-                    url: '/auction-searching-api/suggestions',
-                    method: 'GET',
-                    data: { query: query },
-                    success: function(response) {
-                        displaySuggestions(response);
-                    },
-                    error: function(error) {
-                        console.error('자동 완성 결과를 가져오는 중 오류 발생', error);
-                    }
-                });
-            } else {
-                $('#autocomplete-results').empty();
-            }
-        }
-
-        $('.search-btn').on('click', function() {
-            search();
-        });
-
-        $('#search-input-mobile').on('keypress', function(event) {
-            if (event.which === 13) { // Enter key pressed
-                search();
-            }
-        });
-
-        $('#search-input-mobile').on('input', function() { // 입력 이벤트 추가
-            fetchSuggestions();
-        });
-
-        function displaySearchResults(results) {
-            const resultsContainer = $('#search-results');
-            resultsContainer.empty();
-            if (results.length > 0) {
-                results.forEach(result => {
-                    resultsContainer.append(`
-                        <div class="search-result-item">
-                            <h3>${result.name}</h3>
-                            <p>${result.description}</p>
-                            <p>현재 가격: ${result.currentPrice}</p>
-                            <p>즉시 구매가: ${result.immediatePrice}</p>
-                        </div>
-                    `);
-                });
-            } else {
-                resultsContainer.append('<p>검색 결과가 없습니다.</p>');
-            }
-        }
-
-        function displaySuggestions(suggestions) { // 자동 완성 결과 표시
-            const suggestionsContainer = $('#autocomplete-results');
-            suggestionsContainer.empty();
-            if (suggestions.length > 0) {
-                suggestions.forEach(suggestion => {
-                    suggestionsContainer.append(`
-                        <div class="autocomplete-suggestion">${suggestion}</div>
-                    `);
-                });
-            }
-        }
-    });
-</script>
 </body>
 </html>
+
+
