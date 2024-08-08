@@ -19,24 +19,23 @@ import java.sql.Timestamp;
 public class ChatProductDto {
     private Long productId;
     private Long sellerId;
-//    private Long winnerId;
+    private Long winnerId;
     private String productName;
     private Category category;
     private String image;
     private Integer price; // 낙찰가
-//    private PurchaseStatus status; // 구매 대기, 거래중, 구매확정
+    private PurchaseStatus status; // 구매 대기, 거래중, 구매확정
 
     public static ChatProductDto toChatProductDto(Product product) {
         return new ChatProductDto(
                 product.getId(),
                 product.getMemberId(), // sellerId
-//                winner.getMemberId(), // winnerId
+                product.getWinner().getMemberId(), // winnerId
                 product.getName(), // productName
                 product.getCategory(),
                 product.getImage(),
-//                winner.getPrice(),
-//                winner.getStatus()
-                product.getCurrentPrice()
+                product.getWinner().getPrice(),
+                product.getWinner().getStatus()
         );
     }
 }

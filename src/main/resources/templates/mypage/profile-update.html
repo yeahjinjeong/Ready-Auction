@@ -8,46 +8,58 @@
     <div class="breadcrumb breadcrumb-style-one mb-0 ">
         <div class="container">
             <div class="col-lg-12 text-center">
-                <h1 class="breadcrumb-title">Profile Edit</h1>
+                <h1 class="breadcrumb-title">Edit Profile</h1>
                 <ul class="d-flex justify-content-center breadcrumb-items">
-                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="${index}">Home</a></li>
-                    <li class="breadcrumb-item active">Profile Edit</li>
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item active">Edit Profile</li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <div class="auction-winner-wrapper pt-110">
+    <form class="auction-winner-wrapper pt-110" th:action="@{/mypage/profile-update}" method="post" enctype="multipart/form-data">
         <div class="container">
             <div class="row row-cols-xl-6 row-cols-lg-5 row-cols-md-4 row-cols-sm-3 row-cols-2 gy-5">
                 <div class="col">
                     <div class="winner-gamma">
                         <div class="winner-image">
-<!--                            <img src="../assets/images/winner/winner-b1.png" alt="Profile Image">-->
-                            <img onclick="" th:src="${member.profilePicture != null ? member.profilePicture : '../assets/images/profile/basic-profile.png'}" alt="Profile Image">
+                            <img id="profilePicture" th:src="${member.profilePicture != null ? member.profilePicture : '../assets/images/profile/basic-profile.png'}" alt="Profile Image">
                         </div>
                     </div>
                 </div>
             </div>
             <div class="single-widget">
-                <form class="qsn-form" th:action="@{/mypage/profile-update}" method="post" onsubmit="return submitForm();">
+                <div class="qsn-form">
                     <h5 class="wdget-title">My Profile</h5>
                     <ul class="widget-list">
-<!--                        <li><label>닉네임 :</label><input type="text" name="nickname" placeholder="Nickname"></li>-->
-                        <li><label>닉네임 :</label><input type="text" name="nickname" th:placeholder="${member.nickname}"></li>
+                        <li><label>닉네임 :</label><input type="text" id="nickname" name="nickname" th:placeholder="${member.nickname}"></li>
+                        <li><label>이미지 :</label><input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)"></li>
+                        <li><button type="button" onclick="removeImage()">Remove Image</button>
+                            <input type="hidden" id="removeImage" name="removeImage" value="false"/></li>
                     </ul>
-                    <button type="submit" class="alpha-btn-md-dark" onclick="alert('프로필 수정 완료'); console.log('프로필 수정 완료')">Complete</button>
-                </form>
+                    <button type="submit" class="alpha-btn-md-dark">Complete</button>
+                    <a th:href="@{/mypage}" class="alpha-btn-md-dark">Back</a>
+                </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
 
 <script>
-    function submitForm() {
-        alert("Profile updated successfully!");
-        window.location.href = "/mypage";
-        return false; // 폼 제출 방지
+    function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function(){
+        var output = document.getElementById('profilePicture');
+        output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function removeImage() {
+        var output = document.getElementById('profilePicture');
+        output.src = '../assets/images/profile/basic-profile.png';
+        document.getElementById('image').value = '';
+        document.getElementById('removeImage').value = 'true';
     }
 </script>
 </body>

@@ -3,19 +3,15 @@ package com.readyauction.app.chat.controller;
 import com.readyauction.app.chat.dto.ChatRoomDto;
 import com.readyauction.app.chat.dto.MessageDto;
 import com.readyauction.app.chat.service.ChatService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.servlet.http.HttpServlet;
 import java.util.List;
@@ -38,6 +34,7 @@ public class ChatController {
     @GetMapping("chat/list")
     public void chatList(
 //            @PathVariable Long memberId,
+//            @AuthenticationPrincipal AuthPrincipal principal
             Model model) {
         List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(0L);
         log.debug(chatRoomList.toString());

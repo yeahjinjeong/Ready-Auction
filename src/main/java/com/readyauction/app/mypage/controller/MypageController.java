@@ -6,10 +6,18 @@ import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Controller
 @RequestMapping("/mypage")
@@ -20,65 +28,61 @@ public class MypageController {
     @Autowired
     private MemberService memberService;
 
-    // 마이페이지 - 파라미터
+    // 마이페이지
     @GetMapping("")
-    public String mypage(Model model, @RequestParam(required = false) String email) {
+    public String getMyPage(Model model) {
         log.info("GET /mypage");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
 
-        if (email == null) {
-            // 기본 사용자 정보 또는 오류 처리
-            model.addAttribute("error", "User Email is required.");
-            return "error/404"; // 404 오류 페이지로 이동
-        }
-
-        Member member = memberService.findMemberByEmail(email);
+        Member member = memberService.findMemberByEmail(currentUserName);
         log.debug("member: {}", member);
         model.addAttribute("member", member);
+
         return "mypage/mypage";
     }
-
-    // 마이페이지 - 세션
-//    @GetMapping("")
-//    public String myPage(HttpSession session, Model model) {
-//        // 세션에서 이메일 가져오기
-//        String email = (String) session.getAttribute("email");
-//        if (email == null) {
-//            // 로그인이 안된 상태면 로그인 페이지로 리다이렉트
-//            return "redirect:/login";
-//        }
-//
-//        // 이메일로 사용자 정보 조회
-//        Member member = mypageService.findMemberByEmail(email);
-//        String processedAddress = mypageService.extractAddressPart(member.getAddress());
-//
-//        // 모델에 사용자 정보 추가
-//        model.addAttribute("member", member);
-//        model.addAttribute("processedAddress", processedAddress);
-//        return "mypage/mypage";
-//    }
-
+    
     // 프로필 수정
     @GetMapping("/profile-update")
-    public void updateProfile(/*HttpSession session,*/ Model model) {
-        log.info("GET /mypage/profile-update");
-        String email = "ssg@gmail.com";
-//        String email = (String) session.getAttribute("email");
-//        if (email == null) {
-//            return "redirect:/login";
-//        }
-        Member member = memberService.findMemberByEmail(email);
+    public String editProfile(Model model) {
+        log.info("GET /profile-update");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
+        System.out.println(currentUserName);
+
+        Member member = memberService.findMemberByEmail(currentUserName);
         log.debug("member: {}", member);
         model.addAttribute("member", member);
+
+        return "mypage/profile-update";
     }
 
     // 프로필 수정
     @PostMapping("/profile-update")
-    public String updateProfile(@ModelAttribute MemberUpdateRequestDto dto, RedirectAttributes redirectAttributes) {
-        log.info("POST /mypage/profile-update");
-        memberService.updateProfile(dto);
-        redirectAttributes.addFlashAttribute("message", "프로필을 수정했습니다.");
-//        return "redirect:/mypage/mypage?email=" + dto.getEmail();
-        return "redirect:/mypage?email=" + "ssg@gmail.com";
+    public String updateProfile(@RequestParam("nickname") String nickname,
+                                @RequestParam("image") MultipartFile image,
+                                @RequestParam(value="removeImage", required = false) String removeImage,
+                                Model model) throws IOException {
+        log.info("POST /profile-update");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
+
+        Member member = memberService.findMemberByEmail(currentUserName);
+        member.setNickname(nickname);
+
+        if ("true".equalsIgnoreCase(removeImage)) {
+            memberService.deleteImage(member.getProfilePicture());
+            member.setProfilePicture(null);
+        } else if (!image.isEmpty()) {
+            String imageUrl = memberService.uploadImage(image, currentUserName);
+            member.setProfilePicture(imageUrl);
+        }
+
+        memberService.save(member);
+        log.debug("member: {}", member);
+        model.addAttribute("member", member);
+
+        return "redirect:/mypage";
     }
 
     // 닉네임 중복 검사
@@ -97,7 +101,7 @@ public class MypageController {
 //        }
 //        return response;
 //    }
-
+    
     // 캐쉬 충전
     @GetMapping("/charge")
     public String chargeCash() {

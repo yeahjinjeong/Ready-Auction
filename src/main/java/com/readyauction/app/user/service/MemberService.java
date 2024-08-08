@@ -1,105 +1,120 @@
 package com.readyauction.app.user.service;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.readyauction.app.common.handler.UserNotFoundException;
-import com.readyauction.app.user.dto.MemberDTO;
+import com.readyauction.app.file.model.dto.FileDto;
+import com.readyauction.app.user.dto.MemberDto;
+import com.readyauction.app.user.dto.MemberRegisterRequestDto;
 import com.readyauction.app.user.dto.MemberUpdateRequestDto;
-import com.readyauction.app.user.entity.Gender;
 import com.readyauction.app.user.entity.Member;
-import com.readyauction.app.user.entity.UserStatus;
 import com.readyauction.app.user.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class MemberService {
 
     @Autowired
     private MemberRepository memberRepository;
+    private final AmazonS3Client amazonS3Client;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private AmazonS3 amazonS3;
 
-    @Transactional
-    public void save(MemberDTO memberDTO) {
+    @Value("${spring.s3.bucket}")
+    private String bucketName;
+
+    public void register(MemberRegisterRequestDto dto) {
         // 1. dto -> entity 변환
-        // 2. repository의 save 메서드 호출
-        Member memberEntity = Member.toMember(memberDTO);
-        memberEntity.setUserStatus(UserStatus.active);
-        memberEntity.setMannerScore(0);
-        memberEntity.setProfilePicture("https://kr.object.ncloudstorage.com/ready-auction-bucket/sample-folder/87133e3b-797b-4894-b0bd-59f0d5b3b712.jpeg");
+        Member member = dto.toMember();
+        // 기본권한 설정
+        member.setDefaultAuthorities();
         // repository의 save메서드 호출 (조건. entity객체를 넘겨줘야 함)
-        memberRepository.save(memberEntity);
+        memberRepository.save(member);
     }
 
-//    public User findMemberByEmail(String email){
-//        return memberRepository.findByEmail(email);
-//    }
+    public void update(MemberUpdateRequestDto dto) {
+        Member member = memberRepository.findByEmail(dto.getEmail());
+        member.changeName(dto.getName());
+    }
 
     public Member findMemberByEmail(String email) {
         Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
         return memberOptional.orElseThrow(() -> new UserNotFoundException(email));
     }
 
-    public MemberDTO login(MemberDTO memberDTO) {
-        /*
-            1. 회원이 입력한 이메일로 DB에서 조회를 함
-            2. DB에서 조회한 비밀번호와 사용자가 입력한 비밀번호가 일치하는지 판단
-         */
-        System.out.println("로그인 디비 조회중");
-        Member memberEntity = memberRepository.findByEmail(memberDTO.getEmail());
-        System.out.println(memberEntity.toString());
-        if (memberEntity != null) {
-            // 조회 결과가 있다(해당 이메일을 가진 회원 정보가 있다)
-            if (passwordEncoder.matches(memberDTO.getPassword(), memberEntity.getPassword()) == true) {
-//            if (memberDTO.getPassword().equals(memberEntity.getPassword()) == true) {
+//    public MemberDto login(MemberDto memberDto) {
+//        /*
+//            1. 회원이 입력한 이메일로 DB에서 조회를 함
+//            2. DB에서 조회한 비밀번호와 사용자가 입력한 비밀번호가 일치하는지 판단
+//         */
+//        System.out.println("로그인 디비 조회중");
+//        Member memberEntity = memberRepository.findByEmail(memberDto.getEmail());
+//        System.out.println(memberEntity.toString());
+//        if (memberEntity != null) {
+//            // 조회 결과가 있다(해당 이메일을 가진 회원 정보가 있다)
+//            if (passwordEncoder.matches(memberDto.getPassword(), memberEntity.getPassword()) == true) {
+////            if (memberDTO.getPassword().equals(memberEntity.getPassword()) == true) {
+//
+//                System.out.println("비밀번호 일치");
+//                // 비밀번호 일치
+//                // entity -> dto 변환 후 리턴
+//                MemberDto dto = MemberDto.toMemberDto(memberEntity);
+//                return dto;
+//            } else {
+//                // 비밀번호 불일치(로그인실패)
+//                System.out.println("불일치 ");
+//                return null;
+//            }
+//        } else {
+//            // 조회 결과가 없다(해당 이메일을 가진 회원이 없다)
+//            System.out.println("회원 없음");
+//            return null;
+//        }
+//    }
 
-                System.out.println("비밀번호 일치");
-                // 비밀번호 일치
-                // entity -> dto 변환 후 리턴
-                MemberDTO dto = MemberDTO.toMemberDTO(memberEntity);
-                return dto;
-            } else {
-                // 비밀번호 불일치(로그인실패)
-                System.out.println("불일치 ");
-                return null;
-            }
-        } else {
-            // 조회 결과가 없다(해당 이메일을 가진 회원이 없다)
-            System.out.println("회원 없음");
-            return null;
-        }
-    }
-
-    public List<MemberDTO> findAll() {
+    public List<MemberDto> findAll() {
         List<Member> memberEntityList = memberRepository.findAll();
-        List<MemberDTO> memberDTOList = new ArrayList<>();
+        List<MemberDto> memberDtoList = new ArrayList<>();
         for (Member memberEntity: memberEntityList) {
-            memberDTOList.add(MemberDTO.toMemberDTO(memberEntity));
-//            MemberDTO memberDTO = MemberDTO.toMemberDTO(memberEntity);
-//            memberDTOList.add(memberDTO);
+            memberDtoList.add(MemberDto.toMemberDto(memberEntity));
+            MemberDto memberDTO = MemberDto.toMemberDto(memberEntity);
+            memberDtoList.add(memberDTO);
         }
-        return memberDTOList;
+        return memberDtoList;
     }
 
-    public MemberDTO findById(Long id) {
+    public MemberDto findById(Long id) {
         Optional<Member> optionalMemberEntity = memberRepository.findById(id);
         if (optionalMemberEntity.isPresent()) {
 //            MemberEntity memberEntity = optionalMemberEntity.get();
-//            MemberDTO memberDTO = MemberDTO.toMemberDTO(memberEntity);
+//            MemberDto memberDto = MemberDto.toMemberDto(memberEntity);
 //            return memberDTO;
-            return MemberDTO.toMemberDTO(optionalMemberEntity.get());
+            return MemberDto.toMemberDto(optionalMemberEntity.get());
         } else {
             return null;
         }
-
     }
 
     @Transactional(readOnly = true)
@@ -108,27 +123,96 @@ public class MemberService {
     }
 
 
-    public MemberDTO updateForm(String myEmail) {
+    public MemberDto updateForm(String myEmail) {
         Member optionalMemberEntity = memberRepository.findByEmail(myEmail);
         if (optionalMemberEntity != null) {
-            return MemberDTO.toMemberDTO(optionalMemberEntity);
+            return MemberDto.toMemberDto(optionalMemberEntity);
         } else {
             return null;
         }
     }
 
-    // Profile 데이터 수정
+
+    /* 지영 작업 시작 - 프로필 */
+
+    // Profile 수정을 위한 저장
     @Transactional
-    public void updateProfile(MemberUpdateRequestDto dto) {
-//        Member member = memberRepository.findByEmail(dto.getEmail());
-        Member member = memberRepository.findByEmail("ssg@gmail.com");
-        if (member == null) {
-            // 예외를 던지거나 로그를 남기고 종료
-            throw new UserNotFoundException("Member not found with email: " + dto.getEmail());
-        }
-        member.setNickname(dto.getNickname());
-        member.setProfilePicture(dto.getProfilePicture());
+    public void save(Member member) {
+        memberRepository.save(member);
     }
+
+    public String getUuidFileName(String fileName) {
+        String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
+        return UUID.randomUUID().toString() + "." + ext;
+    }
+
+    public String uploadImage(MultipartFile image, String email) throws IOException {
+        String filePath = "profile/" + email + "/";
+        List<MultipartFile> files = new ArrayList<>();
+        files.add(image);
+        List<FileDto> uploadedFiles = uploadFiles(files, filePath);
+        return uploadedFiles.get(0).getUploadFileUrl();
+    }
+
+    public void deleteImage(String imageUrl) {
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            String key = imageUrl.substring(imageUrl.indexOf(bucketName) + bucketName.length() + 1);
+            deleteFile(key);
+        }
+    }
+
+    public List<FileDto> uploadFiles(List<MultipartFile> multipartFiles, String filePath) {
+        List<FileDto> s3files = new ArrayList<>();
+
+        for (MultipartFile multipartFile : multipartFiles) {
+            String originalFileName = multipartFile.getOriginalFilename();
+            String uploadFileName = getUuidFileName(originalFileName);
+            String uploadFileUrl = "";
+            String keyName = filePath + uploadFileName;
+
+            if (amazonS3Client.doesObjectExist(bucketName, keyName)) {
+                uploadFileUrl = "https://kr.object.ncloudstorage.com/" + bucketName + "/" + keyName;
+            } else {
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentLength(multipartFile.getSize());
+                objectMetadata.setContentType(multipartFile.getContentType());
+
+                try (InputStream inputStream = multipartFile.getInputStream()) {
+                    amazonS3Client.putObject(
+                            new PutObjectRequest(bucketName, keyName, inputStream, objectMetadata)
+                                    .withCannedAcl(CannedAccessControlList.PublicRead));
+
+                    uploadFileUrl = "https://kr.object.ncloudstorage.com/" + bucketName + "/" + keyName;
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            s3files.add(
+                    FileDto.builder()
+                            .originalFileName(originalFileName)
+                            .uploadFileName(uploadFileName)
+                            .uploadFilePath(filePath)
+                            .uploadFileUrl(uploadFileUrl)
+                            .build());
+        }
+
+        return s3files;
+    }
+
+    public void deleteFile(String key) {
+        try {
+            amazonS3Client.deleteObject(bucketName, key);
+            System.out.println("파일이 성공적으로 삭제되었습니다.");
+        } catch (AmazonServiceException e) {
+            e.printStackTrace();
+            System.out.println("파일 삭제 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+    /* 지영 작업 끝 */
+
 
     // Member 데이터 수정
 //    @Transactional

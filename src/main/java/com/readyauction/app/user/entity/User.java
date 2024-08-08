@@ -2,18 +2,22 @@ package com.readyauction.app.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type") // 자식클래스 타입을 결정하는 컬럼명
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class User {
@@ -63,5 +67,41 @@ public abstract class User {
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
 
+    @ElementCollection(targetClass = Authority.class, fetch = FetchType.EAGER)
+//    @CollectionTable(name = "user", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "authority")
+    @Enumerated(EnumType.STRING)
+    private Set<Authority> authorities;
+
+//    // 부모 클래스의 빌더
+//    @Builder
+//    public static class UserBuilder {
+//        private Long id;
+//        private String email;
+//        private String password;
+//        private String name;
+//        private String phone;
+//        private String address;
+//        private Integer mannerScore;
+//        private Gender gender;
+//        private LocalDate birth;
+//        private String nickname;
+//        private String profilePicture;
+//        private Timestamp createdAt;
+//        private Timestamp updatedAt;
+//        private Timestamp deletedAt;
+//        private UserStatus userStatus;
+//
+//        public UserBuilder id(Long id) {
+//            this.id = id;
+//            return this;
+//        }
+//
+//        public UserBuilder email(String email) {
+//            this.email = email;
+//            return this;
+//        }
+//
+//    }
     // Getters and Setters
 }
