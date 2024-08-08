@@ -10,7 +10,7 @@
    <div class="col-lg-12 text-center">
     <h1 class="breadcrumb-title">My Page</h1>
     <ul class="d-flex justify-content-center breadcrumb-items">
-     <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a href="index.html">Home</a></li>
+     <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a></li>
      <li class="breadcrumb-item active">My Page</li>
     </ul>
    </div>
@@ -33,7 +33,6 @@
    <ul class="widget-list">
     <li><span>닉네임 :</span><span th:text="${member.nickname}"></span></li>
     <li><span>내 동네 :</span><span th:text="${member.address}"></span></li>
-<!--    <li><span>내 동네 :</span><span th:text="${processedAddress}"></span></li>-->
     <li><span>매너지수 :</span><span th:text="${member.mannerScore}"></span></li>
    </ul>
    <a th:href="@{/mypage/profile-update}" class="alpha-btn-md-dark">Edit</a>
@@ -41,11 +40,6 @@
  </div>
 </div>
 </div>
-
-<!--<script>-->
-<!-- // 페이지가 로드된 후 쿼리 파라미터를 숨기기 위해 replaceState를 사용-->
-<!-- history.replaceState({}, null, location.pathname);-->
-<!--</script>-->
 
 </body>
 </html>
