@@ -34,11 +34,11 @@ public class MemberService {
         member.changeName(dto.getName());
     }
 
-    public Member findMemberByEmail(String email) {
+    public Long findMemberIdByEmail(String email) {
         Member member = memberRepository.findByEmail(email);
         MemberDto memberDTO = MemberDto.toMemberDto(member);
         System.out.println(memberDTO);
-        return member;
+        return member.getId();
     }
 
     public List<MemberDto> findAll() {
