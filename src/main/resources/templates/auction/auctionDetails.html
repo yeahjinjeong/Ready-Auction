@@ -22,7 +22,7 @@
                     bidTime: currentTime
                 };
                 $.ajax({
-                    url: /*[[${'/auction-api/bid'}]]*/,
+                    url: '[[@{/auction-api/bid}]]',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(bidDto),
@@ -53,7 +53,7 @@
                     buyTime: currentTime
                 };
                 $.ajax({
-                    url: /*[[${'/auction-api/buy'}]]*/,
+                    url: '[[@{/auction-api/buy}]]',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(winnerReqDto),

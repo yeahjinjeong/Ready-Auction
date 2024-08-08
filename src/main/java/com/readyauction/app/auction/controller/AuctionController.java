@@ -30,6 +30,7 @@ public class AuctionController {
         // 상품 등록 로직
     }
 
+
     @GetMapping("/auction") // 상품 조회
     public String searchAuction(Model model) {
         List<ProductDto> products = productService.getAllProducts();
@@ -39,6 +40,7 @@ public class AuctionController {
 
     @GetMapping("/auctionDetails")// 경매 입찰 하는 상품 상세 페이지
     public void auctionDetails() {
+
     }
 
     @GetMapping("/report") // 신고 페이지

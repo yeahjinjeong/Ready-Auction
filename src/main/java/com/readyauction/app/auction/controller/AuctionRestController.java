@@ -56,6 +56,7 @@ public class AuctionRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Bid failed: " + e.getMessage());
         }
     }
+
     @PostMapping("/buy")
     public ResponseEntity<?> buy(HttpServletRequest request, @RequestBody WinnerReqDto winnerReqDto) {
         try{

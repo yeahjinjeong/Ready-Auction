@@ -127,6 +127,7 @@ public class ProductService {
                 .winnerTime(winnerReqDto.getBuyTime())
                 .build();
         product.setWinner(winner);
+        product.setAuctionStatus(AuctionStatus.END);
         productRepository.save(product);
         log.info("Winner created successfully for product ID: {}", product.getId());
         return true;
@@ -148,7 +149,7 @@ public class ProductService {
     }
 
     private Product findProductById(Long productId) {
-        return productRepository.findById(productId)
+        return productRepository.findByIdAndAuctionStatusNot(productId,AuctionStatus.END)
                 .orElseThrow(() -> new IllegalStateException("Product not found with ID: " + productId));
     }
 

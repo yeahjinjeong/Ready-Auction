@@ -1,6 +1,7 @@
 package com.readyauction.app.auction.service;
 
 import com.readyauction.app.auction.dto.BidDto;
+import com.readyauction.app.auction.entity.AuctionStatus;
 import com.readyauction.app.auction.entity.Bid;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.repository.BidRepository;
@@ -24,15 +25,14 @@ public class BidService {
     private final BidRepository bidRepository;
     private final MemberService memberService;
     private final ProductService productService;
+    private final ProductRepository productRepository;
 
     @Transactional
     public boolean createBid(Long userId, Product product, Integer price, Timestamp timestamp) {
         if (product == null) {
             throw new IllegalArgumentException("Product cannot be null");
         }
-
 //
-
         try {
             Bid bid = Bid.builder()
                     .memberId(userId)
@@ -67,7 +67,6 @@ public class BidService {
         Long userId = memberService.findMemberIdByEmail(request.getHeader("email"));
         Product product = productService.findById(bidDto.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
-
         if (product.hasWinner()) {
             throw new RuntimeException("The product has already been won");
         }
@@ -77,7 +76,8 @@ public class BidService {
             throw new RuntimeException("Bid price must be higher than the current product price");
         }
         updateBidPrice(product, bidDto.getBidPrice());
-
+        product.setAuctionStatus(AuctionStatus.PROGRESS);
+        productRepository.save(product);
         bidRepository.findByMemberIdAndProduct(userId, product)
                 .ifPresentOrElse(
                         bid -> updateBid(bid, bidDto.getBidPrice(), bidDto.getBidTime()),
