@@ -155,12 +155,16 @@
         /*    overflow: hidden;*/
         /*    position: relative;*/
         /*}*/
-        #profile-target > img{
+        #profile-target > img {
             position: absolute;
             width: 20%;
             top: 60%;
             left: 25%;
-            transform: translate(-50%,-50%);
+            transform: translate(-50%, -50%);
+        }
+
+        .display-inline-block {
+            display: inline-block;
         }
     </style>
 </head>
@@ -352,9 +356,13 @@
                         <div class="chat_people">
                             <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
                             <div class="chat_ib" id="chat_ib" th:attr="data-chat-room-id=${chatRoom.id}">
-                                <h5 th:text="*{productId}">Sunil Rajput</h5> <span class="chat_date" th:text="*{id}">Dec 25</span>
+                                <div class="display-inline-block">
+                                <h5 th:text="*{productId}">Sunil Rajput</h5> <!-- 상대방 이름 -->
+                                <span class="chat_date" th:text="*{id}">Dec 25</span> <!-- 메시지 마지막 업데이트 시간 -->
+                                <span class="badge text-bg-primary rounded-pill">14</span> <!-- 쌓인 메시지 개수 -->
+                                </div>
                                 <p th:text="*{chatRoomMembers}">Test, which is a new approach to have all solutions
-                                    astrology under one roof.</p>
+                                    astrology under one roof.</p> <!-- 메시지 마지막 대화 내용 -->
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 package com.readyauction.app.chat.controller;
 
+import com.readyauction.app.auth.principal.AuthPrincipal;
 import com.readyauction.app.chat.dto.ChatRoomDto;
 import com.readyauction.app.chat.dto.MessageDto;
 import com.readyauction.app.chat.service.ChatService;
@@ -34,7 +35,7 @@ public class ChatController {
     @GetMapping("chat/list")
     public void chatList(
 //            @PathVariable Long memberId,
-//            @AuthenticationPrincipal AuthPrincipal principal
+            @AuthenticationPrincipal AuthPrincipal principal,
             Model model) {
         List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(0L);
         log.debug(chatRoomList.toString());
