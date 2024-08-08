@@ -3,6 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/default}">
 <head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const bidForm = document.getElementById('bidForm');
@@ -12,7 +13,7 @@
                 event.preventDefault(); // 기본 폼 제출 방지
 
                 const currentPrice = document.getElementById('currentPrice').value;
-                console.log("현재가격"+currentPrice)
+                console.log("현재 가격: " + currentPrice);
                 const productId = document.getElementById('productId').value;
                 const currentTime = new Date().toISOString(); // 현재 시각 ISO 형식
                 const bidDto = {
@@ -21,18 +22,18 @@
                     bidTime: currentTime
                 };
                 $.ajax({
-                    url: '[[@{/auction-api/bid}]]',
+                    url: /*[[${'/auction-api/bid'}]]*/,
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(bidDto),
-                    beforeSend: function(xhr) {
+                    beforeSend: function (xhr) {
                         xhr.setRequestHeader("email", "ssg2@gmail.com");
                     },
-                    success: function(data) {
+                    success: function (data) {
                         console.log('Bid successful:', data);
                         alert('Bid placed successfully!');
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error('Error placing bid:', error);
                         alert('Failed to place bid. Please try again.');
                     }
@@ -43,29 +44,28 @@
                 event.preventDefault(); // 기본 폼 제출 방지
 
                 const immediatePrice = document.getElementById('immediatePrice').value;
-                console.log("즉시 구매 가격"+immediatePrice)
+                console.log("즉시 구매 가격: " + immediatePrice);
                 const productId = document.getElementById('productId2').value;
                 const currentTime = new Date().toISOString(); // 현재 시각 ISO 형식
-                // 여기부터 백단 부터 짜야함
                 const winnerReqDto = {
                     buyPrice: immediatePrice,
                     productId: productId,
                     buyTime: currentTime
                 };
                 $.ajax({
-                    url: '[[@{/auction-api/buy}]]',
+                    url: /*[[${'/auction-api/buy'}]]*/,
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(winnerReqDto),
-                    beforeSend: function(xhr) {
+                    beforeSend: function (xhr) {
                         xhr.setRequestHeader("email", "ssg2@gmail.com");
                     },
-                    success: function(data) {
-                        console.log('Bid successful:', data);
-                        alert('immediate buy placed successfully!');
+                    success: function (data) {
+                        console.log('Immediate buy successful:', data);
+                        alert('Immediate buy placed successfully!');
                     },
-                    error: function(xhr, status, error) {
-                        console.error('Error placing bid:', error);
+                    error: function (xhr, status, error) {
+                        console.error('Error placing immediate buy:', error);
                         alert('Failed to place immediate buy. Please try again.');
                     }
                 });
@@ -86,6 +86,49 @@
             </div>
         </div>
     </div>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var products = /*[[${products}]]*/ [];
+
+            function startCountdown(endTime, productId) {
+                const countDownDate = new Date(endTime).getTime();
+                if (isNaN(countDownDate)) {
+                    console.error('Invalid end time:', endTime);
+                    return;
+                }
+
+                const intervalId = setInterval(function () {
+                    const now = new Date().getTime();
+                    const distance = countDownDate - now;
+
+                    // 시간 계산
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    // DOM 요소 가져오기
+                    document.getElementById(`days-${productId}`).textContent = days;
+                    document.getElementById(`hours-${productId}`).textContent = hours;
+                    document.getElementById(`minutes-${productId}`).textContent = minutes;
+                    document.getElementById(`seconds-${productId}`).textContent = seconds;
+
+                    if (distance < 0) {
+                        clearInterval(intervalId);
+                        document.getElementById(`days-${productId}`).textContent = "0";
+                        document.getElementById(`hours-${productId}`).textContent = "0";
+                        document.getElementById(`minutes-${productId}`).textContent = "0";
+                        document.getElementById(`seconds-${productId}`).textContent = "0";
+                    }
+                }, 1000);
+            }
+            products.forEach(product => {
+                const endTime = new Date(product.endTime).toISOString(); // endTime을 ISO 형식으로 변환
+                const productId = product.id;
+                startCountdown(endTime, productId);
+            });
+        });
+    </script>
 
     <section class="auction-details-section pt-110">
         <div class="container">
@@ -96,57 +139,16 @@
                             <p>현재입찰가</p>
                             <h5 th:text="'₩'+ ${#numbers.formatDecimal(productDetail.currentPrice, 0, 'COMMA', 0, 'POINT')}"></h5>
                         </div>
-                        <script>
-                            // 서버로부터 받은 경매 마감 시간을 자바스크립트 변수에 저장
-                            const auctionEndTime = /*[[${productDetail.endTime}]]*/ '2024-08-07T12:00:00Z';
-                            let timerInterval = null;
-                        </script>
                         <div class="auction-timer">
                             <div class="countdown">
-                                <h6><span id="days4"></span>D :
-                                    <span id="hours4"></span>H :
-                                    <span id="minutes4"></span>M :
-                                    <span id="seconds4"></span>S</h6>
+                                <h6>
+                                    <span id="days-[[${productDetail.id}]]"></span>D :
+                                    <span id="hours-[[${productDetail.id}]]"></span>H :
+                                    <span id="minutes-[[${productDetail.id}]]"></span>M :
+                                    <span id="seconds-[[${productDetail.id}]]"></span>S
+                                </h6>
                             </div>
                         </div>
-                        <script>
-                            // 타이머를 시작하는 함수
-                            function startCountdown(endTime) {
-                                const end = new Date(endTime).getTime();
-                                if (timerInterval !== null) {
-                                    clearInterval(timerInterval);
-                                }
-
-                                // 1초마다 갱신
-                                const x = setInterval(function() {
-                                    const now = new Date().getTime();
-                                    const distance = end - now;
-
-                                    // 시간 계산
-                                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                                    // 결과를 각 span에 삽입
-                                    document.getElementById("days4").innerHTML = days;
-                                    document.getElementById("hours4").innerHTML = hours;
-                                    document.getElementById("minutes4").innerHTML = minutes;
-                                    document.getElementById("seconds4").innerHTML = seconds;
-                                    document.querySelector(".auction-timer").style.visibility = "visible";
-                                    // 타이머 종료 시 동작
-                                    if (distance < 0) {
-                                        clearInterval(x);
-                                        document.getElementById("timer4").innerHTML = "Auction Ended";
-                                    }
-                                }, 1000);
-                            }
-
-                            // 페이지 로드 시 카운트다운 시작
-                            window.onload = function() {
-                                startCountdown(auctionEndTime);
-                            };
-                        </script>
                     </div>
 
                     <!-- 상품 이미지를 하얀 박스 위에 표시 -->
@@ -191,19 +193,6 @@
                                 <li><span>판매자 ID :</span><span th:text="${productDetail.memberId}">판매자</span></li>
                                 <li><span>카테고리 :</span><span id="end-time" th:text="${productDetail.category}">카테고리</span></li>
                                 <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
-                                <!--경매 마감 시간 뒤에 .0제거하기                               -->
-                                <script>
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        var endTimeElement = document.getElementById('end-time');
-                                        var endTimeText = endTimeElement.textContent;
-
-                                        // 문자열에서 '.0'을 제거
-                                        if (endTimeText.endsWith('.0')) {
-                                            endTimeText = endTimeText.slice(0, -2);
-                                            endTimeElement.textContent = endTimeText;
-                                        }
-                                    });
-                                </script>
                                 <li><span>즉시 구매가 :</span><span th:text="${productDetail.immediatePrice}">즉시 구매가</span></li>
                                 <li><span>상품 설명 :</span><span th:text="${productDetail.description}">상품 설명</span></li>
                             </ul>
@@ -212,7 +201,7 @@
                             <form class="widget-form" id="bidForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
-                                    <input type="text" readonly class="form-control" placeholder="Current Price" th:value="${productDetail.currentPrice}" id="currentPrice" name ="currentPrice">
+                                    <input type="text" readonly class="form-control" placeholder="Current Price" th:value="${productDetail.currentPrice}" id="currentPrice" name="currentPrice">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
                                     <input type="hidden" th:value="${productDetail.id}" name="productId" id="productId">
                                     <button type="submit" class="widget-btn">Place Bid</button>
@@ -224,51 +213,51 @@
                             <form class="widget-form" id="buyForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
-                                    <input type="text" readonly class="form-control" placeholder="Immediate Price" th:value="${productDetail.immediatePrice}" id="immediatePrice" name ="immediatePrice">
+                                    <input type="text" readonly class="form-control" placeholder="Immediate Price" th:value="${productDetail.immediatePrice}" id="immediatePrice" name="immediatePrice">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
                                     <input type="hidden" th:value="${productDetail.id}" name="productId2" id="productId2">
-                                    <button type="submit" class="widget-btn2">Place buy</button>
+                                    <button type="submit" class="widget-btn2">Place Buy</button>
                                 </div>
                                 <div class="bidding-content">
                                     <h6><a href="../winner.html">Robart FOX</a></h6>
                                     <p>Bid 23 minutes ago for 24.5$</p>
                                 </div>
-                            </div>
-                            <div class="bidding-item gap-sm-4 gap-2">
-                                <div class="bidding-img">
-                                    <img src="assets/images/buyer/bid-histo2.png" alt="">
+                                <div class="bidding-item gap-sm-4 gap-2">
+                                    <div class="bidding-img">
+                                        <img src="assets/images/buyer/bid-histo2.png" alt="">
+                                    </div>
+                                    <div class="bidding-content">
+                                        <h6><a href="../winner.html">Leslie Alexander</a></h6>
+                                        <p>Bid 23 minutes ago for 24.5$</p>
+                                    </div>
                                 </div>
-                                <div class="bidding-content">
-                                    <h6><a href="../winner.html">Leslie Alexander</a></h6>
-                                    <p>Bid 23 minutes ago for 24.5$</p>
+                                <div class="bidding-item gap-sm-4 gap-2">
+                                    <div class="bidding-img">
+                                        <img src="assets/images/buyer/bid-hidto3.png" alt="">
+                                    </div>
+                                    <div class="bidding-content">
+                                        <h6><a href="../winner.html">Jane Cooper</a></h6>
+                                        <p>Bid 23 minutes ago for 24.5$</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="bidding-item gap-sm-4 gap-2">
-                                <div class="bidding-img">
-                                    <img src="assets/images/buyer/bid-hidto3.png" alt="">
-                                </div>
-                                <div class="bidding-content">
-                                    <h6><a href="../winner.html">Jane Cooper</a></h6>
-                                    <p>Bid 23 minutes ago for 24.5$</p>
-                                </div>
-                            </div>
                         </div>
-
-                        <div class="details-social-area">
-                            <h5 class="wdget-title">Share Now</h5>
-                            <ul>
-                                <li><a href="https://www.facebook.com"><i class='bx bxl-facebook'></i></a></li>
-                                <li><a href="https://twitter.com"><i class='bx bxl-twitter'></i></a></li>
-                                <li><a href="https://www.pinterest.com"><i class='bx bxl-pinterest-alt'></i></a></li>
-                                <li><a href="https://www.instagram.com"><i class='bx bxl-instagram'></i></a></li>
-                            </ul>
-                        </div>
-
                     </div>
+
+                    <div class="details-social-area">
+                        <h5 class="wdget-title">Share Now</h5>
+                        <ul>
+                            <li><a href="https://www.facebook.com"><i class='bx bxl-facebook'></i></a></li>
+                            <li><a href="https://twitter.com"><i class='bx bxl-twitter'></i></a></li>
+                            <li><a href="https://www.pinterest.com"><i class='bx bxl-pinterest-alt'></i></a></li>
+                            <li><a href="https://www.instagram.com"><i class='bx bxl-instagram'></i></a></li>
+                        </ul>
+                    </div>
+
                 </div>
             </div>
         </div>
-    </section>
+</div>
+</section>
 </div>
 </body>
 </html>

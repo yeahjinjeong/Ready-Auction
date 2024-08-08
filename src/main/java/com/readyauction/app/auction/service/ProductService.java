@@ -12,7 +12,7 @@ import com.readyauction.app.auction.entity.Winner;
 import com.readyauction.app.auction.repository.ProductRepository;
 import com.readyauction.app.file.model.dto.FileDto;
 import com.readyauction.app.file.model.service.NcpObjectStorageService;
-//import com.readyauction.app.user.service.MemberService;
+import com.readyauction.app.user.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
-   // private final MemberService memberService;
+    private final MemberService memberService;
     @Transactional
     public ProductRepDto createProduct(HttpServletRequest request, ProductReqDto productReqDto) {
         // Create and save the Product entity
