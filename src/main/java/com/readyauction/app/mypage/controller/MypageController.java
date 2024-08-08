@@ -24,14 +24,19 @@ public class MypageController {
     @GetMapping("")
     public String mypage(Model model, @RequestParam(required = false) String email) {
         log.info("GET /mypage");
+        Member member = memberService.findMemberByEmail(email);
 
-        if (email == null) {
-            // 기본 사용자 정보 또는 오류 처리
-            model.addAttribute("error", "User Email is required.");
-            return "error/404"; // 404 오류 페이지로 이동
+        if (member == null) {
+            model.addAttribute("error", "User not found.");
+            return "error/404";
         }
 
-        Member member = memberService.findMemberByEmail(email);
+//        Member member = memberService.findMemberByEmail(email);
+//        log.debug("member: {}", member);
+//        model.addAttribute("member", member);
+//        return "mypage/mypage";
+//    }
+
         log.debug("member: {}", member);
         model.addAttribute("member", member);
         return "mypage/mypage";
@@ -56,16 +61,18 @@ public class MypageController {
 //        model.addAttribute("processedAddress", processedAddress);
 //        return "mypage/mypage";
 //    }
-
+    
     // 프로필 수정
     @GetMapping("/profile-update")
     public void updateProfile(/*HttpSession session,*/ Model model) {
         log.info("GET /mypage/profile-update");
-        String email = "ssg@gmail.com";
+        String email = "ssg@gmail.com"; // 정적
+
 //        String email = (String) session.getAttribute("email");
 //        if (email == null) {
 //            return "redirect:/login";
 //        }
+
         Member member = memberService.findMemberByEmail(email);
         log.debug("member: {}", member);
         model.addAttribute("member", member);
@@ -78,7 +85,7 @@ public class MypageController {
         memberService.updateProfile(dto);
         redirectAttributes.addFlashAttribute("message", "프로필을 수정했습니다.");
 //        return "redirect:/mypage/mypage?email=" + dto.getEmail();
-        return "redirect:/mypage?email=" + "ssg@gmail.com";
+        return "redirect:/mypage?email=" + "ssg@gmail.com"; // 정적
     }
 
     // 닉네임 중복 검사
@@ -97,7 +104,7 @@ public class MypageController {
 //        }
 //        return response;
 //    }
-
+    
     // 캐쉬 충전
     @GetMapping("/charge")
     public String chargeCash() {
