@@ -33,7 +33,6 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
-
     @Transactional
     public ProductRepDto createProduct(HttpServletRequest request, ProductReqDto productReqDto) {
         Long userId = getUserIdFromRequest(request);
@@ -179,5 +178,12 @@ public class ProductService {
                 product.getImmediatePrice(),
                 product.getImage()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductDto> searchProductsByName(String query) {
+        return productRepository.findByNameContainingIgnoreCase(query).stream()
+                .map(this::convertToProductDto)
+                .collect(Collectors.toList());
     }
 }
