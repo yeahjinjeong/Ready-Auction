@@ -12,9 +12,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatRoomMember {
-    @Column(name = "member_id")
+    @Column(name = "member_id", nullable = false)
     private Long memberId;
-    @Column(name = "chat_room_member_status")
+    @Column(name = "member_nickname", nullable = false)
+    private String memberNickname;
+    @Column(name = "chat_room_member_status", nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private ChatRoomMemberStatus chatRoomMemberStatus;
 }

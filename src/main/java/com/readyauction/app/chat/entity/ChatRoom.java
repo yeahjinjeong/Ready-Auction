@@ -1,11 +1,15 @@
 package com.readyauction.app.chat.entity;
 
+import com.readyauction.app.chat.dto.MessageDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Entity(name = "ChatRoom")
@@ -29,6 +33,10 @@ public class ChatRoom {
     )
     @OrderColumn(name = "chat_room_member_idx")
     private List<ChatRoomMember> chatRoomMembers;
+    @Column(name = "last_message")
+    private String lastMessage;
+    @Column(name = "last_message_updated_at")
+    private LocalDateTime lastMessageUpdatedAt;
 
 //    @ElementCollection(fetch = FetchType.EAGER)
 //    @CollectionTable(
@@ -37,6 +45,12 @@ public class ChatRoom {
 //    )
 //    @OrderColumn(name = "chat_message_idx")
 //    private List<ChatMessage> chatMessages;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
+//
+    public void changeLastMessage(MessageDto messageDto) {
+        this.lastMessage = messageDto.getMessage();
+        this.lastMessageUpdatedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(messageDto.getCreatedAt()), ZoneId.systemDefault());
+    }
 }
