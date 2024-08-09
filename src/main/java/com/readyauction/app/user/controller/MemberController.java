@@ -95,4 +95,13 @@ public class MemberController {
             "message", "회원 정보를 수정했습니다."
         ));
     }
+
+
+    /* 지영 작업 시작 - 외부 프로필 */
+
+    // 외부 프로필
+    @GetMapping("/profile")
+    public void profile() {}
+
+    /* 지영 작업 끝 */
 }
