@@ -188,4 +188,11 @@ public class ProductService {
                 product.getImage()
         );
     }
+
+    @Transactional(readOnly = true)
+    public List<ProductDto> searchProductsByName(String query) {
+        return productRepository.findByNameContainingIgnoreCase(query).stream()
+                .map(this::convertToProductDto)
+                .collect(Collectors.toList());
+    }
 }

@@ -3,6 +3,20 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/default}">
 
+<head>
+    <style>
+        .image {
+            text-align: center;
+        }
+        .image img {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            margin-bottom: 5%;
+        }
+    </style>
+</head>
+
 <body>
 <div layout:fragment="content1">
     <div class="breadcrumb breadcrumb-style-one mb-0 ">
@@ -19,48 +33,48 @@
 
     <form class="auction-winner-wrapper pt-110" th:action="@{/mypage/profile-update}" method="post" enctype="multipart/form-data">
         <div class="container">
-            <div class="row row-cols-xl-6 row-cols-lg-5 row-cols-md-4 row-cols-sm-3 row-cols-2 gy-5">
-                <div class="col">
-                    <div class="winner-gamma">
-                        <div class="winner-image">
-                            <img id="profilePicture" th:src="${member.profilePicture != null ? member.profilePicture : '../assets/images/profile/basic-profile.png'}" alt="Profile Image">
-                        </div>
-                    </div>
-                </div>
+            <div class="image">
+                <img id="profilePicture" th:src="${member.profilePicture != null ? member.profilePicture : '../assets/images/profile/basic-profile.png'}" alt="Profile Image">
             </div>
             <div class="single-widget">
                 <div class="qsn-form">
                     <h5 class="wdget-title">My Profile</h5>
                     <ul class="widget-list">
-                        <li><label>닉네임 :</label><input type="text" id="nickname" name="nickname" th:placeholder="${member.nickname}"></li>
+                        <li><label>닉네임 :</label><input type="text" id="nickname" name="nickname" th:value="${member.nickname}"></li>
                         <li><label>이미지 :</label><input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)"></li>
                         <li><button type="button" onclick="removeImage()">Remove Image</button>
                             <input type="hidden" id="removeImage" name="removeImage" value="false"/></li>
                     </ul>
-                    <button type="submit" class="alpha-btn-md-dark">Complete</button>
-                    <a th:href="@{/mypage}" class="alpha-btn-md-dark">Back</a>
+                    <div>
+                        <a th:href="@{/mypage}" class="alpha-btn-md-dark">Back</a>
+                    </div>
+                    <div style="text-align: right">
+                        <button type="submit" class="alpha-btn-md-dark">Complete</button>
+                    </div>
                 </div>
             </div>
         </div>
     </form>
+    <script>
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function(){
+                var output = document.getElementById('profilePicture');
+                output.src = reader.result;
+            };
+            if (event.target.files[0]) {
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        }
+
+        function removeImage() {
+            var output = document.getElementById('profilePicture');
+            output.src = '../assets/images/profile/basic-profile.png';
+            document.getElementById('removeImage').value = 'true';
+            document.getElementById('profilePicture').value = '';
+        }
+    </script>
 </div>
 
-<script>
-    function previewImage(event) {
-        var reader = new FileReader();
-        reader.onload = function(){
-        var output = document.getElementById('profilePicture');
-        output.src = reader.result;
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
-    function removeImage() {
-        var output = document.getElementById('profilePicture');
-        output.src = '../assets/images/profile/basic-profile.png';
-        document.getElementById('image').value = '';
-        document.getElementById('removeImage').value = 'true';
-    }
-</script>
 </body>
 </html>

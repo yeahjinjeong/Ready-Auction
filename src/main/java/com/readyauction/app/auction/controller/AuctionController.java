@@ -33,8 +33,13 @@ public class AuctionController {
 
 
     @GetMapping("/auction") // 상품 조회
-    public String searchAuction(Model model) {
-        List<ProductDto> products = productService.getAllProducts();
+    public String searchAuction(@RequestParam(required = false) String query, Model model) {
+        List<ProductDto> products;
+        if (query != null && !query.isEmpty()) {
+            products = productService.searchProductsByName(query);
+        } else {
+            products = productService.getAllProducts();
+        }
         model.addAttribute("products", products);
         return "auction/auction";
     }

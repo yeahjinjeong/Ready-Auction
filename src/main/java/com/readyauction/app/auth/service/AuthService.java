@@ -31,8 +31,8 @@ public class AuthService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("loadUserByUsername({})", email);
         // orElseThrow()는 NoSuchElementException예외를 던진다.
-        Member member = memberRepository.findByEmail(email).orElseThrow();
-//                .orElseThrow(() -> new UsernameNotFoundException(email));
+        Member member = memberRepository.findMemberByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(email));
         log.info("member = {}", member);
         return new AuthPrincipal(member);
     }
@@ -42,7 +42,7 @@ public class AuthService implements UserDetailsService {
      * @param email
      */
     public void updateAuthentication(String email) {
-        Member newMember = memberRepository.findByEmail(email)
+        Member newMember = memberRepository.findMemberByEmail(email)
                                 .orElseThrow();
         AuthPrincipal authPrincipal = new AuthPrincipal(newMember);
         Authentication newAuthentication = new UsernamePasswordAuthenticationToken(

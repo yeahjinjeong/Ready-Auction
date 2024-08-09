@@ -16,6 +16,9 @@ public class ChatRoomDto {
     private Long id;
     private Long productId;
     private List<ChatRoomMember> chatRoomMembers;
+//    private String anotherMemberNickname;
+    private String lastMessage;
+    private LocalDateTime lastMessageUpdatedAt;
     private LocalDateTime createdAt;
 
     public static ChatRoomDto toChatRoomDto(ChatRoom chatRoom) {
@@ -23,6 +26,8 @@ public class ChatRoomDto {
                 chatRoom.getId(),
                 chatRoom.getProductId(),
                 chatRoom.getChatRoomMembers(),
+                chatRoom.getLastMessage(),
+                chatRoom.getLastMessageUpdatedAt(),
                 chatRoom.getCreatedAt()
         );
     }
