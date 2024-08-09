@@ -32,10 +32,15 @@
                     success: function (data) {
                         console.log('Bid successful:', data);
                         alert('Bid placed successfully!');
+                        // Update the current price on the page
+                        document.getElementById('currentPrice').value = data;
                     },
                     error: function (xhr, status, error) {
                         console.error('Error placing bid:', error);
                         alert('Failed to place bid. Please try again.');
+                        // Even in case of an error, update the current price on the page
+                        const responseJson = JSON.parse(xhr.responseText);
+                        document.getElementById('currentPrice').value = responseJson;
                     }
                 });
             });
@@ -63,6 +68,15 @@
                     success: function (data) {
                         console.log('Immediate buy successful:', data);
                         alert('Immediate buy placed successfully!');
+                        var productId = data.id;
+
+                        if (productId) {
+                            // Redirect to the payment page using the product ID
+                            window.location.href = '/app/cash/payment/' + productId;
+                        } else {
+                            alert('Product ID not found. Unable to proceed to payment.');
+                        }
+
                     },
                     error: function (xhr, status, error) {
                         console.error('Error placing immediate buy:', error);
@@ -105,7 +119,7 @@
                                 </h6>
                             </div>
                             <script th:inline="javascript">
-                                document.addEventListener('DOMContentLoaded', function() {
+                                document.addEventListener('DOMContentLoaded', function () {
                                     // Assuming productDetail is an array of product objects with 'endTime' and 'id' properties
 
                                     // Assuming productDetail is a single product object with 'endTime' and 'id' properties
@@ -150,7 +164,7 @@
                                             const hoursElem = document.getElementById(`hours-${productId}`);
                                             const minutesElem = document.getElementById(`minutes-${productId}`);
                                             const secondsElem = document.getElementById(`seconds-${productId}`);
-                                            console.log(daysElem+" "+hoursElem+""+ minutesElem+""+secondsElem+"ffffffff");
+                                            console.log(daysElem + " " + hoursElem + "" + minutesElem + "" + secondsElem + "ffffffff");
                                             if (daysElem && hoursElem && minutesElem && secondsElem) {
                                                 daysElem.textContent = days;
                                                 hoursElem.textContent = hours;
@@ -218,9 +232,11 @@
                             <ul class="widget-list">
                                 <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
                                 <li><span>판매자 ID :</span><span th:text="${productDetail.memberId}">판매자</span></li>
-                                <li><span>카테고리 :</span><span id="end-time" th:text="${productDetail.category}">카테고리</span></li>
+                                <li><span>카테고리 :</span><span id="end-time"
+                                                             th:text="${productDetail.category}">카테고리</span></li>
                                 <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
-                                <li><span>즉시 구매가 :</span><span th:text="${productDetail.immediatePrice}">즉시 구매가</span></li>
+                                <li><span>즉시 구매가 :</span><span th:text="${productDetail.immediatePrice}">즉시 구매가</span>
+                                </li>
                                 <li><span>상품 설명 :</span><span th:text="${productDetail.description}">상품 설명</span></li>
                             </ul>
                         </div>
@@ -228,7 +244,9 @@
                             <form class="widget-form" id="bidForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
-                                    <input type="text" readonly class="form-control" placeholder="Current Price" th:value="${productDetail.currentPrice}" id="currentPrice" name="currentPrice">
+                                    <input type="text" readonly class="form-control" placeholder="Current Price"
+                                           th:value="${productDetail.currentPrice}" id="currentPrice"
+                                           name="currentPrice">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
                                     <input type="hidden" th:value="${productDetail.id}" name="productId" id="productId">
                                     <button type="submit" class="widget-btn">Place Bid</button>
@@ -240,9 +258,12 @@
                             <form class="widget-form" id="buyForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
-                                    <input type="text" readonly class="form-control" placeholder="Immediate Price" th:value="${productDetail.immediatePrice}" id="immediatePrice" name="immediatePrice">
+                                    <input type="text" readonly class="form-control" placeholder="Immediate Price"
+                                           th:value="${productDetail.immediatePrice}" id="immediatePrice"
+                                           name="immediatePrice">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
-                                    <input type="hidden" th:value="${productDetail.id}" name="productId2" id="productId2">
+                                    <input type="hidden" th:value="${productDetail.id}" name="productId2"
+                                           id="productId2">
                                     <button type="submit" class="widget-btn2">Place Buy</button>
                                 </div>
                                 <div class="bidding-content">
@@ -267,6 +288,7 @@
                                         <p>Bid 23 minutes ago for 24.5$</p>
                                     </div>
                                 </div>
+                                </form>
                         </div>
                     </div>
 
@@ -283,8 +305,7 @@
                 </div>
             </div>
         </div>
-</div>
-</section>
+    </section>
 </div>
 </body>
 </html>

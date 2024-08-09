@@ -3,15 +3,16 @@ package com.readyauction.app.auction.controller;
 import com.readyauction.app.auction.dto.ProductDto;
 import com.readyauction.app.auction.dto.ProductRepDto;
 import com.readyauction.app.auction.dto.ProductReqDto;
+import com.readyauction.app.auction.dto.WinnerReqDto;
 import com.readyauction.app.auction.service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -65,4 +66,5 @@ public class AuctionController {
             return "error/404"; // 예외 발생 시 에러 페이지로 리다이렉션
         }
     }
+
 }

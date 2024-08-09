@@ -44,16 +44,18 @@ public class AuctionRestController {
         System.out.println("사진 올라감");
         return productService.uploadFile(request,file);
     }
+
     @PostMapping("/bid")
-    public ResponseEntity<?> bid(HttpServletRequest request, @RequestBody BidDto bidDto) {
+    public ResponseEntity<Integer> bid(HttpServletRequest request, @RequestBody BidDto bidDto) {
+        Integer currentPrice = productService.findCurrentPriceById(bidDto.getProductId());
         try {
-            System.out.println(" 입찰중 " + request.getHeader("email"));
-            bidService.startBid(request, bidDto);
+            System.out.println("입찰중 " + request.getHeader("email"));
+            currentPrice = bidService.startBid(request, bidDto);
             System.out.println(bidDto);
-            return ResponseEntity.ok(bidDto); // 성공적으로 처리되면, 200 OK와 함께 bidDto를 반환
+            return ResponseEntity.ok(currentPrice); // 성공적으로 처리되면, 200 OK와 함께 bidDto를 반환
         } catch (RuntimeException e) {
             // startBid에서 던져진 RuntimeException을 처리
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Bid failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(currentPrice);
         }
     }
 
@@ -61,9 +63,7 @@ public class AuctionRestController {
     public ResponseEntity<?> buy(HttpServletRequest request, @RequestBody WinnerReqDto winnerReqDto) {
         try{
             System.out.println("즉시구매중" + winnerReqDto);
-
-            productService.startWinnerProcess(request,winnerReqDto);
-            return ResponseEntity.ok(winnerReqDto);
+            return ResponseEntity.ok(productService.startWinnerProcess(request,winnerReqDto));
         }
         catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Bid failed: " + e.getMessage());

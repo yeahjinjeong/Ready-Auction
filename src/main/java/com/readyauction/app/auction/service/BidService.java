@@ -63,7 +63,7 @@ public class BidService {
     }
 
     @Transactional
-    public void startBid(HttpServletRequest request, BidDto bidDto) {
+    public Integer startBid(HttpServletRequest request, BidDto bidDto) {
         Long userId = memberService.findMemberIdByEmail(request.getHeader("email"));
         Product product = productService.findById(bidDto.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
@@ -83,7 +83,10 @@ public class BidService {
                         bid -> updateBid(bid, bidDto.getBidPrice(), bidDto.getBidTime()),
                         () -> createBid(userId, product, bidDto.getBidPrice(), bidDto.getBidTime())
                 );
+
+        return productService.findCurrentPriceById(bidDto.getProductId());
     }
+
 
     private void updateBidPrice(Product product, Integer bidPrice) {
         try {
