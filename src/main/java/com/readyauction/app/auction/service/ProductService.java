@@ -34,8 +34,8 @@ public class ProductService {
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
     @Transactional
-    public ProductRepDto createProduct(HttpServletRequest request, ProductReqDto productReqDto) {
-        Long userId = getUserIdFromRequest(request);
+    public ProductRepDto createProduct(String email, ProductReqDto productReqDto) {
+        Long userId = getUserIdFromRequest(email);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         Product product = Product.builder()
@@ -57,11 +57,9 @@ public class ProductService {
     }
 
     @Transactional
-    public String uploadFile(HttpServletRequest request, MultipartFile multipartFile) {
+    public String uploadFile(String email, MultipartFile multipartFile) {
         validateMultipartFile(multipartFile);
-
-        String pathPrefix = request.getHeader("email");
-        List<FileDto> s3Files = ncpObjectStorageService.uploadFiles(Collections.singletonList(multipartFile), pathPrefix);
+        List<FileDto> s3Files = ncpObjectStorageService.uploadFiles(Collections.singletonList(multipartFile), "productIMG/"+ email);
 
         return s3Files.stream()
                 .findFirst()
@@ -93,6 +91,12 @@ public class ProductService {
             return false;
         }
     }
+    @Transactional
+    public Integer findCurrentPriceById(Long productId)
+    {
+        Product productResult = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        return productResult.getCurrentPrice();
+    }
 
     @Transactional(readOnly = true)
     public Optional<Product> findById(Long productId) {
@@ -108,18 +112,19 @@ public class ProductService {
     }
 
     @Transactional
-    public void startWinnerProcess(HttpServletRequest request, WinnerReqDto winnerReqDto) {
-        Long userId = getUserIdFromRequest(request);
+    public ProductDto startWinnerProcess(String email, WinnerReqDto winnerReqDto) {
+        Long userId = getUserIdFromRequest(email);
         Product product = findProductById(winnerReqDto.getProductId());
 
         if (product.hasWinner()) {
             throw new RuntimeException("The product has already been won");
         }
-        createWinner(userId, product, winnerReqDto);
+
+        return convertToProductDto(createWinner(userId, product, winnerReqDto));
     }
 
     @Transactional
-    public boolean createWinner(Long userId, Product product, WinnerReqDto winnerReqDto) {
+    public Product createWinner(Long userId, Product product, WinnerReqDto winnerReqDto) {
         Winner winner = Winner.builder()
                 .memberId(userId)
                 .status(PurchaseStatus.CONFIRMED)
@@ -127,14 +132,16 @@ public class ProductService {
                 .winnerTime(winnerReqDto.getBuyTime())
                 .build();
         product.setWinner(winner);
-        productRepository.save(product);
+        product.setAuctionStatus(AuctionStatus.END);
         log.info("Winner created successfully for product ID: {}", product.getId());
-        return true;
+
+        return productRepository.save(product);
+
     }
 
-    private Long getUserIdFromRequest(HttpServletRequest request) {
+    private Long getUserIdFromRequest(String email) {
         try {
-            return memberService.findMemberByEmail(request.getHeader("email")).getId();
+            return memberService.findMemberByEmail(email).getId();
         } catch (Exception e) {
             log.error("Failed to retrieve user ID: {}", e.getMessage());
             throw new RuntimeException("User not found", e);
