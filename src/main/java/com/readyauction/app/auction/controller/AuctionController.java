@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -31,8 +28,13 @@ public class AuctionController {
     }
 
     @GetMapping("/auction") // 상품 조회
-    public String searchAuction(Model model) {
-        List<ProductDto> products = productService.getAllProducts();
+    public String searchAuction(@RequestParam(required = false) String query, Model model) {
+        List<ProductDto> products;
+        if (query != null && !query.isEmpty()) {
+            products = productService.searchProductsByName(query);
+        } else {
+            products = productService.getAllProducts();
+        }
         model.addAttribute("products", products);
         return "auction/auction";
     }

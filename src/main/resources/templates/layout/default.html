@@ -28,14 +28,16 @@
     </div>
 </div>
 
+<!-- 검색 창을 조건부로 렌더링 -->
 <div class="mobile-search">
     <div class="container">
         <div class="row">
             <div class="col-11">
                 <label>무엇을 찾고 계신가요?</label>
-                <input type="text" id="search-input-mobile" placeholder="검색어를 입력하세요.">
+                <input type="text" id="search-input-mobile" placeholder="검색어를 입력하세요."
+                       oninput="fetchSuggestions(this.value)" onkeydown="handleSearch(event)">
                 <!-- 자동 완성 목록을 표시할 영역 -->
-                <div id="autocomplete-results" class="autocomplete-suggestions"></div> <!-- 추가된 부분 -->
+                <div id="autocomplete-results" class="autocomplete-suggestions"></div>
             </div>
             <div class="col-1 d-flex justify-content-end align-items-center">
                 <div class="search-cross-btn">
@@ -52,7 +54,8 @@
             <div class="row">
                 <div class="col-xl-2 align-items-center d-xl-flex d-lg-block">
                     <div class="nav-logo d-flex justify-content-between align-items-center">
-                        <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" alt="logo" width="50" height="50"></a>
+                        <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" alt="logo" width="50"
+                                               height="50"></a>
                         <div class="d-flex align-items-center gap-4">
                             <span style="font-size: 16px; font-weight: bold; color: white; margin-left: 10px;">READY? AUCTION!</span>
                             <ul class="nav-actions nav-inner-actions d-flex d-xl-none">
@@ -92,7 +95,6 @@
                                 <a href="javascript:void(0)">로그인/회원가입</a>
                                 <i class="fl flaticon-plus">+</i>
                                 <ul class="sub-menu">
-                                    <!--                                    <li><a th:href="@{/about.html}">about</a></li>-->
                                     <li><a th:href="@{/auth/login}">로그인</a></li>
                                     <li><a th:href="@{/member/register}">회원가입</a></li>
                                 </ul>
@@ -101,15 +103,14 @@
                                 <a href="javascript:void(0)">로그아웃</a>
                                 <i class="fl flaticon-plus">+</i>
                                 <ul class="sub-menu">
-                                    <!--                                    <li><a th:href="@{/about.html}">about</a></li>-->
                                     <li><a th:href="@{/auth/logout}" method="post">로그아웃</a></li>
                                 </ul>
                             </li>
-                            <!--                            <li><a th:href="@{/contact.html}">contact</a></li>-->
                         </ul>
                         <div class="contact-mail inner-contact-mail mt-5 d-block d-xl-none">
                             <span>메시지 보내기</span>
-                            <a href="/cdn-cgi/l/email-protection#53202623233c212713362b323e233f367d303c3e"><span class="__cf_email__" data-cfemail="9ae9efeaeaf5e8eedaffe2fbf7eaf6ffb4f9f5f7">[email&#160;protected]</span></a>
+                            <a href="/cdn-cgi/l/email-protection#53202623233c212713362b323e233f367d303c3e"><span
+                                    class="__cf_email__" data-cfemail="9ae9efeaeaf5e8eedaffe2fbf7eaf6ffb4f9f5f7">[email&#160;protected]</span></a>
                         </div>
                     </nav>
                 </div>
@@ -149,7 +150,8 @@
         </div>
         <div class="copyright row align-items-center">
             <div class="col-lg-6 col-md-6 order-1 order-md-0 text-center text-md-start mt-3 mt-md-0">
-                <p>Copyright 2024 <a href="#">Ready Auction</a> | Design By <a href="https://www.egenslab.com">Egens Theme</a></p>
+                <p>Copyright 2024 <a href="#">Ready Auction</a> | Design By <a href="https://www.egenslab.com">Egens
+                    Theme</a></p>
             </div>
             <div class="col-lg-6 col-md-6 order-0 order-md-1">
                 <div class="acceptable-cards float-lg-end text-center text-md-start">
@@ -167,89 +169,41 @@
 <script th:src="@{/assets/js/jquery.magnific-popup.min.js}"></script>
 <script th:src="@{/assets/js/jquery.nice-select.js}"></script>
 <script th:src="@{/assets/js/main.js}"></script>
-<script>
-    $(document).ready(function() {
-        function search() {
-            const query = $('#search-input-mobile').val();
-            if (query) {
-                $.ajax({
-                    url: '/auction-searching-api/searching',
-                    method: 'GET',
-                    data: { query: query },
-                    success: function(response) {
-                        displaySearchResults(response);
-                    },
-                    error: function(error) {
-                        console.error('검색 결과를 가져오는 중 오류 발생', error);
-                    }
-                });
-            }
+<script th:inline="javascript">
+    function fetchSuggestions(query) {
+        if (query.length === 0) {
+            document.getElementById('autocomplete-results').innerHTML = '';
+            return;
         }
-
-        function fetchSuggestions() { // 자동 완성 기능 추가
-            const query = $('#search-input-mobile').val();
-            if (query.length > 0) {
-                $.ajax({
-                    url: '/auction-searching-api/suggestions',
-                    method: 'GET',
-                    data: { query: query },
-                    success: function(response) {
-                        displaySuggestions(response);
-                    },
-                    error: function(error) {
-                        console.error('자동 완성 결과를 가져오는 중 오류 발생', error);
-                    }
+        $.ajax({
+            url: /*[[@{/auction-searching-api/searching}]]*/,
+            type: 'GET',
+            data: {query: query},
+            success: function (data) {
+                let suggestionsList = '';
+                data.forEach(function (suggestion) {
+                    suggestionsList += '<div class="suggestion-item" onclick="handleSuggestionClick(\'' + encodeURIComponent(suggestion.name) + '\')">' + suggestion.name + '</div>';
                 });
-            } else {
-                $('#autocomplete-results').empty();
-            }
-        }
-
-        $('.search-btn').on('click', function() {
-            search();
-        });
-
-        $('#search-input-mobile').on('keypress', function(event) {
-            if (event.which === 13) { // Enter key pressed
-                search();
+                document.getElementById('autocomplete-results').innerHTML = suggestionsList;
+            },
+            error: function (error) {
+                console.error('Error fetching suggestions:', error);
             }
         });
+    }
 
-        $('#search-input-mobile').on('input', function() { // 입력 이벤트 추가
-            fetchSuggestions();
-        });
-
-        function displaySearchResults(results) {
-            const resultsContainer = $('#search-results');
-            resultsContainer.empty();
-            if (results.length > 0) {
-                results.forEach(result => {
-                    resultsContainer.append(`
-                        <div class="search-result-item">
-                            <h3>${result.name}</h3>
-                            <p>${result.description}</p>
-                            <p>현재 가격: ${result.currentPrice}</p>
-                            <p>즉시 구매가: ${result.immediatePrice}</p>
-                        </div>
-                    `);
-                });
-            } else {
-                resultsContainer.append('<p>검색 결과가 없습니다.</p>');
-            }
+    // handleSearch 함수에서 경로 수정
+    function handleSearch(event) {
+        if (event.key === 'Enter') {
+            let query = encodeURIComponent(event.target.value);
+            window.location.href = '?prodName=' + query;
         }
+    }
 
-        function displaySuggestions(suggestions) { // 자동 완성 결과 표시
-            const suggestionsContainer = $('#autocomplete-results');
-            suggestionsContainer.empty();
-            if (suggestions.length > 0) {
-                suggestions.forEach(suggestion => {
-                    suggestionsContainer.append(`
-                        <div class="autocomplete-suggestion">${suggestion}</div>
-                    `);
-                });
-            }
-        }
-    });
+    // handleSuggestionClick 함수에서 경로 수정
+    function handleSuggestionClick(query) {
+        window.location.href = '?prodName=' + query;
+    }
 </script>
 </body>
 </html>
