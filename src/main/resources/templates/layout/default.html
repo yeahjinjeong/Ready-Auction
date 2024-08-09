@@ -86,7 +86,13 @@
                                 </ul>
                             </li>
                             <li class="has-child-menu">
-                                <a th:href="@{/mypage}">마이페이지</a>
+                                <a th:href="@{/about}" method="post">공지사항</a>
+                            </li>
+                            <li class="has-child-menu">
+                                <a th:href="@{/faq}" method="post">FAQ</a>
+                            </li>
+                            <li sec:authorize="isAuthenticated()" class="has-child-menu">
+                                <a th:href="@{/mypage}" method="post">마이페이지</a>
                             </li>
                             <li sec:authorize="isAnonymous()" class="has-child-menu">
                                 <a href="javascript:void(0)">로그인/회원가입</a>

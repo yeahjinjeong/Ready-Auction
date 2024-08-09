@@ -1,6 +1,7 @@
 package com.readyauction.app.mypage.controller;
 
-import com.readyauction.app.user.dto.MemberUpdateRequestDto;
+import com.readyauction.app.cash.entity.Account;
+import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Controller
 @RequestMapping("/mypage")
@@ -28,14 +25,19 @@ public class MypageController {
     @Autowired
     private MemberService memberService;
 
+    @Autowired
+    private AccountService accountService;
+
     // 마이페이지
     @GetMapping("")
     public String getMyPage(Model model) {
         log.info("GET /mypage");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
+        System.out.println("currentUserName : " + currentUserName);
 
         Member member = memberService.findMemberByEmail(currentUserName);
+//        Account account = accountService.findMemberByEmail(currentUserName);
         log.debug("member: {}", member);
         model.addAttribute("member", member);
 
@@ -48,7 +50,7 @@ public class MypageController {
         log.info("GET /profile-update");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
-        System.out.println(currentUserName);
+        System.out.println("cuurentUserName : " + currentUserName);
 
         Member member = memberService.findMemberByEmail(currentUserName);
         log.debug("member: {}", member);
@@ -70,10 +72,14 @@ public class MypageController {
         Member member = memberService.findMemberByEmail(currentUserName);
         member.setNickname(nickname);
 
-        if ("true".equalsIgnoreCase(removeImage)) {
+        boolean removeImageFlag = "true".equalsIgnoreCase(removeImage);
+
+        if (removeImageFlag && member.getProfilePicture() != null) {
             memberService.deleteImage(member.getProfilePicture());
             member.setProfilePicture(null);
-        } else if (!image.isEmpty()) {
+        }
+
+        if (!image.isEmpty()) {
             String imageUrl = memberService.uploadImage(image, currentUserName);
             member.setProfilePicture(imageUrl);
         }
@@ -83,29 +89,6 @@ public class MypageController {
         model.addAttribute("member", member);
 
         return "redirect:/mypage";
-    }
-
-    // 닉네임 중복 검사
-//    @PostMapping("/check-nickname")
-//    @ResponseBody
-//    public Map<String, Object> checkNickname(@RequestBody Map<String, String> request) {
-//        String nickname = request.get("nickname");
-//        boolean isAvailable = mypageService.isNicknameAvailable(nickname); // 닉네임 중복 확인 로직
-//
-//        Map<String, Object> response = new HashMap<>();
-//        if (isAvailable) {
-//            response.put("success", true);
-//            response.put("email", mypageService.getCurrentUserEmail()); // 현재 사용자의 이메일
-//        } else {
-//            response.put("success", false);
-//        }
-//        return response;
-//    }
-    
-    // 캐쉬 충전
-    @GetMapping("/charge")
-    public String chargeCash() {
-        return "mypage/charge";
     }
 
     // 회원정보 수정
