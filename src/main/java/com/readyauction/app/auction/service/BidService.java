@@ -64,7 +64,7 @@ public class BidService {
 
     @Transactional
     public Integer startBid(HttpServletRequest request, BidDto bidDto) {
-        Long userId = memberService.findMemberIdByEmail(request.getHeader("email"));
+        Long userId = memberService.findMemberByEmail(request.getHeader("email")).getId();
         Product product = productService.findById(bidDto.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         if (product.hasWinner()) {

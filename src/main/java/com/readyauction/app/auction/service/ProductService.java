@@ -143,7 +143,7 @@ public class ProductService {
 
     private Long getUserIdFromRequest(HttpServletRequest request) {
         try {
-            return memberService.findMemberIdByEmail(request.getHeader("email"));
+            return memberService.findMemberByEmail(request.getHeader("email")).getId();
         } catch (Exception e) {
             log.error("Failed to retrieve user ID: {}", e.getMessage());
             throw new RuntimeException("User not found", e);

@@ -45,6 +45,7 @@ public class MemberService {
     @Value("${spring.s3.bucket}")
     private String bucketName;
 
+
     public void register(MemberRegisterRequestDto dto) {
         // 1. dto -> entity 변환
         Member member = dto.toMember();
@@ -59,11 +60,9 @@ public class MemberService {
         member.changeName(dto.getName());
     }
 
-    public Long findMemberIdByEmail(String email) {
-        Member member = memberRepository.findByEmail(email);
-        MemberDto memberDTO = MemberDto.toMemberDto(member);
-        System.out.println(memberDTO);
-        return member.getId();
+    public Member findMemberByEmail(String email) {
+        Optional<Member> memberOptional = memberRepository.findMemberByEmail(email);
+        return memberOptional.orElseThrow(() -> new UserNotFoundException(email));
     }
 
 //    public MemberDto login(MemberDto memberDto) {
