@@ -26,7 +26,7 @@ public class ChatController {
     @SendTo("/sub/{chatRoomId}")
     public MessageDto chatting(@DestinationVariable("chatRoomId") String chatRoomId,
                                MessageDto messageDto) {
-        log.debug("message = {}", messageDto);
+        log.info("message = {}", messageDto);
         log.info("chatRoomId = {}", chatRoomId);
         chatService.save(messageDto);
         return messageDto;
@@ -37,7 +37,7 @@ public class ChatController {
 //            @PathVariable Long memberId,
             @AuthenticationPrincipal AuthPrincipal principal,
             Model model) {
-        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(0L);
+        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(principal.getMember().getId());
         log.debug(chatRoomList.toString());
         model.addAttribute("chatRoomList", chatRoomList);
     }

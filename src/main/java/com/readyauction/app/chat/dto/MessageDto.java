@@ -15,8 +15,8 @@ import java.time.ZoneId;
 @AllArgsConstructor
 @Builder
 public class MessageDto {
-//    private Long id;
-//    private Long chatRoomId;
+    private Long id;
+    private Long chatRoomId;
     private Long memberId;
     private String message;
     private Long createdAt;
@@ -25,8 +25,8 @@ public class MessageDto {
 
     public ChatMessage toChatMessageEntity() {
         return ChatMessage.builder()
-//                .id(createdAt)
-//                .chatRoomId(this.chatRoomId)
+                .id(createdAt)
+                .chatRoomId(this.chatRoomId)
                 .memberId(this.memberId)
                 .message(this.message)
                 .createdAt(LocalDateTime.ofInstant(Instant.ofEpochMilli(this.createdAt), ZoneId.systemDefault()))
@@ -36,8 +36,8 @@ public class MessageDto {
 
     public static MessageDto toChatMessageDto(ChatMessage chatRoomMessage) {
         return new MessageDto(
-//                chatRoomMessage.getId(),
-//                chatRoomMessage.getChatRoomId(),
+                chatRoomMessage.getId(),
+                chatRoomMessage.getChatRoomId(),
                 chatRoomMessage.getMemberId(),
                 chatRoomMessage.getMessage(),
                 null,

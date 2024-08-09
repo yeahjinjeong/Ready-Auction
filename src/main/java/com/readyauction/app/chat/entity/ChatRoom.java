@@ -33,6 +33,10 @@ public class ChatRoom {
     )
     @OrderColumn(name = "chat_room_member_idx")
     private List<ChatRoomMember> chatRoomMembers;
+    @Column(name = "last_message")
+    private String lastMessage;
+    @Column(name = "last_message_updated_at")
+    private LocalDateTime lastMessageUpdatedAt;
 
 //    @ElementCollection(fetch = FetchType.EAGER)
 //    @CollectionTable(
@@ -45,8 +49,8 @@ public class ChatRoom {
     @CreationTimestamp
     private LocalDateTime createdAt;
 //
-//    public void changeLastMessage(MessageDto messageDto) {
-//        this.lastMessage = messageDto.getMessage();
-//        this.lastMessageUpdatedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(messageDto.getCreatedAt()), ZoneId.systemDefault());
-//    }
+    public void changeLastMessage(MessageDto messageDto) {
+        this.lastMessage = messageDto.getMessage();
+        this.lastMessageUpdatedAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(messageDto.getCreatedAt()), ZoneId.systemDefault());
+    }
 }
