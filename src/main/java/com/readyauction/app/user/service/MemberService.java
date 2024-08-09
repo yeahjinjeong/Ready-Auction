@@ -45,6 +45,7 @@ public class MemberService {
     @Value("${spring.s3.bucket}")
     private String bucketName;
 
+
     public void register(MemberRegisterRequestDto dto) {
         // 1. dto -> entity 변환
         Member member = dto.toMember();
