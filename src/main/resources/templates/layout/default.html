@@ -1,25 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Ready Auction</title>
+    <title>Ready? Auction!</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="icon" href="assets/images/favicon.png" type="image/gif" sizes="20x20">
-
-    <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
-
-    <link rel="stylesheet" href="assets/css/boxicons.min.css">
-
-    <link rel="stylesheet" href="assets/css/bootstrap-icons.css">
-
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/css/magnific-popup.css">
-
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="icon" th:href="@{/assets/images/logo.png}" type="image/gif" sizes="20x20">
+    <link rel="stylesheet" th:href="@{/assets/css/swiper-bundle.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/boxicons.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap-icons.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/magnific-popup.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" th:href="@{/assets/css/responsive.css}">
 </head>
 <body>
 <!-- ======= Header ======= -->
@@ -33,16 +28,19 @@
     </div>
 </div>
 
+<!-- 검색 창을 조건부로 렌더링 -->
 <div class="mobile-search">
     <div class="container">
         <div class="row">
             <div class="col-11">
-                <label>What are you lookking for?</label>
-                <input type="text" placeholder="Search Products, Category, Brand">
+                <label>무엇을 찾고 계신가요?</label>
+                <input type="text" id="search-input-mobile" placeholder="검색어를 입력하세요."
+                       oninput="fetchSuggestions(this.value)" onkeydown="handleSearch(event)">
+                <!-- 자동 완성 목록을 표시할 영역 -->
+                <div id="autocomplete-results" class="autocomplete-suggestions"></div>
             </div>
             <div class="col-1 d-flex justify-content-end align-items-center">
                 <div class="search-cross-btn">
-
                     <i class="bi bi-x"></i>
                 </div>
             </div>
@@ -50,15 +48,16 @@
     </div>
 </div>
 
-
 <header>
     <div class="header-area header-style-one px-md-5">
         <div class="container">
             <div class="row">
                 <div class="col-xl-2 align-items-center d-xl-flex d-lg-block">
                     <div class="nav-logo d-flex justify-content-between align-items-center">
-                        <a href="index.html"><img src="assets/images/logo.png" alt="logo"></a>
+                        <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" alt="logo" width="50"
+                                               height="50"></a>
                         <div class="d-flex align-items-center gap-4">
+                            <span style="font-size: 16px; font-weight: bold; color: white; margin-left: 10px;">READY? AUCTION!</span>
                             <ul class="nav-actions nav-inner-actions d-flex d-xl-none">
                                 <li class="search-btn"><i class="bi bi-search"></i></li>
                             </ul>
@@ -75,55 +74,51 @@
                 <div class="col-xl-7 d-flex justify-content-center ">
                     <nav class="main-nav">
                         <div class="inner-logo d-xl-none text-center mt-4">
-                            <a href="#"><img src="assets/images/logo-dark.png" alt=""></a>
+                            <a href="#"><img th:src="@{/assets/images/logo.png}" width="50" height="50" alt=""></a>
                         </div>
                         <ul>
                             <li class="has-child-menu">
-                                <a href="javascript:void(0)">Home</a>
+                                <a th:href="@{/}">Home</a>
+                            </li>
+                            <li class="has-child-menu">
+                                <a href="javascript:void(0)">경매</a>
                                 <i class="fl flaticon-plus">+</i>
                                 <ul class="sub-menu">
-                                    <li><a href="index.html">Home Accessories </a></li>
-                                    <li><a href="index-car.html">Home Car</a></li>
-                                    <li><a href="index-land.html">Home Land</a></li>
-                                    <li><a href="index-art-light.html">Home Light-art</a></li>
-                                    <li><a href="index-art-dark.html">Home Dark-art</a></li>
+                                    <li><a th:href="@{/auction/auction}">경매 목록 확인</a></li>
+                                    <li><a th:href="@{/auction/productUpload}">경매 물품 등록</a></li>
                                 </ul>
                             </li>
                             <li class="has-child-menu">
-                                <a href="javascript:void(0)">Auction</a>
-                                <i class="fl flaticon-plus">+</i>
-                                <ul class="sub-menu">
-                                    <li><a href="auction.html">auction</a></li>
-                                    <li><a href="auction-details.html">auction details</a></li>
-                                </ul>
+                                <a th:href="@{/about}" method="post">공지사항</a>
                             </li>
                             <li class="has-child-menu">
-                                <a href="javascript:void(0)">Pages</a>
+                                <a th:href="@{/faq}" method="post">FAQ</a>
+                            </li>
+                            <li sec:authorize="isAuthenticated()" class="has-child-menu">
+                                <a th:href="@{/mypage}" method="post">마이페이지</a>
+                            </li>
+                            <!-- 로그인하지 않은 경우 anonymous -->
+                            <li sec:authorize="isAnonymous()" class="has-child-menu">
+                                <a href="javascript:void(0)">로그인/회원가입</a>
                                 <i class="fl flaticon-plus">+</i>
                                 <ul class="sub-menu">
-                                    <li><a href="about.html">about</a></li>
-                                    <li><a href="winner.html">winner</a></li>
-                                    <li><a href="login.html">login</a></li>
-                                    <li><a href="register.html">register</a></li>
-                                    <li><a href="faq.html">faq</a></li>
-                                    <li><a href="privacy.html">Privacy Policy</a></li>
-                                    <li><a href="404.html">Error</a></li>
+                                    <li><a th:href="@{/auth/login}">로그인</a></li>
+                                    <li><a th:href="@{/member/register}">회원가입</a></li>
                                 </ul>
                             </li>
-                            <li class="has-child-menu">
-                                <a href="javascript:void(0)">Blog</a>
+                            <!-- 로그인한 경우 authenticated -->
+                            <li sec:authorize="isAuthenticated()" class="has-child-menu">
+                                <a href="javascript:void(0)">로그아웃</a>
                                 <i class="fl flaticon-plus">+</i>
                                 <ul class="sub-menu">
-                                    <li><a href="blog.html">Blog</a></li>
-                                    <li><a href="blog-standard.html">Blog Standard</a></li>
-                                    <li><a href="blog-details.html">Blog Details</a></li>
+                                    <li><a th:href="@{/auth/logout}" method="post">로그아웃</a></li>
                                 </ul>
                             </li>
-                            <li><a href="contact.html">contact</a></li>
                         </ul>
                         <div class="contact-mail inner-contact-mail mt-5 d-block d-xl-none">
-                            <span>Message Us</span>
-                            <a href="/cdn-cgi/l/email-protection#53202623233c212713362b323e233f367d303c3e"><span class="__cf_email__" data-cfemail="9ae9efeaeaf5e8eedaffe2fbf7eaf6ffb4f9f5f7">[email&#160;protected]</span></a>
+                            <span>메시지 보내기</span>
+                            <a href="/cdn-cgi/l/email-protection#53202623233c212713362b323e233f367d303c3e"><span
+                                    class="__cf_email__" data-cfemail="9ae9efeaeaf5e8eedaffe2fbf7eaf6ffb4f9f5f7">[email&#160;protected]</span></a>
                         </div>
                     </nav>
                 </div>
@@ -134,7 +129,7 @@
                         </ul>
                         <div class="contact-no d-flex align-items-center">
                             <div class="contact-icon">
-                                <img src="assets/images/icon/phone-w.svg" alt="">
+                                <img th:src="@{/assets/images/icon/phone-w.svg}" alt="">
                             </div>
                             <div class="contact-info">
                                 <p>Hot Line Number</p>
@@ -150,112 +145,73 @@
 
 <main class="main" id="main">
     <div layout:fragment="content1"></div>
-
+    <!-- 검색 결과가 표시될 곳 -->
+    <div id="search-results"></div>
 </main>
 
 <footer class="footer-area footer-style-one mt-110">
     <div class="container">
-    <div class="footer-main">
-    <div class="row gy-5 d-flex justify-content-center">
-    <div class="col-lg-4 col-md-6">
-    <div class="footer-widget">
-    <form action="#" id="subscribe_form">
-    <h3 class="form-title">subscribe us</h3>
-    <div class="form-wrap d-flex align-items-center">
-    <input type="email" placeholder="Enter Your Email">
-    <button type="submit">Send</button>
+        <div class="footer-main">
+            <div class="row gy-5 d-flex justify-content-center">
+                <!-- 푸터 내용 -->
+            </div>
+        </div>
+        <div class="copyright row align-items-center">
+            <div class="col-lg-6 col-md-6 order-1 order-md-0 text-center text-md-start mt-3 mt-md-0">
+                <p>Copyright 2024 <a href="#">Ready Auction</a> | Design By <a href="https://www.egenslab.com">Egens
+                    Theme</a></p>
+            </div>
+            <div class="col-lg-6 col-md-6 order-0 order-md-1">
+                <div class="acceptable-cards float-lg-end text-center text-md-start">
+                    <img th:src="@{/assets/images/icon/payment-cards.png}" alt="" class="img-fluid">
+                </div>
+            </div>
+        </div>
     </div>
-    </form>
-    <div class="footer-contact-links">
-    <div class="contact-option">
-    <div class="icon">
-    <i class="bi bi-telephone-plus"></i>
-    </div>
-    <div class="link">
-    <a href="tel:8801761111456">+880 176 1111 456</a>
-    </div>
-    </div>
-    <div class="contact-option">
-    <div class="icon">
-    <i class="bi bi-envelope"></i>
-    </div>
-    <div class="link">
-    <a href="info@example.com"><span class="__cf_email__" data-cfemail="fb92959d94bb9e839a968b979ed5989496">[email&#160;protected]</span></a>
-    </div>
-    </div>
-    <div class="contact-option">
-    <div class="icon">
-    <i class="bi bi-geo-alt"></i>
-    </div>
-    <div class="link">
-    <a href="tel:8801761111456">168/170, Avenue 01, ADDRESS, Bangladesh</a>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    <div class="col-lg-2 col-md-6">
-    <div class="footer-widget">
-     <h5 class="widget-title">Quick Links</h5>
-    <ul class="widget-links">
-    <li><a href="login.html">My Account</a></li>
-    <li><a href="about.html">Affiliate Program</a></li>
-    <li><a href="contact.html">Lawyer Consulting</a></li>
-    <li><a href="#">Sorteo Locemses</a></li>
-    <li><a href="privacy.html">Privacey Policy</a></li>
-    <li><a href="#">Term & Condition</a></li>
-    </ul>
-    </div>
-    </div>
-    <div class="col-lg-2 col-md-6">
-    <div class="footer-widget">
-    <h5 class="widget-title">Help Center</h5>
-    <ul class="widget-links">
-    <li><a href="contact.html">Help Center</a></li>
-    <li><a href="faq.html">FAQ</a></li>
-    <li><a href="#">Borrow</a></li>
-    <li><a href="contact.html">License Agreement</a></li>
-    <li><a href="#">Sell your Product</a></li>
-    </ul>
-    </div>
-    </div>
-    <div class="col-lg-4 col-md-6">
-    <div class="footer-widget text-start">
-    <div class="footer-disc">
-    <a href="index.html"><img src="assets/images/logo.png" alt=""></a>
-    <p>Duis luctus risus ut velit aliquam, sed fringilla odio gravida. In vitae sagittis neque, eget vestibulum enim. Pellentesque ante odio.</p>
-    </div>
-    <ul class="footer-social-links justify-content-start">
-    <li><a href="https://www.facebook.com"><i class='bx bxl-facebook'></i></a></li>
-    <li><a href="https://twitter.com"><i class='bx bxl-twitter'></i></a></li>
-    <li><a href="https://www.pinterest.com"><i class='bx bxl-pinterest'></i></a></li>
-    <li><a href="https://www.instagram.com"><i class='bx bxl-instagram'></i></a></li>
-    </ul>
-    </div>
-    </div>
-    </div>
-    </div>
-    <div class="copyright row align-items-center">
-    <div class="col-lg-6 col-md-6 order-1 order-md-0 text-center text-md-start mt-3 mt-md-0">
-    <p>Copyright 2022 <a href="#">Bidgen</a> | Design By <a href="https://www.egenslab.com">Egens Theme</a></p>
-    </div>
-    <div class="col-lg-6 col-md-6 order-0 order-md-1">
-    <div class="acceptable-cards float-lg-end text-center text-md-start">
-    <img src="assets/images/icon/payment-cards.png" alt="" class="img-fluid">
-    </div>
-    </div>
-    </div>
-    </div>
-    </footer>
-    
-    
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="assets/js/jquery-3.6.0.min.js"></script>
-    <script src="assets/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/swiper-bundle.min.js"></script>
-    <script src="assets/js/jquery.magnific-popup.min.js"></script>
-    <script src="assets/js/jquery.nice-select.js"></script>
-    
-    <script src="assets/js/main.js"></script>
-</div>
+</footer>
+
+<script data-cfasync="false" th:src="@{/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js}"></script>
+<script th:src="@{/assets/js/jquery-3.6.0.min.js}"></script>
+<script th:src="@{/assets/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/js/swiper-bundle.min.js}"></script>
+<script th:src="@{/assets/js/jquery.magnific-popup.min.js}"></script>
+<script th:src="@{/assets/js/jquery.nice-select.js}"></script>
+<script th:src="@{/assets/js/main.js}"></script>
+<script th:inline="javascript">
+    function fetchSuggestions(query) {
+        if (query.length === 0) {
+            document.getElementById('autocomplete-results').innerHTML = '';
+            return;
+        }
+        $.ajax({
+            url: /*[[@{/auction-searching-api/searching}]]*/,
+            type: 'GET',
+            data: {query: query},
+            success: function (data) {
+                let suggestionsList = '';
+                data.forEach(function (suggestion) {
+                    suggestionsList += '<div class="suggestion-item" onclick="handleSuggestionClick(\'' + encodeURIComponent(suggestion.name) + '\')">' + suggestion.name + '</div>';
+                });
+                document.getElementById('autocomplete-results').innerHTML = suggestionsList;
+            },
+            error: function (error) {
+                console.error('Error fetching suggestions:', error);
+            }
+        });
+    }
+
+    // handleSearch 함수에서 경로 수정
+    function handleSearch(event) {
+        if (event.key === 'Enter') {
+            let query = encodeURIComponent(event.target.value);
+            window.location.href = '?prodName=' + query;
+        }
+    }
+
+    // handleSuggestionClick 함수에서 경로 수정
+    function handleSuggestionClick(query) {
+        window.location.href = '?prodName=' + query;
+    }
+</script>
 </body>
 </html>

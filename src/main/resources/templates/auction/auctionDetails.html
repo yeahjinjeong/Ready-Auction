@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const bidForm = document.getElementById('bidForm');
+            const buyForm = document.getElementById('buyForm');
+
+            bidForm.addEventListener('submit', function (event) {
+                event.preventDefault(); // 기본 폼 제출 방지
+
+                const currentPrice = document.getElementById('currentPrice').value;
+                console.log("현재 가격: " + currentPrice);
+                const productId = document.getElementById('productId').value;
+                const currentTime = new Date().toISOString(); // 현재 시각 ISO 형식
+                const bidDto = {
+                    bidPrice: currentPrice,
+                    productId: productId,
+                    bidTime: currentTime
+                };
+                $.ajax({
+                    url: /*[[${'/auction-api/bid'}]]*/,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(bidDto),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("email", "ssg2@gmail.com");
+                    },
+                    success: function (data) {
+                        console.log('Bid successful:', data);
+                        alert('Bid placed successfully!');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error placing bid:', error);
+                        alert('Failed to place bid. Please try again.');
+                    }
+                });
+            });
+
+            buyForm.addEventListener('submit', function (event) {
+                event.preventDefault(); // 기본 폼 제출 방지
+
+                const immediatePrice = document.getElementById('immediatePrice').value;
+                console.log("즉시 구매 가격: " + immediatePrice);
+                const productId = document.getElementById('productId2').value;
+                const currentTime = new Date().toISOString(); // 현재 시각 ISO 형식
+                const winnerReqDto = {
+                    buyPrice: immediatePrice,
+                    productId: productId,
+                    buyTime: currentTime
+                };
+                $.ajax({
+                    url: /*[[${'/auction-api/buy'}]]*/,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(winnerReqDto),
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("email", "ssg2@gmail.com");
+                    },
+                    success: function (data) {
+                        console.log('Immediate buy successful:', data);
+                        alert('Immediate buy placed successfully!');
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error placing immediate buy:', error);
+                        alert('Failed to place immediate buy. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="breadcrumb breadcrumb-style-one mb-0">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">Auction Details</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a href="../index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Auction Details</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <section class="auction-details-section pt-110">
+        <div class="container">
+            <div class="row gy-5">
+                <div class="col-lg-6">
+                    <div class="item-bid-timer">
+                        <div class="auction-bid">
+                            <p>현재입찰가</p>
+                            <h5 th:text="'₩'+ ${#numbers.formatDecimal(productDetail.currentPrice, 0, 'COMMA', 0, 'POINT')}"></h5>
+                        </div>
+                        <div class="auction-timer">
+                            <div class="countdown">
+                                <h6>
+                                    <span th:id="|days-${productDetail.id}|">0</span>D :
+                                    <span th:id="|hours-${productDetail.id}|">0</span>H :
+                                    <span th:id="|minutes-${productDetail.id}|">0</span>M :
+                                    <span th:id="|seconds-${productDetail.id}|">0</span>S
+                                </h6>
+                            </div>
+                            <script th:inline="javascript">
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    // Assuming productDetail is an array of product objects with 'endTime' and 'id' properties
+
+                                    // Assuming productDetail is a single product object with 'endTime' and 'id' properties
+                                    var product = /*[[${productDetail}]]*/ {};
+
+// Log the product object to debug
+                                    console.log("Product object:", product);
+
+// Ensure product has the necessary properties
+                                    if (product && product.endTime && product.id) {
+                                        const endTime = new Date(product.endTime).toISOString(); // Ensure valid date
+                                        const productId = product.id;
+
+                                        console.log(`Starting countdown for product ID: ${productId}`);
+                                        startCountdown(endTime, productId);
+                                    } else {
+                                        console.error("Invalid product data:", product);
+                                    }
+
+// Countdown function
+                                    function startCountdown(endTime, productId) {
+                                        const countDownDate = new Date(endTime).getTime();
+                                        if (isNaN(countDownDate)) {
+                                            console.error('Invalid end time:', endTime);
+                                            return;
+                                        }
+
+                                        const intervalId = setInterval(function () {
+                                            const now = new Date().getTime();
+                                            const distance = countDownDate - now;
+
+                                            // Time calculations
+                                            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                            console.log(productId); //2
+                                            // Update DOM elements
+                                            console.log(`days-${productId}`);
+                                            console.log(`Countdown for product ID ${productId}: ${days}d ${hours}h ${minutes}m ${seconds}s`);
+                                            const daysElem = document.getElementById(`days-${productId}`);
+                                            const hoursElem = document.getElementById(`hours-${productId}`);
+                                            const minutesElem = document.getElementById(`minutes-${productId}`);
+                                            const secondsElem = document.getElementById(`seconds-${productId}`);
+                                            console.log(daysElem+" "+hoursElem+""+ minutesElem+""+secondsElem+"ffffffff");
+                                            if (daysElem && hoursElem && minutesElem && secondsElem) {
+                                                daysElem.textContent = days;
+                                                hoursElem.textContent = hours;
+                                                minutesElem.textContent = minutes;
+                                                secondsElem.textContent = seconds;
+                                            } else {
+                                                console.error(`Countdown elements not found for product ID: ${productId}`);
+                                                clearInterval(intervalId);
+                                                return;
+                                            }
+
+                                            // Check if countdown is over
+                                            if (distance < 0) {
+                                                clearInterval(intervalId);
+                                                daysElem.textContent = "0";
+                                                hoursElem.textContent = "0";
+                                                minutesElem.textContent = "0";
+                                                secondsElem.textContent = "0";
+                                            }
+                                        }, 1000);
+                                    }
+
+                                });
+                            </script>
+                        </div>
+                    </div>
+
+                    <!-- 상품 이미지를 하얀 박스 위에 표시 -->
+                    <div class="product-image-box">
+                        <img th:src="${productDetail.imgUrl}" alt="상품 이미지" class="product-image">
+                    </div>
+
+                    <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">
+                        <li class="nav-item">
+                            <div id="details-img1">
+                                <img src="assets/images/product/details1.png" alt="">
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div id="details-img2">
+                                <img src="assets/images/product/details2.png" alt="">
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div id="details-img3">
+                                <img src="assets/images/product/details3.png" alt="">
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div id="details-img4">
+                                <img src="assets/images/product/details4.png" alt="">
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <div id="details-img5">
+                                <img src="assets/images/product/details5.png" alt="">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-6">
+                    <div class="widget-right-area">
+                        <div class="single-widget">
+                            <h5 class="widget-title">Product Overview</h5>
+                            <ul class="widget-list">
+                                <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
+                                <li><span>판매자 ID :</span><span th:text="${productDetail.memberId}">판매자</span></li>
+                                <li><span>카테고리 :</span><span id="end-time" th:text="${productDetail.category}">카테고리</span></li>
+                                <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
+                                <li><span>즉시 구매가 :</span><span th:text="${productDetail.immediatePrice}">즉시 구매가</span></li>
+                                <li><span>상품 설명 :</span><span th:text="${productDetail.description}">상품 설명</span></li>
+                            </ul>
+                        </div>
+                        <div class="single-widget">
+                            <form class="widget-form" id="bidForm">
+                                <div class="form-group d-flex justify-content-center align-items-center">
+                                    <!-- 현재 가격을 보여주는 입력 필드 -->
+                                    <input type="text" readonly class="form-control" placeholder="Current Price" th:value="${productDetail.currentPrice}" id="currentPrice" name="currentPrice">
+                                    <!-- 상품 ID를 숨긴 필드에 저장 -->
+                                    <input type="hidden" th:value="${productDetail.id}" name="productId" id="productId">
+                                    <button type="submit" class="widget-btn">Place Bid</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="single-widget">
+                            <form class="widget-form" id="buyForm">
+                                <div class="form-group d-flex justify-content-center align-items-center">
+                                    <!-- 현재 가격을 보여주는 입력 필드 -->
+                                    <input type="text" readonly class="form-control" placeholder="Immediate Price" th:value="${productDetail.immediatePrice}" id="immediatePrice" name="immediatePrice">
+                                    <!-- 상품 ID를 숨긴 필드에 저장 -->
+                                    <input type="hidden" th:value="${productDetail.id}" name="productId2" id="productId2">
+                                    <button type="submit" class="widget-btn2">Place Buy</button>
+                                </div>
+                                <div class="bidding-content">
+                                    <h6><a href="../winner.html">Robart FOX</a></h6>
+                                    <p>Bid 23 minutes ago for 24.5$</p>
+                                </div>
+                                <div class="bidding-item gap-sm-4 gap-2">
+                                    <div class="bidding-img">
+                                        <img src="assets/images/buyer/bid-histo2.png" alt="">
+                                    </div>
+                                    <div class="bidding-content">
+                                        <h6><a href="../winner.html">Leslie Alexander</a></h6>
+                                        <p>Bid 23 minutes ago for 24.5$</p>
+                                    </div>
+                                </div>
+                                <div class="bidding-item gap-sm-4 gap-2">
+                                    <div class="bidding-img">
+                                        <img src="assets/images/buyer/bid-hidto3.png" alt="">
+                                    </div>
+                                    <div class="bidding-content">
+                                        <h6><a href="../winner.html">Jane Cooper</a></h6>
+                                        <p>Bid 23 minutes ago for 24.5$</p>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+
+                    <div class="details-social-area">
+                        <h5 class="wdget-title">Share Now</h5>
+                        <ul>
+                            <li><a href="https://www.facebook.com"><i class='bx bxl-facebook'></i></a></li>
+                            <li><a href="https://twitter.com"><i class='bx bxl-twitter'></i></a></li>
+                            <li><a href="https://www.pinterest.com"><i class='bx bxl-pinterest-alt'></i></a></li>
+                            <li><a href="https://www.instagram.com"><i class='bx bxl-instagram'></i></a></li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+</div>
+</section>
+</div>
+</body>
+</html>

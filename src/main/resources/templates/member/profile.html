@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<head>
+    <style>
+        .image {
+            text-align: center;
+        }
+        .image img {
+            width: 220px;
+            height: 220px;
+            border-radius:50%;
+            margin-bottom: 5%;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content1">
+    <div class="breadcrumb breadcrumb-style-one mb-0 ">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">Profile</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item active">Profile</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="auction-winner-wrapper pt-110">
+        <div class="container">
+            <div class="image">
+                <img id="profilePicture" th:src="@{/assets/images/profile/basic-profile.png}" alt="Profile Image">
+            </div>
+            <div class="single-widget">
+                <h5 class="wdget-title">Profile</h5>
+                <ul class="widget-list">
+                    <li><span>닉네임 :</span><span text="nickname"></span></li>
+                    <li><span>내 동네 :</span><span text="address"></span></li>
+                    <li><span>매너지수 :</span><span text="mannerScore"></span></li>
+                    <li><span>받은 매너 평가 :</span><span text=""></span></li>
+                    <li><span>경매 등록 내역 :</span><span text=""></span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
