@@ -93,6 +93,12 @@ public class ProductService {
             return false;
         }
     }
+    @Transactional
+    public Integer findCurrentPriceById(Long productId)
+    {
+        Product productResult = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        return productResult.getCurrentPrice();
+    }
 
     @Transactional(readOnly = true)
     public Optional<Product> findById(Long productId) {
@@ -108,18 +114,19 @@ public class ProductService {
     }
 
     @Transactional
-    public void startWinnerProcess(HttpServletRequest request, WinnerReqDto winnerReqDto) {
+    public ProductDto startWinnerProcess(HttpServletRequest request, WinnerReqDto winnerReqDto) {
         Long userId = getUserIdFromRequest(request);
         Product product = findProductById(winnerReqDto.getProductId());
 
         if (product.hasWinner()) {
             throw new RuntimeException("The product has already been won");
         }
-        createWinner(userId, product, winnerReqDto);
+
+        return convertToProductDto(createWinner(userId, product, winnerReqDto));
     }
 
     @Transactional
-    public boolean createWinner(Long userId, Product product, WinnerReqDto winnerReqDto) {
+    public Product createWinner(Long userId, Product product, WinnerReqDto winnerReqDto) {
         Winner winner = Winner.builder()
                 .memberId(userId)
                 .status(PurchaseStatus.CONFIRMED)
@@ -127,9 +134,11 @@ public class ProductService {
                 .winnerTime(winnerReqDto.getBuyTime())
                 .build();
         product.setWinner(winner);
-        productRepository.save(product);
+        product.setAuctionStatus(AuctionStatus.END);
         log.info("Winner created successfully for product ID: {}", product.getId());
-        return true;
+
+        return productRepository.save(product);
+
     }
 
     private Long getUserIdFromRequest(HttpServletRequest request) {

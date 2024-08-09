@@ -6,6 +6,7 @@
     <!-- Include jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
+
         /* Progress bar style */
         #progress-bar-container {
             width: 100%;
@@ -69,23 +70,49 @@
                     <input type="hidden" name="category" id="categoryInput">
 
                     <div class="contact-input-group">
-                        <label for="bidUnit">응찰당 상승 가격</label>
+                        <label for="bidUnit">응찰당 상승 가격(원)</label>
                         <input type="number" name="bidUnit" id="bidUnit" placeholder="Enter product code">
                     </div>
                     <div class="contact-input-group">
-                        <label for="immediatePrice">즉시 구매가격</label>
+                        <label for="immediatePrice">즉시 구매가격(원)</label>
                         <input type="number" id="immediatePrice" placeholder="Enter product code">
                     </div>
                     <div class="contact-input-group">
-                        <label for="currentPrice">시작 구매가격</label>
+                        <label for="currentPrice">시작 구매가격(원)</label>
                         <input type="number" id="currentPrice" placeholder="Enter product code">
                     </div>
 
-                    <div class="contact-input-group">
-                        <label for="endTime">경매 종료 날짜 및 시간 설정:</label>
-                        <input type="datetime-local" id="endTime" name="endTime">
+                    <div class="blog-widget widget-categories">
+                        <h5 class="widget-title">경매 종료 날짜 및 시간 설정:</h5>
+                        <ul class="sidebar-tag-list">
+                            <li><a onclick="setEndTime(1)">1일</a></li>
+                            <li><a onclick="setEndTime(3)">3일</a></li>
+                            <li><a onclick="setEndTime(5)">5일</a></li>
+                            <li><a onclick="setEndTime(7)">7일</a></li>
+                        </ul>
+                        <input type="datetime-local" id="endTime" name="endTime" readonly>
                     </div>
 
+                    <script>
+                        function setEndTime(daysToAdd) {
+                            const endTimeInput = document.getElementById('endTime');
+                            const currentDate = new Date();
+                            currentDate.setDate(currentDate.getDate() + parseInt(daysToAdd));
+                            const year = currentDate.getFullYear();
+                            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                            const day = String(currentDate.getDate()).padStart(2, '0');
+                            const hours = String(currentDate.getHours()).padStart(2, '0');
+                            const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+
+                            const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+                            endTimeInput.value = formattedDateTime;
+                        }
+
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Initialize with a default value (1 day from now)
+                            setEndTime(1);
+                        });
+                    </script>
                     <div class="contact-input-group">
                         <label for="discription">상품 설명</label>
                         <textarea id="discription" cols="30" rows="10" placeholder="Type your description"></textarea>
@@ -118,9 +145,23 @@
         }
 
         function setCategory(category) {
+            // Set the hidden input value
             var input = document.getElementById('categoryInput');
             input.value = category;
+
+            // Get the list items
+            var items = document.querySelectorAll('.sidebar-tag-list li a');
+
+            // Reset the color of all items
+            items.forEach(function(item) {
+                item.style.color = ""; // Reset to default
+            });
+
+            // Change the color of the clicked element
+            event.target.style.color = "red"; // Or any color you prefer
         }
+
+
 
         $(document).ready(function () {
             // Image upload on file select
@@ -137,7 +178,7 @@
                     contentType: false, // Prevent jQuery from overriding the content type
                     beforeSend: function (xhr) {
                         // Add email to the request header
-                        xhr.setRequestHeader("email", "ssg@gmail.com"); // Retrieve from session
+                        xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
                         $('#progress-bar-container').show();
                         $('#progress-bar').css('width', '0%').text('0%');
                     },
@@ -195,7 +236,7 @@
                     data: JSON.stringify(productData), // Serialize JSON
                     beforeSend: function (xhr) {
                         // Add email to the request header
-                        xhr.setRequestHeader("email", "ssg@gmail.com"); // Retrieve from session
+                        xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
                     },
                     success: function (data) {
                         alert('상품이 성공적으로 등록되었습니다.');
