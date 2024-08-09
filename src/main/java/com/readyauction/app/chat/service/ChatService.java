@@ -68,4 +68,23 @@ public class ChatService {
         Optional<Member> winner = memberRepository.findById(winnerId);
         return ChatProfileDto.toChatProfileDto(seller.get(), winner.get());
     }
+
+    public Long findChatRoomIdByProductId(Long productId) {
+        Optional<Long> chatRoomId = chatRoomRepository.findChatRoomIdByProductId(productId);
+        return chatRoomId.get();
+    }
+
+    public void updateMessageStatus(Long chatRoomId) {
+        Optional<List<ChatMessage>> chatMessageList = chatMessageRepository.findUnreadMessagesByChatRoomId(chatRoomId);
+        chatMessageList.get().forEach((m) -> {
+            m.changeStauts((short) 1);
+        });
+    }
+
+    public void updateMessageStatus(Long chatRoomId, Long id) {
+        Optional<List<ChatMessage>> chatMessageList = chatMessageRepository.findUnreadMessagesByChatRoomId(chatRoomId, id);
+        chatMessageList.get().forEach((m) -> {
+            m.changeStauts((short) 1);
+        });
+    }
 }

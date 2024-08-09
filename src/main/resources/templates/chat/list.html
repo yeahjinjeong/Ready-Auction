@@ -221,7 +221,7 @@
 
                 // location.href = `[[@{/chat/${productId}}]]`;
                 $.ajax({
-                    url : `[[@{/chat/${productId}}]]`,
+                    url : `[[@{/chat/message/${$chatRoomId}}]]`,
                     method : 'get', // 기본값
                     dataType : 'json', // 기대하는 응답 MIME
                     success: function(data) {
@@ -249,6 +249,16 @@
                                         <span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
                                     </div>`)
                                 } else {
+                                    $.ajax({
+                                        url : `[[@{/chat/message/${$chatRoomId}/read}]]`,
+                                        method : 'post', // 기본값
+                                        dataType : 'json', // 기대하는 응답 MIME
+                                        data: { memberId: memberId },
+                                        success: function(response) {
+                                            console.log('요청 성공:', response);
+                                        },
+                                    })
+
                                     $container.insertAdjacentHTML('beforeend',
                                     `<div class="incoming_msg">
                                         <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
@@ -316,6 +326,7 @@
                     <div class="${isIncoming ? 'received_msg' : ''}">
                         <div class="${isIncoming ? 'received_withd_msg' : ''}">
                             <p>${msg.message}</p>
+                            ${isIncoming ? '' : msg.status === 0 ? '<span>1</span>' : ''}
                             <span class="time_date">${dateTimeFormat}</span>
                         </div>
                     </div>
@@ -395,14 +406,14 @@
                             <div class="received_withd_msg">
                                 <p>Test which is a new approach to have all
                                     solutions</p>
-                                <span class="time_date"> 11:01 AM    |    June 9</span></div>
+                                <span>1</span><span class="time_date"> 11:01 AM    |    June 9</span></div>
                         </div>
                     </div>
                     <div class="outgoing_msg">
                         <div class="sent_msg">
                             <p>Test which is a new approach to have all
                                 solutions</p>
-                            <span class="time_date"> 11:01 AM    |    June 9</span> </div>
+                            <span>1</span><span class="time_date"> 11:01 AM    |    June 9</span> </div>
                     </div>
                 </div>
                 <div class="type_msg">
@@ -429,11 +440,9 @@
             message: $message.value,
             createdAt: Date.now(),
             status: 0
-            // 내가 보내면 무조건 id가 읽음이고 상대방이 읽었는지만 체크한다
-            // 000 : id 안숨김(0) !id 안숨김(0) !id 안읽음(0)  => 0
-            // 001 : id 안숨김(0) !id 안숨김(0) !id 읽음(1) => 1
-            // 011 : !id 읽음(1) id 숨김(1) !id 안숨김(0) => 3
-            // 111 : !id 읽음(1) id 숨김(1) !id 숨김(1) => 6
+            // 0 unread
+            // 1 read
+            // 내 id 가 아니면서 unread 인 것만 카운트하기
         };
         stompClient.send(`/pub/${$chatRoomId}`, {}, JSON.stringify(message));
         // stompClient.send(`/pub/${productId}`, {}, JSON.stringify(message));

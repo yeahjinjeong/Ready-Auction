@@ -30,5 +30,9 @@ public class ChatMessage {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column
-    private Short status;
+    private Short status; // 0 unread 1 read
+
+    public void changeStauts(Short i) {
+        this.status = i;
+    }
 }
