@@ -171,8 +171,14 @@
 <body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script>
-    let id = Math.floor(Math.random() * 2);
-    // let id = 3;
+    // let id = Math.floor(Math.random() * 2);
+    let $memberId;
+    fetch('[[@{/api/authentication/memberId}]]')
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+            $memberId = data;
+        });
     let $chatRoomId;
     let stompClient;
     let mySubscription = null;
@@ -212,7 +218,7 @@
                     dataType : 'json', // 기대하는 응답 MIME
                     success: function(data) {
                         console.log(data);
-                        displayChatProfiles(data, id);
+                        displayChatProfiles(data, $memberId);
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching chat:', status, error);
@@ -225,7 +231,7 @@
                     method : 'get', // 기본값
                     dataType : 'json', // 기대하는 응답 MIME
                     success: function(data) {
-                        displayChatMessages(data, id);
+                        displayChatMessages(data, $memberId);
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching chat:', status, error);
@@ -241,19 +247,19 @@
                                 const data = JSON.parse(frame.body);
                                 const $container = document.querySelector("#target");
                                 const {chatMsgId, memberId, message, createdAt, status} = data;
-                                if (memberId == id) { // 만약 내가 보낸 거면
+                                if (memberId == $memberId) { // 만약 내가 보낸 거면
                                     $container.insertAdjacentHTML('beforeend',
                                     `<div class="outgoing_msg">
                                         <div class="sent_msg">
                                         <p>${message}</p>
-                                        <span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
+                                        ${status == 0 ? '<span>1</span>' : ''}<span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
                                     </div>`)
                                 } else {
                                     $.ajax({
                                         url : `[[@{/chat/message/${$chatRoomId}/read}]]`,
                                         method : 'post', // 기본값
                                         dataType : 'json', // 기대하는 응답 MIME
-                                        data: { memberId: memberId },
+                                        data: { anotherMemberId: memberId },
                                         success: function(response) {
                                             console.log('요청 성공:', response);
                                         },
@@ -313,9 +319,10 @@
         const messageHistory = document.getElementById('target');
         messageHistory.innerHTML = ''; // 기존 메시지를 지우고 새로운 메시지를 표시
         console.log(messages);
+        console.log(currentMemberId);
         messages.forEach(function (msg) {
             // 예시로, 현재 로그인한 사용자의 ID와 메시지를 보낸 사람의 ID를 비교하여 메시지 타입 결정
-            var isIncoming = msg.memberId !== currentMemberId; // true/false
+            var isIncoming = msg.memberId != currentMemberId; // true/false
             var msgType = isIncoming ? 'incoming_msg' : 'outgoing_msg';
             var imgHTML = isIncoming ? '<img src="https://ptetutorials.com/images/user-profile.png" alt="user"></div>' : '';
             var dateTimeFormat = new Date(msg.createdAt2).toLocaleString(); // 'createdAt2' 필드를 사용하여 날짜 포맷팅
@@ -326,7 +333,7 @@
                     <div class="${isIncoming ? 'received_msg' : ''}">
                         <div class="${isIncoming ? 'received_withd_msg' : ''}">
                             <p>${msg.message}</p>
-                            ${isIncoming ? '' : msg.status === 0 ? '<span>1</span>' : ''}
+                            ${isIncoming ? '' : msg.status == 0 ? '<span>1</span>' : ''}
                             <span class="time_date">${dateTimeFormat}</span>
                         </div>
                     </div>
@@ -366,7 +373,7 @@
                     <div class="chat_list" th:each="chatRoom, stat : ${chatRoomList}" th:object="${chatRoom}" th:attr="data-product-id=${chatRoom.productId}, data-chat-room-id=${chatRoom.id}">
                         <div class="chat_people">
                             <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                            <div class="chat_ib" id="chat_ib" th:attr="data-chat-room-id=${chatRoom.id}">
+                            <div class="chat_ib">
                                 <div class="display-inline-block">
                                     <!-- 상대방 이름 -->
 <!--                                    <div th:if="${chatRoom.chatRoomMembers[0].memberId eq #authentication.principal.member.id}">-->
@@ -406,14 +413,14 @@
                             <div class="received_withd_msg">
                                 <p>Test which is a new approach to have all
                                     solutions</p>
-                                <span>1</span><span class="time_date"> 11:01 AM    |    June 9</span></div>
+                                <span class="time_date"> 11:01 AM    |    June 9</span></div>
                         </div>
                     </div>
                     <div class="outgoing_msg">
                         <div class="sent_msg">
                             <p>Test which is a new approach to have all
                                 solutions</p>
-                            <span>1</span><span class="time_date"> 11:01 AM    |    June 9</span> </div>
+                            <span class="time_date"> 11:01 AM    |    June 9</span> </div>
                     </div>
                 </div>
                 <div class="type_msg">
@@ -434,9 +441,9 @@
     const $message = document.querySelector("#message");
     document.querySelector("#send").addEventListener('click', (e) => {
         const message = {
-            id :null,
+            id : null,
             chatRoomId: $chatRoomId,
-            memberId: id,
+            memberId: $memberId,
             message: $message.value,
             createdAt: Date.now(),
             status: 0
@@ -447,6 +454,7 @@
         stompClient.send(`/pub/${$chatRoomId}`, {}, JSON.stringify(message));
         // stompClient.send(`/pub/${productId}`, {}, JSON.stringify(message));
         $message.value = "";
+        // window.location.href(`/sub/${$chatRoomId}`);
     });
 </script>
 </body>

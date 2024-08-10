@@ -10,7 +10,9 @@ import com.readyauction.app.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +28,13 @@ import java.util.Map;
 public class ChatMessageController {
     private final ChatService chatService;
 
+    @GetMapping("/api/authentication/memberId")
+    public ResponseEntity<?> getMemberId(
+            @AuthenticationPrincipal AuthPrincipal principal
+    ) {
+        return ResponseEntity.ok(principal.getMember().getId());
+    }
+
     @GetMapping("chat/message/{chatRoomId}")
     public List<MessageDto> findMessages(
             @PathVariable Long chatRoomId,
@@ -38,8 +47,8 @@ public class ChatMessageController {
 //        List<MessageDto> messageDtos = chatService.findChatMessagesByChatRoomId(chatRoomDto.getId());
         log.info("{}", chatRoomId);
         // memberId가 나와 다르고 status가 0인 메시지들 읽기(1)
-//        chatService.updateMessageStatus(chatRoomId, principal.getMember().getId());
-        chatService.updateMessageStatus(chatRoomId, 1L);
+        chatService.updateMessageStatus(chatRoomId, principal.getMember().getId());
+//        chatService.updateMessageStatus(chatRoomId, 1L);
         // chatRoomId로 메시지들을 찾는다
         List<MessageDto> messageDtos = chatService.findChatMessagesByChatRoomId(chatRoomId);
         log.info(messageDtos.toString());

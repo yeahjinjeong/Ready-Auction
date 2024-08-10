@@ -37,6 +37,7 @@ public class ChatController {
 //            @PathVariable Long memberId,
             @AuthenticationPrincipal AuthPrincipal principal,
             Model model) {
+        log.debug("멤버아이디 : {}", principal.getMember().getId());
         List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(principal.getMember().getId());
 //        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(0L);
         log.debug(chatRoomList.toString());
