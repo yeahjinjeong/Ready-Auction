@@ -1,8 +1,69 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" layout:decorate="~{layout/default}"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/default}">
+      xmlns:th="http://www.thymeleaf.org">
+<link href="https://unpkg.com/swiper/swiper-bundle.min.css" rel="stylesheet">
 <head>
+    <style>
+            /* 추가 스타일을 원한다면 여기에 작성하세요 */
+        .swiper-container {
+            width: 80%;
+            max-width: 600px;
+            margin: 50px auto;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        /* 썸네일 이미지 박스 스타일 */
+        .nav-item div {
+            width: 80px; /* 썸네일 이미지와 동일한 너비 */
+            height: 10px; /* 썸네일 이미지와 동일한 높이 */
+            overflow: hidden; /* 이미지가 박스를 초과하지 않도록 설정 */
+            display: flex;
+            justify-content: center; /* 이미지 박스 내에서 이미지 중앙 정렬 */
+            align-items: center; /* 이미지 박스 내에서 이미지 수직 중앙 정렬 */
+        }
+
+        /* 썸네일 이미지 스타일 */
+        .small-image-list img {
+            width: 80px; /* 썸네일 이미지의 너비 */
+            height: auto; /* 종횡비 유지 */
+            max-height: 10px; /* 썸네일 이미지의 최대 높이 */
+        }
+
+        /* 상품 이미지 박스 스타일 */
+        .product-image-box {
+            display: flex;
+            justify-content: center; /* 박스 내에서 이미지를 중앙에 정렬 */
+            border: 1px solid #ddd; /* 선택 사항: 이미지 박스에 테두리를 추가 */
+            padding: 10px; /* 선택 사항: 이미지 주위에 여백을 추가 */
+            max-width: 100%; /* 이미지 박스가 컨테이너를 초과하지 않도록 설정 */
+        }
+
+        /* 상품 이미지 스타일 */
+        .product-image {
+            max-width: 100%; /* 이미지가 컨테이너 너비를 초과하지 않도록 설정 */
+            max-height: 300px; /* 이미지의 최대 높이를 설정 */
+            height: auto; /* 이미지의 종횡비 유지 */
+            width: auto; /* 이미지의 종횡비 유지 */
+        }
+
+        /* 작은 이미지 썸네일 스타일 */
+        .small-image-list img {
+            width: 80px; /* 썸네일의 너비 설정 */
+            height: auto; /* 종횡비 유지 */
+            max-height: 80px; /* 선택 사항: 최대 높이 제한 */
+
+            .description {
+                white-space: pre-wrap;
+            }
+        }
+
+        .description {
+            white-space: pre-wrap;
+        }
+
+    </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -78,7 +139,7 @@
     <div class="breadcrumb breadcrumb-style-one mb-0">
         <div class="container">
             <div class="col-lg-12 text-center">
-                <h1 class="breadcrumb-title">Auction Details</h1>
+                <h1 class="breadcrumb-title">경매 물품 상세 정보</h1>
                 <ul class="d-flex justify-content-center breadcrumb-items">
                     <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a href="../index.html">Home</a></li>
                     <li class="breadcrumb-item active">Auction Details</li>
@@ -105,7 +166,7 @@
                                 </h6>
                             </div>
                             <script th:inline="javascript">
-                                document.addEventListener('DOMContentLoaded', function() {
+                                document.addEventListener('DOMContentLoaded', function () {
                                     // Assuming productDetail is an array of product objects with 'endTime' and 'id' properties
 
                                     // Assuming productDetail is a single product object with 'endTime' and 'id' properties
@@ -150,7 +211,7 @@
                                             const hoursElem = document.getElementById(`hours-${productId}`);
                                             const minutesElem = document.getElementById(`minutes-${productId}`);
                                             const secondsElem = document.getElementById(`seconds-${productId}`);
-                                            console.log(daysElem+" "+hoursElem+""+ minutesElem+""+secondsElem+"ffffffff");
+                                            console.log(daysElem + " " + hoursElem + "" + minutesElem + "" + secondsElem + "ffffffff");
                                             if (daysElem && hoursElem && minutesElem && secondsElem) {
                                                 daysElem.textContent = days;
                                                 hoursElem.textContent = hours;
@@ -163,12 +224,15 @@
                                             }
 
                                             // Check if countdown is over
-                                            if (distance < 0) {
+                                            if (distance <= 0) {
                                                 clearInterval(intervalId);
-                                                daysElem.textContent = "0";
-                                                hoursElem.textContent = "0";
-                                                minutesElem.textContent = "0";
-                                                secondsElem.textContent = "0";
+                                                document.querySelector(`#days-${productId}`).textContent = "0";
+                                                document.querySelector(`#hours-${productId}`).textContent = "0";
+                                                document.querySelector(`#minutes-${productId}`).textContent = "0";
+                                                document.querySelector(`#seconds-${productId}`).textContent = "0";
+                                                // 타이머가 종료되면 "마감된 경매" 메시지를 표시합니다.
+                                                document.querySelector('.countdown h6').textContent = "마감된 경매";
+                                                document.querySelector('.countdown h6').classList.add('auction-ended');
                                             }
                                         }, 1000);
                                     }
@@ -179,59 +243,67 @@
                     </div>
 
                     <!-- 상품 이미지를 하얀 박스 위에 표시 -->
-                    <div class="product-image-box">
-                        <img th:src="${productDetail.imgUrl}" alt="상품 이미지" class="product-image">
-                    </div>
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <img alt="상품 이미지" class="product-image" th:src="${productDetail.imgUrl}">
+                                <div class="swiper-pagination"></div>
+                            </div>
+                        </div>
 
+
+                    <!-- 내비게이션 버튼 -->
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+                    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+                    <!-- Initialize Swiper -->
+                    <script>
+                        const swiper = new Swiper('.swiper-container', {
+                            loop: true,
+                            pagination: {
+                                el: '.swiper-pagination',
+                                clickable: true,
+                            },
+                            navigation: {
+                                nextEl: '.swiper-button-next',
+                                prevEl: '.swiper-button-prev',
+                            }
+                        });
+                    </script>
                     <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">
                         <li class="nav-item">
-                            <div id="details-img1">
-                                <img src="assets/images/product/details1.png" alt="">
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <div id="details-img2">
-                                <img src="assets/images/product/details2.png" alt="">
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <div id="details-img3">
-                                <img src="assets/images/product/details3.png" alt="">
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <div id="details-img4">
-                                <img src="assets/images/product/details4.png" alt="">
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <div id="details-img5">
-                                <img src="assets/images/product/details5.png" alt="">
-                            </div>
+
                         </li>
                     </ul>
                 </div>
                 <div class="col-lg-6">
                     <div class="widget-right-area">
                         <div class="single-widget">
-                            <h5 class="widget-title">Product Overview</h5>
+                            <h5 class="widget-title">상품 상세정보</h5>
                             <ul class="widget-list">
                                 <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
-                                <li><span>판매자 ID :</span><span th:text="${productDetail.memberId}">판매자</span></li>
-                                <li><span>카테고리 :</span><span id="end-time" th:text="${productDetail.category}">카테고리</span></li>
+                                <li><span>카테고리 :</span><span id="end-time"
+                                                             th:text="${productDetail.category}">카테고리</span></li>
                                 <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
-                                <li><span>즉시 구매가 :</span><span th:text="${productDetail.immediatePrice}">즉시 구매가</span></li>
-                                <li><span>상품 설명 :</span><span th:text="${productDetail.description}">상품 설명</span></li>
+                                <li><span>입찰 단위 :</span><span th:text="${productDetail.bidUnit} + '￦' "></span></li>
+                                <li><span>즉시 구매가 :</span><span th:text="${productDetail.immediatePrice}+ '￦' ">즉시 구매가</span>
+                                </li>
+                                <li><span>상품 설명 :</span>
+                                    <span class="description" th:text="${productDetail.description}">상품 설명</span></li>
                             </ul>
                         </div>
                         <div class="single-widget">
                             <form class="widget-form" id="bidForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
-                                    <input type="text" readonly class="form-control" placeholder="Current Price" th:value="${productDetail.currentPrice}" id="currentPrice" name="currentPrice">
+                                    <input class="form-control" id="currentPrice" name="currentPrice" placeholder="Current Price"
+                                           readonly th:value="${productDetail.currentPrice}"
+                                           type="text">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
-                                    <input type="hidden" th:value="${productDetail.id}" name="productId" id="productId">
-                                    <button type="submit" class="widget-btn">Place Bid</button>
+                                    <input id="productId" name="productId" th:value="${productDetail.id}" type="hidden">
+                                    <button class="widget-btn" type="submit">Place Bid</button>
                                 </div>
                             </form>
                         </div>
@@ -240,10 +312,13 @@
                             <form class="widget-form" id="buyForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
-                                    <input type="text" readonly class="form-control" placeholder="Immediate Price" th:value="${productDetail.immediatePrice}" id="immediatePrice" name="immediatePrice">
+                                    <input class="form-control" id="immediatePrice" name="immediatePrice" placeholder="Immediate Price"
+                                           readonly th:value="${productDetail.immediatePrice}"
+                                           type="text">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
-                                    <input type="hidden" th:value="${productDetail.id}" name="productId2" id="productId2">
-                                    <button type="submit" class="widget-btn2">Place Buy</button>
+                                    <input id="productId2" name="productId2" th:value="${productDetail.id}"
+                                           type="hidden">
+                                    <button class="widget-btn2" type="submit">Place Buy</button>
                                 </div>
                                 <div class="bidding-content">
                                     <h6><a href="../winner.html">Robart FOX</a></h6>
@@ -251,7 +326,7 @@
                                 </div>
                                 <div class="bidding-item gap-sm-4 gap-2">
                                     <div class="bidding-img">
-                                        <img src="assets/images/buyer/bid-histo2.png" alt="">
+                                        <img alt="" src="assets/images/buyer/bid-histo2.png">
                                     </div>
                                     <div class="bidding-content">
                                         <h6><a href="../winner.html">Leslie Alexander</a></h6>
@@ -260,7 +335,7 @@
                                 </div>
                                 <div class="bidding-item gap-sm-4 gap-2">
                                     <div class="bidding-img">
-                                        <img src="assets/images/buyer/bid-hidto3.png" alt="">
+                                        <img alt="" src="assets/images/buyer/bid-hidto3.png">
                                     </div>
                                     <div class="bidding-content">
                                         <h6><a href="../winner.html">Jane Cooper</a></h6>
