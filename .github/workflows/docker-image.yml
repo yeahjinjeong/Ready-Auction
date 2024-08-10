@@ -61,6 +61,8 @@ jobs:
             -e "PROD_DB_URL=${{ secrets.PROD_DB_URL }}" \
             -e "PROD_DB_USERNAME=${{ secrets.PROD_DB_USERNAME }}" \
             -e "PROD_DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}" \
+            -e "SPRING_S3_ACCESSKEY=${{ secrets.SPRING_S3_ACCESSKEY }}" \
+            -e "SPRING_S3_SECRETKEY=${{ secrets.SPRING_S3_SECRETKEY }}" \
             --name ${{ vars.APP_NAME }} \
             ${{ secrets.DOCKER_USERNAME }}/${{ vars.APP_NAME }}
             sudo docker image prune -f

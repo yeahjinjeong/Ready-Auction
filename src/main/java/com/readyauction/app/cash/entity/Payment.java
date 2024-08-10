@@ -2,10 +2,16 @@ package com.readyauction.app.cash.entity;
 
 import com.readyauction.app.auction.entity.Product;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.sql.Timestamp;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +29,7 @@ public class Payment {
 
     private Timestamp date;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    private Long productId;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;

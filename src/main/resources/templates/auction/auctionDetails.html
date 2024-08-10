@@ -83,7 +83,7 @@
                     bidTime: currentTime
                 };
                 $.ajax({
-                    url: /*[[${'/auction-api/bid'}]]*/,
+                    url: '[[@{/auction-api/bid}]]',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(bidDto),
@@ -93,10 +93,15 @@
                     success: function (data) {
                         console.log('Bid successful:', data);
                         alert('Bid placed successfully!');
+                        // Update the current price on the page
+                        document.getElementById('currentPrice').value = data;
                     },
                     error: function (xhr, status, error) {
                         console.error('Error placing bid:', error);
                         alert('Failed to place bid. Please try again.');
+                        // Even in case of an error, update the current price on the page
+                        const responseJson = JSON.parse(xhr.responseText);
+                        document.getElementById('currentPrice').value = responseJson;
                     }
                 });
             });
@@ -114,7 +119,7 @@
                     buyTime: currentTime
                 };
                 $.ajax({
-                    url: /*[[${'/auction-api/buy'}]]*/,
+                    url: '[[@{/auction-api/buy}]]',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(winnerReqDto),
@@ -124,6 +129,15 @@
                     success: function (data) {
                         console.log('Immediate buy successful:', data);
                         alert('Immediate buy placed successfully!');
+                        var productId = data.id;
+
+                        if (productId) {
+                            // Redirect to the payment page using the product ID
+                            window.location.href = '/app/cash/payment/' + productId;
+                        } else {
+                            alert('Product ID not found. Unable to proceed to payment.');
+                        }
+
                     },
                     error: function (xhr, status, error) {
                         console.error('Error placing immediate buy:', error);
@@ -298,9 +312,9 @@
                             <form class="widget-form" id="bidForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
-                                    <input class="form-control" id="currentPrice" name="currentPrice" placeholder="Current Price"
-                                           readonly th:value="${productDetail.currentPrice}"
-                                           type="text">
+                                    <input type="text" readonly class="form-control" placeholder="Current Price"
+                                           th:value="${productDetail.currentPrice}" id="currentPrice"
+                                           name="currentPrice">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
                                     <input id="productId" name="productId" th:value="${productDetail.id}" type="hidden">
                                     <button class="widget-btn" type="submit">Place Bid</button>
@@ -312,13 +326,13 @@
                             <form class="widget-form" id="buyForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
-                                    <input class="form-control" id="immediatePrice" name="immediatePrice" placeholder="Immediate Price"
-                                           readonly th:value="${productDetail.immediatePrice}"
-                                           type="text">
+                                    <input type="text" readonly class="form-control" placeholder="Immediate Price"
+                                           th:value="${productDetail.immediatePrice}" id="immediatePrice"
+                                           name="immediatePrice">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
-                                    <input id="productId2" name="productId2" th:value="${productDetail.id}"
-                                           type="hidden">
-                                    <button class="widget-btn2" type="submit">Place Buy</button>
+                                    <input type="hidden" th:value="${productDetail.id}" name="productId2"
+                                           id="productId2">
+                                    <button type="submit" class="widget-btn2">Place Buy</button>
                                 </div>
                                 <div class="bidding-content">
                                     <h6><a href="../winner.html">Robart FOX</a></h6>
@@ -342,6 +356,7 @@
                                         <p>Bid 23 minutes ago for 24.5$</p>
                                     </div>
                                 </div>
+                                </form>
                         </div>
                     </div>
 
@@ -358,8 +373,7 @@
                 </div>
             </div>
         </div>
-</div>
-</section>
+    </section>
 </div>
 </body>
 </html>

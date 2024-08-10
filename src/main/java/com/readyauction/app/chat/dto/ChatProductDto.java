@@ -3,15 +3,7 @@ package com.readyauction.app.chat.dto;
 import com.readyauction.app.auction.entity.Category;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.entity.PurchaseStatus;
-import com.readyauction.app.auction.entity.Winner;
-import com.readyauction.app.chat.entity.ChatMessage;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.sql.Timestamp;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
