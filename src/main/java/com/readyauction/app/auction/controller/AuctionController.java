@@ -45,7 +45,8 @@ public class AuctionController {
         }
 
         model.addAttribute("products", products);
-        model.addAttribute("currentPage", products.getNumber());
+        model.addAttribute("currentPage", "auction");  // currentPage 값을 "auction"으로 설정
+        model.addAttribute("currentPageNumber", products.getNumber());
         model.addAttribute("totalPages", products.getTotalPages());
         model.addAttribute("prodName", prodName);
 

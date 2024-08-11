@@ -189,12 +189,16 @@
         $.ajax({
             url: /*[[@{/auction-searching-api/searching}]]*/,
             type: 'GET',
-            data: {query: query},
+            data: { query: query },
             success: function (data) {
+                console.log('Received data:', data); // 로그를 통해 데이터 구조를 확인합니다.
                 let suggestionsList = '';
-                data.forEach(function (suggestion) {
+
+                // Page 객체에서 content 배열에 접근
+                data.content.forEach(function (suggestion) {
                     suggestionsList += '<div class="suggestion-item" onclick="handleSuggestionClick(\'' + encodeURIComponent(suggestion.name) + '\')">' + suggestion.name + '</div>';
                 });
+
                 document.getElementById('autocomplete-results').innerHTML = suggestionsList;
             },
             error: function (error) {
