@@ -48,18 +48,19 @@
     </div>
 </div>
 
+<!-- default.html -->
 <header>
     <div class="header-area header-style-one px-md-5">
         <div class="container">
             <div class="row">
                 <div class="col-xl-2 align-items-center d-xl-flex d-lg-block">
                     <div class="nav-logo d-flex justify-content-between align-items-center">
-                        <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" alt="logo" width="50"
-                                               height="50"></a>
+                        <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" alt="logo" width="50" height="50"></a>
                         <div class="d-flex align-items-center gap-4">
                             <span style="font-size: 16px; font-weight: bold; color: white; margin-left: 10px;">READY? AUCTION!</span>
                             <ul class="nav-actions nav-inner-actions d-flex d-xl-none">
-                                <li class="search-btn"><i class="bi bi-search"></i></li>
+                                <!-- search-btn은 auction 페이지에서만 보입니다 -->
+                                <li class="search-btn" th:if="${currentPage == 'auction'}"><i class="bi bi-search"></i></li>
                             </ul>
                             <div class="mobile-menu d-flex ">
                                 <a href="javascript:void(0)" class="hamburger d-block d-xl-none">
@@ -125,7 +126,8 @@
                 <div class="col-xl-3 d-xl-flex align-items-center justify-content-end d-none">
                     <div class="nav-right d-flex align-items-center">
                         <ul class="nav-actions">
-                            <li class="search-btn"><i class="bi bi-search"></i></li>
+                            <!-- search-btn은 auction 페이지에서만 보입니다 -->
+                            <li class="search-btn" th:if="${currentPage == 'auction'}"><i class="bi bi-search"></i></li>
                         </ul>
                         <div class="contact-no d-flex align-items-center">
                             <div class="contact-icon">
@@ -142,6 +144,7 @@
         </div>
     </div>
 </header>
+
 
 <main class="main" id="main">
     <div layout:fragment="content1"></div>

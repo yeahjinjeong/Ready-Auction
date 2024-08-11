@@ -28,16 +28,18 @@ public class AuctionController {
     }
 
     @GetMapping("/auction") // 상품 조회
-    public String searchAuction(@RequestParam(required = false) String query, Model model) {
+    public String searchAuction(@RequestParam(required = false) String prodName, Model model) {
         List<ProductDto> products;
-        if (query != null && !query.isEmpty()) {
-            products = productService.searchProductsByName(query);
+        if (prodName != null && !prodName.isEmpty()) {
+            products = productService.searchProductsByName(prodName);
         } else {
             products = productService.getAllProducts();
         }
         model.addAttribute("products", products);
+        model.addAttribute("currentPage", "auction"); // 현재 페이지 설정
         return "auction/auction";
-    }
+    }sr
+
 
     @GetMapping("/auctionDetails")// 경매 입찰 하는 상품 상세 페이지
     public void auctionDetails() {
