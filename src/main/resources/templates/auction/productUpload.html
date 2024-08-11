@@ -204,50 +204,133 @@
                 });
             });
 
-            $('#contact_form').on('submit', function (e) {
-                e.preventDefault();
+            function resizeImage(file, maxWidth, maxHeight, callback) {
+                const reader = new FileReader();
 
-                var formData = new FormData(this);
-                formData.delete('image'); // Removes the image entry from the formData
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        let canvas = document.createElement('canvas');
+                        let ctx = canvas.getContext('2d');
 
-                // Add the image URL to the form data if it exists
-                if (imgUrl !== null) {
-                    console.log(imgUrl + " 상품 url");
-                    formData.append('imgUrl', imgUrl);
-                }
+                        let width = img.width;
+                        let height = img.height;
 
-                var productData = {
-                    name: $('#first-Name').val(),
-                    imgUrl: imgUrl, // Already uploaded image URL
-                    category: $('#categoryInput').val(),
-                    bidUnit: $('#bidUnit').val(),
-                    immediatePrice: $('#immediatePrice').val(),
-                    endTime: $('#endTime').val(),
-                    description: $('#discription').val(),
-                    currentPrice: $('#currentPrice').val()
+                        if (width > maxWidth || height > maxHeight) {
+                            if (width > height) {
+                                height = Math.round((maxHeight / width) * height);
+                                width = maxWidth;
+                            } else {
+                                width = Math.round((maxWidth / height) * width);
+                                height = maxHeight;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        canvas.toBlob(function(blob) {
+                            callback(blob);
+                        }, file.type);
+                    };
+
+                    img.src = event.target.result;
                 };
 
-                console.log(productData);
-                // Send JSON data with AJAX request
-                $.ajax({
-                    url: '[[@{/auction-api/create}]]', // Server URL
-                    type: 'POST',
-                    contentType: 'application/json', // Send as JSON
-                    data: JSON.stringify(productData), // Serialize JSON
-                    beforeSend: function (xhr) {
-                        // Add email to the request header
-                        xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
-                    },
-                    success: function (data) {
-                        alert('상품이 성공적으로 등록되었습니다.');
-                        console.log('Success:', data);
-                    },
-                    error: function (xhr, status, error) {
-                        alert('상품 등록에 실패했습니다.');
-                        console.error('Error:', error);
+                reader.readAsDataURL(file);
+            }
+
+            $(document).ready(function () {
+                // Image upload on file select
+                $('#image').on('change', function () {
+                    var fileData = $(this).prop('files')[0];
+
+                    resizeImage(fileData, 1920, 1080, function(resizedBlob) {
+                        var formData = new FormData();
+                        formData.append('file', resizedBlob, fileData.name); // Set the resized image with the original file name
+
+                        $.ajax({
+                            url: '[[@{/auction-api/img-upload}]]', // Address as a relative path
+                            type: 'POST',
+                            data: formData,
+                            processData: false, // Prevent jQuery from converting the data into a query string
+                            contentType: false, // Prevent jQuery from overriding the content type
+                            beforeSend: function (xhr) {
+                                // Add email to the request header
+                                xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
+                                $('#progress-bar-container').show();
+                                $('#progress-bar').css('width', '0%').text('0%');
+                            },
+                            xhr: function () {
+                                var xhr = new window.XMLHttpRequest();
+                                xhr.upload.addEventListener('progress', function (e) {
+                                    if (e.lengthComputable) {
+                                        var percentComplete = (e.loaded / e.total) * 100;
+                                        $('#progress-bar').css('width', percentComplete + '%').text(Math.round(percentComplete) + '%');
+                                    }
+                                }, false);
+                                return xhr;
+                            },
+                            success: function (response) {
+                                console.log('Image uploaded successfully:', response);
+                                imgUrl = response;
+                                $('#progress-bar').css('width', '100%').text('Upload Complete');
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Failed to upload image:', error);
+                                $('#progress-bar').css('width', '0%').text('Upload Failed');
+                            }
+                        });
+                    });
+                });
+
+                $('#contact_form').on('submit', function (e) {
+                    e.preventDefault();
+
+                    var formData = new FormData(this);
+                    formData.delete('image'); // Removes the image entry from the formData
+
+                    // Add the image URL to the form data if it exists
+                    if (imgUrl !== null) {
+                        console.log(imgUrl + " 상품 url");
+                        formData.append('imgUrl', imgUrl);
                     }
+
+                    var productData = {
+                        name: $('#first-Name').val(),
+                        imgUrl: imgUrl, // Already uploaded image URL
+                        category: $('#categoryInput').val(),
+                        bidUnit: $('#bidUnit').val(),
+                        immediatePrice: $('#immediatePrice').val(),
+                        endTime: $('#endTime').val(),
+                        description: $('#discription').val(),
+                        currentPrice: $('#currentPrice').val()
+                    };
+
+                    console.log(productData);
+                    // Send JSON data with AJAX request
+                    $.ajax({
+                        url: '[[@{/auction-api/create}]]', // Server URL
+                        type: 'POST',
+                        contentType: 'application/json', // Send as JSON
+                        data: JSON.stringify(productData), // Serialize JSON
+                        beforeSend: function (xhr) {
+                            // Add email to the request header
+                            xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
+                        },
+                        success: function (data) {
+                            alert('상품이 성공적으로 등록되었습니다.');
+                            console.log('Success:', data);
+                        },
+                        error: function (xhr, status, error) {
+                            alert('상품 등록에 실패했습니다.');
+                            console.error('Error:', error);
+                        }
+                    });
                 });
             });
+
         });
     </script>
 </div>
