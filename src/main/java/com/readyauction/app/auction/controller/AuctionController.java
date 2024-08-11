@@ -38,8 +38,7 @@ public class AuctionController {
         model.addAttribute("products", products);
         model.addAttribute("currentPage", "auction"); // 현재 페이지 설정
         return "auction/auction";
-    }sr
-
+    }
 
     @GetMapping("/auctionDetails")// 경매 입찰 하는 상품 상세 페이지
     public void auctionDetails() {
