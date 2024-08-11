@@ -1,6 +1,8 @@
 package com.readyauction.app.auction.repository;
 
 import com.readyauction.app.auction.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +15,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findById(Long id);
 
-    // 이름을 기준으로 제품을 검색하는 쿼리 메서드
-    List<Product> findByNameContainingIgnoreCase(String name);
+    // 이름을 기준으로 제품을 검색하는 페이징 쿼리 메서드
+    Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
 }

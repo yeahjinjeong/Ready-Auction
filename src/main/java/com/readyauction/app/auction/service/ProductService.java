@@ -15,6 +15,8 @@ import com.readyauction.app.user.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -76,10 +78,9 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getAllProducts() {
-        return productRepository.findAll().stream()
-                .map(this::convertToProductDto)
-                .collect(Collectors.toList());
+    public Page<ProductDto> getAllProducts(Pageable pageable) {
+        return productRepository.findAll(pageable)
+                .map(this::convertToProductDto);
     }
 
     @Transactional
@@ -181,9 +182,8 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> searchProductsByName(String query) {
-        return productRepository.findByNameContainingIgnoreCase(query).stream()
-                .map(this::convertToProductDto)
-                .collect(Collectors.toList());
+    public Page<ProductDto> searchProductsByName(String name, Pageable pageable) {
+        return productRepository.findByNameContainingIgnoreCase(name, pageable)
+                .map(this::convertToProductDto);
     }
 }
