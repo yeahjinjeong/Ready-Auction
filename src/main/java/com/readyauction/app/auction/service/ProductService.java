@@ -77,12 +77,6 @@ public class ProductService {
         return convertToProductRepDto(product);
     }
 
-    @Transactional(readOnly = true)
-    public Page<ProductDto> getAllProducts(Pageable pageable) {
-        return productRepository.findAll(pageable)
-                .map(this::convertToProductDto);
-    }
-
     @Transactional
     public Boolean updateBidPrice(Product product, Integer bidPrice) {
         try {
@@ -183,7 +177,13 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public Page<ProductDto> searchProductsByName(String name, Pageable pageable) {
-        return productRepository.findByNameContainingIgnoreCase(name, pageable)
+        return productRepository.searchByNameAndStatus(name, AuctionStatus.END, pageable)
+                .map(this::convertToProductDto);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductDto> getAllProducts(Pageable pageable) {
+        return productRepository.findActiveProducts(AuctionStatus.END, pageable)
                 .map(this::convertToProductDto);
     }
 }
