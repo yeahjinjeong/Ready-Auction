@@ -1,6 +1,7 @@
 package com.readyauction.app.chat.entity;
 
 import com.readyauction.app.chat.dto.ChatRoomDto;
+import com.readyauction.app.chat.dto.ChatUnreadCountDto;
 import com.readyauction.app.chat.dto.MessageDto;
 import com.readyauction.app.chat.repository.ChatMessageRepository;
 import com.readyauction.app.chat.repository.ChatRoomRepository;
@@ -78,6 +79,9 @@ public class ChatTest {
     @DisplayName("[채팅-조회] 내가 안 읽은 채팅 개수 조회")
     void findUnreadCountsByNotMemberId() {
         // given
+        Optional<List<ChatUnreadCountDto>> unreadCounts = chatMessageRepository.findUnreadCountsByNotMemberId(2L);
+        List<ChatUnreadCountDto> countList = unreadCounts.get();
+        System.out.println(countList);
         // when
         // then
     }

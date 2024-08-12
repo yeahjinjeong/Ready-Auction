@@ -1,5 +1,6 @@
 package com.readyauction.app.chat.repository;
 
+import com.readyauction.app.chat.dto.ChatUnreadCountDto;
 import com.readyauction.app.chat.entity.ChatMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,7 +31,11 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
 
     // 내가 들어있는 채팅방 목록 중
     @Query("""
-        select count(cm)
+        select
+            new com.readyauction.app.chat.dto.ChatUnreadCountDto(
+            cm.chatRoomId,
+            count(cm)
+            )
         from
             ChatMessage cm
         where
@@ -44,9 +49,8 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
             from
                 ChatRoom c join c.chatRoomMembers m
             where
-                m.memberId = :memberId
-            order by
-                c.createdAt desc)
+                m.memberId = :memberId)
+        group by cm.chatRoomId
     """)
-    Optional<List<Integer>> findUnreadCountsByNotMemberId(Long id);
+    Optional<List<ChatUnreadCountDto>> findUnreadCountsByNotMemberId(Long memberId);
 }

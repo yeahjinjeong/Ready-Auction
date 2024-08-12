@@ -3,10 +3,7 @@ package com.readyauction.app.chat.service;
 
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.repository.ProductRepository;
-import com.readyauction.app.chat.dto.ChatProductDto;
-import com.readyauction.app.chat.dto.ChatProfileDto;
-import com.readyauction.app.chat.dto.ChatRoomDto;
-import com.readyauction.app.chat.dto.MessageDto;
+import com.readyauction.app.chat.dto.*;
 import com.readyauction.app.chat.entity.ChatMessage;
 import com.readyauction.app.chat.entity.ChatRoom;
 import com.readyauction.app.chat.repository.ChatMessageRepository;
@@ -89,8 +86,8 @@ public class ChatService {
         });
     }
 
-    public List<Integer> findCountStatusByNotMemberId(Long id) {
-        Optional<List<Integer>> unreadCounts = chatMessageRepository.findUnreadCountsByNotMemberId(id);
+    public List<ChatUnreadCountDto> findCountStatusByNotMemberId(Long id) {
+        Optional<List<ChatUnreadCountDto>> unreadCounts = chatMessageRepository.findUnreadCountsByNotMemberId(id);
         return unreadCounts.get();
     }
 }
