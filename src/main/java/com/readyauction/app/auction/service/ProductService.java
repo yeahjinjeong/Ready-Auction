@@ -116,7 +116,9 @@ public class ProductService {
     public ProductDto startWinnerProcess(String email, WinnerReqDto winnerReqDto) {
         Long userId = getUserIdFromRequest(email);
         Product product = findProductById(winnerReqDto.getProductId());
-
+        if(userId.equals(product.getMemberId())) {
+            throw new IllegalStateException("Seller can't start bid for product with ID: " + winnerReqDto.getProductId());
+        }
         if (product.hasWinner()) {
             throw new RuntimeException("The product has already been won");
         }

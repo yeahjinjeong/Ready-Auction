@@ -75,7 +75,9 @@ public class BidService {
             // 제품 조회
             Product product = productService.findById(bidDto.getProductId())
                     .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + bidDto.getProductId()));
-
+            if(userId.equals(product.getMemberId())) {
+                throw new IllegalStateException("Seller can't start bid for product with ID: " + bidDto.getProductId());
+            }
             // 제품이 이미 낙찰되었는지 확인
             if (product.hasWinner()) {
                 throw new IllegalStateException("The product has already been won");
