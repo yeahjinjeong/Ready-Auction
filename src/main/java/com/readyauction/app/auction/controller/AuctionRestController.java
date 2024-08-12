@@ -1,9 +1,6 @@
 package com.readyauction.app.auction.controller;
 
-import com.readyauction.app.auction.dto.BidDto;
-import com.readyauction.app.auction.dto.ProductRepDto;
-import com.readyauction.app.auction.dto.ProductReqDto;
-import com.readyauction.app.auction.dto.WinnerReqDto;
+import com.readyauction.app.auction.dto.*;
 import com.readyauction.app.auction.service.BidService;
 import com.readyauction.app.auction.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,18 +51,18 @@ public class AuctionRestController {
     }
 
     @PostMapping("/bid")
-    public ResponseEntity<Integer> bid(@RequestBody BidDto bidDto) {
+    public ResponseEntity<BidResDto> bid(@RequestBody BidDto bidDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        Integer currentPrice = productService.findCurrentPriceById(bidDto.getProductId());
+        BidResDto bidResDto = new BidResDto();
         try {
             System.out.println("입찰중 "+ email);
-            currentPrice = bidService.startBid(email, bidDto);
+            bidResDto = bidService.startBid(email, bidDto);
             System.out.println(bidDto);
-            return ResponseEntity.ok(currentPrice); // 성공적으로 처리되면, 200 OK와 함께 bidDto를 반환
+            return ResponseEntity.ok(bidResDto); // 성공적으로 처리되면, 200 OK와 함께 bidDto를 반환
         } catch (RuntimeException e) {
             // startBid에서 던져진 RuntimeException을 처리
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(currentPrice);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(bidResDto);
         }
     }
 

@@ -12,9 +12,11 @@ import com.readyauction.app.auction.repository.ProductRepository;
 import com.readyauction.app.file.model.dto.FileDto;
 import com.readyauction.app.file.model.service.NcpObjectStorageService;
 import com.readyauction.app.user.service.MemberService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -76,14 +78,13 @@ public class ProductService {
     }
 
     @Transactional
-    public Boolean updateBidPrice(Product product, Integer bidPrice) {
+    public Integer updateBidPrice(Product product, Integer bidPrice) {
         try {
             product.setCurrentPrice(bidPrice + product.getBidUnit());
             productRepository.save(product);
-            return true;
+            return bidPrice + product.getBidUnit();
         } catch (Exception e) {
-            log.error("Failed to update bid price for productId {}: {}", product.getId(), e.getMessage());
-            return false;
+            throw new RuntimeException("Update bid price failed", e);
         }
     }
     @Transactional
@@ -110,7 +111,9 @@ public class ProductService {
     public ProductDto startWinnerProcess(String email, WinnerReqDto winnerReqDto) {
         Long userId = getUserIdFromRequest(email);
         Product product = findProductById(winnerReqDto.getProductId());
-
+        if(userId.equals(product.getMemberId())) {
+            throw new IllegalStateException("Seller can't start bid for product with ID: " + winnerReqDto.getProductId());
+        }
         if (product.hasWinner()) {
             throw new RuntimeException("The product has already been won");
         }
@@ -119,19 +122,68 @@ public class ProductService {
     }
 
     @Transactional
+    public Product progressWinnerProcess(Long productId) {
+        try {
+
+            Product product = findProductById(productId);
+
+            if (product == null) {
+                throw new EntityNotFoundException("Product not found with ID: " + productId);
+            }
+
+            if (product.hasWinner()) {
+                product.getWinner().setStatus(PurchaseStatus.IN_PROGRESS);
+            }
+
+            Product savedProduct = productRepository.save(product);
+            if (savedProduct == null) {
+                throw new RuntimeException("Failed to save the product");
+            }
+
+            return savedProduct;
+        } catch (EntityNotFoundException e) {
+            // 제품을 찾지 못했을 때의 예외 처리
+            throw new RuntimeException("Error during product search: " + e.getMessage(), e);
+        } catch (DataAccessException e) {
+            // 데이터베이스 관련 예외 처리
+            throw new RuntimeException("Database error during saving product: " + e.getMessage(), e);
+        } catch (Exception e) {
+            // 기타 예외 처리
+            throw new RuntimeException("Unexpected error occurred during winner process: " + e.getMessage(), e);
+        }
+    }
+
+
+    @Transactional
     public Product createWinner(Long userId, Product product, WinnerReqDto winnerReqDto) {
-        Winner winner = Winner.builder()
-                .memberId(userId)
-                .status(PurchaseStatus.CONFIRMED)
-                .price(winnerReqDto.getBuyPrice())
-                .winnerTime(winnerReqDto.getBuyTime())
-                .build();
-        product.setWinner(winner);
-        product.setAuctionStatus(AuctionStatus.END);
-        log.info("Winner created successfully for product ID: {}", product.getId());
+        try {
+            // Winner 객체를 생성하고 제품에 설정
+            Winner winner = Winner.builder()
+                    .memberId(userId)
+                    .status(PurchaseStatus.CONFIRMED)
+                    .price(winnerReqDto.getBuyPrice())
+                    .winnerTime(winnerReqDto.getBuyTime())
+                    .build();
+            product.setWinner(winner);
+            product.setAuctionStatus(AuctionStatus.END);
 
-        return productRepository.save(product);
+            log.info("Winner created successfully for product ID: {}", product.getId());
 
+            // 제품을 저장
+            Product savedProduct = productRepository.save(product);
+
+            if (savedProduct == null) {
+                throw new RuntimeException("Failed to save the product with the winner");
+            }
+
+            return savedProduct;
+        } catch (DataAccessException e) {
+            // 데이터베이스 관련 예외 처리
+            throw new RuntimeException("Database error during saving the product with the winner: " + e.getMessage(), e);
+        } catch (Exception e) {
+            // 기타 예외 처리
+            throw new RuntimeException("Unexpected error occurred during creating the winner: " + e.getMessage(), e);
+        }
     }
 
     private Long getUserIdFromRequest(String email) {

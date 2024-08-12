@@ -3,8 +3,8 @@ profile:
   value: 'prod'
 spring:
   datasource:
-    url: ${PROD_DB_URL}
-    username: ${PROD_DB_USERNAME}
-    password: ${PROD_DB_PASSWORD}
+    url: jdbc:mysql://wittdbreal.chr10oalkvb3.ap-northeast-2.rds.amazonaws.com:3306/auctiondb
+    username: admin
+    password: RKAWK78044***
     driver-class-name: com.mysql.cj.jdbc.Driver
 
