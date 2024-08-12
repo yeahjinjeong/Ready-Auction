@@ -76,7 +76,7 @@ public class MemberRegisterRequestDto {
                 .gender(this.gender)
                 .birth(this.birth)
                 .nickname(this.nickname)
-                .profilePicture("https://kr.object.ncloudstorage.com/ready-auction-bucket/sample-folder/87133e3b-797b-4894-b0bd-59f0d5b3b712.jpeg")
+                .profilePicture(this.profilePicture)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .deletedAt(this.deletedAt)

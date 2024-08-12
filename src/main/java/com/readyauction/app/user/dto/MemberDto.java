@@ -32,20 +32,20 @@ public class MemberDto {
 
 
     public static MemberDto toMemberDto(Member memberEntity) {
-        MemberDto memberDTO = new MemberDto();
-        memberDTO.setId(memberEntity.getId());
-        memberDTO.setEmail(memberEntity.getEmail());
-        memberDTO.setPassword(memberEntity.getPassword());
-        memberDTO.setName(memberEntity.getName());
-        memberDTO.setPhone(memberEntity.getPhone());
-        memberDTO.setAddress(memberEntity.getAddress());
-        memberDTO.setBirth(memberDTO.getBirth());
-        memberDTO.setNickname(memberEntity.getNickname());
-        memberDTO.setProfilePicture(memberEntity.getProfilePicture());
-        memberDTO.setMannerScore(memberEntity.getMannerScore());
-        memberDTO.setCreatedAt(memberEntity.getCreatedAt());
-//        memberDTO.setUpdatedAt(memberEntity.getUpdatedAt());
-        memberDTO.setUserStatus(memberEntity.getUserStatus());
-        return memberDTO;
+        MemberDto memberDto = new MemberDto();
+        memberDto.setId(memberEntity.getId());
+        memberDto.setEmail(memberEntity.getEmail());
+        memberDto.setPassword(memberEntity.getPassword());
+        memberDto.setName(memberEntity.getName());
+        memberDto.setPhone(memberEntity.getPhone());
+        memberDto.setAddress(memberEntity.getAddress());
+        memberDto.setBirth(memberDto.getBirth());
+        memberDto.setNickname(memberEntity.getNickname());
+        memberDto.setProfilePicture(memberEntity.getProfilePicture());
+        memberDto.setMannerScore(memberEntity.getMannerScore());
+        memberDto.setCreatedAt(memberEntity.getCreatedAt());
+//        memberDto.setUpdatedAt(memberEntity.getUpdatedAt());
+        memberDto.setUserStatus(memberEntity.getUserStatus());
+        return memberDto;
     }
 }
