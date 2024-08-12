@@ -13,6 +13,7 @@ import com.readyauction.app.chat.repository.ChatMessageRepository;
 import com.readyauction.app.chat.repository.ChatRoomRepository;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.repository.MemberRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -86,5 +87,10 @@ public class ChatService {
         chatMessageList.get().forEach((m) -> {
             m.changeStauts((short) 1);
         });
+    }
+
+    public List<Integer> findCountStatusByNotMemberId(Long id) {
+        Optional<List<Integer>> unreadCounts = chatMessageRepository.findUnreadCountsByNotMemberId(id);
+        return unreadCounts.get();
     }
 }

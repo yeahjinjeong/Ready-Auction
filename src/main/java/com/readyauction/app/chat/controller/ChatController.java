@@ -43,4 +43,14 @@ public class ChatController {
         log.debug(chatRoomList.toString());
         model.addAttribute("chatRoomList", chatRoomList);
     }
+
+    @GetMapping("/chat/list/count")
+    public void chatCountList(
+            @AuthenticationPrincipal AuthPrincipal principal,
+            Model model) {
+        log.debug("멤버아이디 : {}", principal.getMember().getId());
+        // 상대방이 보낸 메시지 중(멤버아이디가 다름) 0인 메시지 상태에 대해 카운트한다.
+        List<Integer> countList = chatService.findCountStatusByNotMemberId(principal.getMember().getId());
+        log.info("countList = {}", countList);
+    }
 }

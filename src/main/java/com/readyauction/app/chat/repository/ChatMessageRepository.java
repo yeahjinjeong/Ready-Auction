@@ -27,4 +27,26 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
         and cm.memberId != :id
     """)
     Optional<List<ChatMessage>> findUnreadMessagesByChatRoomId(Long chatRoomId, Long id);
+
+    // 내가 들어있는 채팅방 목록 중
+    @Query("""
+        select count(cm)
+        from
+            ChatMessage cm
+        where
+            cm.status = 0
+            and
+            cm.memberId != :memberId
+            and
+            cm.chatRoomId =
+            (select
+                c.id
+            from
+                ChatRoom c join c.chatRoomMembers m
+            where
+                m.memberId = :memberId
+            order by
+                c.createdAt desc)
+    """)
+    Optional<List<Integer>> findUnreadCountsByNotMemberId(Long id);
 }

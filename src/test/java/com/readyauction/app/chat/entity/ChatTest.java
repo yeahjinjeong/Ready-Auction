@@ -73,4 +73,12 @@ public class ChatTest {
         // then
         System.out.println(messageDtos);
     }
+
+    @Test
+    @DisplayName("[채팅-조회] 내가 안 읽은 채팅 개수 조회")
+    void findUnreadCountsByNotMemberId() {
+        // given
+        // when
+        // then
+    }
 }
