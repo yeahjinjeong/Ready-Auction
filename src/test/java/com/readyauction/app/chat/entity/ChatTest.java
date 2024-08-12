@@ -4,6 +4,7 @@ import com.readyauction.app.chat.dto.ChatRoomDto;
 import com.readyauction.app.chat.dto.MessageDto;
 import com.readyauction.app.chat.repository.ChatMessageRepository;
 import com.readyauction.app.chat.repository.ChatRoomRepository;
+import com.readyauction.app.user.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,7 +22,6 @@ public class ChatTest {
 
     @Autowired
     private ChatRoomRepository chatRoomRepository;
-
     @Autowired
     private ChatMessageRepository chatMessageRepository;
 
@@ -34,7 +35,7 @@ public class ChatTest {
     void insertChatRoom() {
         ChatRoom chatRoom = ChatRoom.builder()
                 .productId(1L)
-                .chatRoomMembers(List.of(new ChatRoomMember(2L, ChatRoomMemberStatus.Seller), new ChatRoomMember(3L, ChatRoomMemberStatus.Winner)))
+                .chatRoomMembers(List.of(new ChatRoomMember(0L, "yejin", ChatRoomMemberStatus.Seller), new ChatRoomMember(3L, "aejin", ChatRoomMemberStatus.Winner)))
                 .build();
         ChatRoom chatRoomResult = chatRoomRepository.save(chatRoom);
         assertThat(chatRoomResult.getChatRoomMembers()).isNotEmpty();
@@ -45,9 +46,9 @@ public class ChatTest {
     @Test
     @DisplayName("[채팅-조회] 채팅방 조회")
     void findChatRoomsByMemberId() {
-        List<ChatRoom> chatRoomList = chatRoomRepository.findChatRoomsByMemberId(3L);
+        Optional<List<ChatRoom>> chatRoomList = chatRoomRepository.findChatRoomsByMemberId(0L);
         System.out.println(chatRoomList);
-        chatRoomList.stream().map(ChatRoomDto::toChatRoomDto).toList();
+        chatRoomList.get().stream().map(ChatRoomDto::toChatRoomDto).toList();
         System.out.println(chatRoomList);
     }
 
@@ -55,9 +56,9 @@ public class ChatTest {
     @DisplayName("[채팅-조회] 채팅방 id 조회")
     void findChatRoomByProductId() {
         // given
-        ChatRoom chatRoom = chatRoomRepository.findChatRoomByProductId(1L);
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findChatRoomByProductId(1L);
         // when
-        ChatRoomDto chatRoomDto = ChatRoomDto.toChatRoomDto(chatRoom);
+        ChatRoomDto chatRoomDto = ChatRoomDto.toChatRoomDto(chatRoom.get());
         System.out.println(chatRoomDto);
         // then
     }
@@ -66,9 +67,9 @@ public class ChatTest {
     @DisplayName("[채팅-조회] 채팅 메시지 조회")
     void findChatMessagesByChatRoomId() {
         // given
-        List<ChatMessage> chatMessageList = chatMessageRepository.findChatMessagesByChatRoomId(1L);
+        Optional<List<ChatMessage>> chatMessageList = chatMessageRepository.findChatMessagesByChatRoomId(1L);
         // when
-        List<MessageDto> messageDtos = chatMessageList.stream().map(MessageDto::toChatMessageDto).toList();
+        List<MessageDto> messageDtos = chatMessageList.get().stream().map(MessageDto::toChatMessageDto).toList();
         // then
         System.out.println(messageDtos);
     }

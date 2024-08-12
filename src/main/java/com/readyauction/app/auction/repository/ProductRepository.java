@@ -17,6 +17,7 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     // 여기에 추가적인 쿼리 메서드를 정의할 수 있습니다.
 
+    Optional<Product> findByIdAndAuctionStatusNot(Long id, AuctionStatus auctionStatus);
     Optional<Product> findById(Long id);
 
     // 이름으로 검색하면서 auctionStatus가 END가 아닌 상품만 가져오기

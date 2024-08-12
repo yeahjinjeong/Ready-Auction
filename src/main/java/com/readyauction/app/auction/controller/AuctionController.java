@@ -3,13 +3,20 @@ package com.readyauction.app.auction.controller;
 import com.readyauction.app.auction.dto.ProductDto;
 import com.readyauction.app.auction.dto.ProductRepDto;
 import com.readyauction.app.auction.dto.ProductReqDto;
+import com.readyauction.app.auction.dto.WinnerReqDto;
 import com.readyauction.app.auction.service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +37,7 @@ public class AuctionController {
     public void createAuction(Model model) {
         // 상품 등록 로직
     }
+
 
     @GetMapping("/auction") // 상품 조회
     public String searchAuction(@RequestParam(required = false) String prodName,
@@ -61,6 +69,7 @@ public class AuctionController {
 
     @GetMapping("/auctionDetails")// 경매 입찰 하는 상품 상세 페이지
     public void auctionDetails() {
+
     }
 
     @GetMapping("/report") // 신고 페이지
@@ -85,4 +94,5 @@ public class AuctionController {
             return "error/404"; // 예외 발생 시 에러 페이지로 리다이렉션
         }
     }
+
 }

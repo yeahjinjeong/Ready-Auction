@@ -2,13 +2,15 @@ package com.readyauction.app.chat.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-//@Embeddable
 @Entity(name = "ChatMessage")
 @Table(name = "tbl_chat_message")
+//@Embeddable
 @Data
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor
@@ -18,15 +20,19 @@ public class ChatMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @JoinColumn(name = "chat_room_id", nullable = false) // 수정하기 .. 연관관계 쓰지 않고 엔티티 외래키 참조하기
+    @Column(name = "chat_room_id", nullable = false) // 수정하기 .. 연관관계 쓰지 않고 엔티티 외래키 참조하기
     private Long chatRoomId;
     @Column(name = "member_id")
     private Long memberId;
     @Column(name = "message")
     private String message;
-    @UpdateTimestamp
-    @Column(name = "created_at") // null값 들어가도 되겠는데
+    @CreationTimestamp
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column
-    private Short status;
+    private Short status; // 0 unread 1 read
+
+    public void changeStauts(Short i) {
+        this.status = i;
+    }
 }
