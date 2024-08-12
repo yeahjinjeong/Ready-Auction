@@ -90,18 +90,27 @@
                     beforeSend: function (xhr) {
                         xhr.setRequestHeader("email", "ssg2@gmail.com");
                     },
-                    success: function (data) {
-                        console.log('Bid successful:', data);
+                    success: function (bidRes) {
+                        console.log('Bid successful:', bidRes);
                         alert('Bid placed successfully!');
                         // Update the current price on the page
-                        document.getElementById('currentPrice').value = data;
+
+                        document.getElementById('currentPrice').value = bidRes.bidCurrentPrice;
+                        if(bidRes.bidStatus === "SUCCESS") {
+                            if (productId) {
+                                // Redirect to the payment page using the product ID
+                                window.location.href = '/app/cash/payment/' + productId;
+                            } else {
+                                alert('Product ID not found. Unable to proceed to payment.');
+                            }
+                        }
                     },
                     error: function (xhr, status, error) {
                         console.error('Error placing bid:', error);
                         alert('Failed to place bid. Please try again.');
                         // Even in case of an error, update the current price on the page
                         const responseJson = JSON.parse(xhr.responseText);
-                        document.getElementById('currentPrice').value = responseJson;
+                        document.getElementById('currentPrice').value = responseJson.bidCurrentPrice;
                     }
                 });
             });
