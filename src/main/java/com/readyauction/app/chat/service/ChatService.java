@@ -3,16 +3,14 @@ package com.readyauction.app.chat.service;
 
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.repository.ProductRepository;
-import com.readyauction.app.chat.dto.ChatProductDto;
-import com.readyauction.app.chat.dto.ChatProfileDto;
-import com.readyauction.app.chat.dto.ChatRoomDto;
-import com.readyauction.app.chat.dto.MessageDto;
+import com.readyauction.app.chat.dto.*;
 import com.readyauction.app.chat.entity.ChatMessage;
 import com.readyauction.app.chat.entity.ChatRoom;
 import com.readyauction.app.chat.repository.ChatMessageRepository;
 import com.readyauction.app.chat.repository.ChatRoomRepository;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.repository.MemberRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -86,5 +84,10 @@ public class ChatService {
         chatMessageList.get().forEach((m) -> {
             m.changeStauts((short) 1);
         });
+    }
+
+    public List<ChatUnreadCountDto> findCountStatusByNotMemberId(Long id) {
+        Optional<List<ChatUnreadCountDto>> unreadCounts = chatMessageRepository.findUnreadCountsByNotMemberId(id);
+        return unreadCounts.get();
     }
 }
