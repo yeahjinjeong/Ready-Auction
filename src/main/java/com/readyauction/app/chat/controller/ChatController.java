@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -27,8 +28,13 @@ public class ChatController {
                                MessageDto messageDto) {
         log.info("message = {}", messageDto);
         log.info("chatRoomId = {}", chatRoomId);
-        chatService.save(messageDto);
+        chatService.saveMessages(messageDto);
         return messageDto;
+    }
+
+    @GetMapping("/chat/create/{productId}")
+    public void createChatRoom(@PathVariable Long productId) {
+        chatService.saveChatRooms(productId);
     }
 
     @GetMapping("chat/list")
