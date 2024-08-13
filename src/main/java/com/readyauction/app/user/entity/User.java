@@ -73,35 +73,9 @@ public abstract class User {
     @Enumerated(EnumType.STRING)
     private Set<Authority> authorities;
 
-//    // 부모 클래스의 빌더
-//    @Builder
-//    public static class UserBuilder {
-//        private Long id;
-//        private String email;
-//        private String password;
-//        private String name;
-//        private String phone;
-//        private String address;
-//        private Integer mannerScore;
-//        private Gender gender;
-//        private LocalDate birth;
-//        private String nickname;
-//        private String profilePicture;
-//        private Timestamp createdAt;
-//        private Timestamp updatedAt;
-//        private Timestamp deletedAt;
-//        private UserStatus userStatus;
-//
-//        public UserBuilder id(Long id) {
-//            this.id = id;
-//            return this;
-//        }
-//
-//        public UserBuilder email(String email) {
-//            this.email = email;
-//            return this;
-//        }
-//
-//    }
-    // Getters and Setters
+    public User(String address, String nickname, String profilePicture) {
+        this.address = address;
+        this.nickname = nickname;
+        this.profilePicture = profilePicture;
+    }
 }
