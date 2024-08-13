@@ -57,9 +57,6 @@ public class AuctionController {
         model.addAttribute("totalPages", products.getTotalPages());
         model.addAttribute("prodName", prodName);
 
-        if (page < 0 || page >= products.getTotalPages()) {
-            return "auction/auction"; // 유효하지 않은 페이지 번호인 경우 첫 페이지로 리다이렉션
-        }
 
         return "auction/auction";
 
