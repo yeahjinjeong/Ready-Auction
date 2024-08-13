@@ -2,9 +2,9 @@ package com.readyauction.app.user.service;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.readyauction.app.cash.dto.AccountDto;
+import com.readyauction.app.cash.entity.Account;
+import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.file.model.dto.FileDto;
 import com.readyauction.app.file.model.service.NcpObjectStorageService;
@@ -22,11 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -35,21 +33,27 @@ public class MemberService {
 
     @Autowired
     private MemberRepository memberRepository;
-    private final AmazonS3Client amazonS3Client;
 
-    @Value("${spring.s3.bucket}")
-    private String bucketName;
+    @Autowired
+    private AmazonS3Client amazonS3Client;
+
+    @Autowired
+    private AccountService accountService;
+
     @Autowired
     private NcpObjectStorageService ncpObjectStorageService;
 
+    @Value("${spring.s3.bucket}")
+    private String bucketName;
 
-    public void register(MemberRegisterRequestDto dto) {
+
+    public Member register(MemberRegisterRequestDto dto) {
         // 1. dto -> entity 변환
         Member member = dto.toMember();
         // 기본권한 설정
         member.setDefaultAuthorities();
         // repository의 save메서드 호출 (조건. entity객체를 넘겨줘야 함)
-        memberRepository.save(member);
+        return memberRepository.save(member); // 저장 후 Member 반환
     }
 
     public void update(MemberUpdateRequestDto dto) {
@@ -79,7 +83,7 @@ public class MemberService {
     }
 
 
-    /* 지영 작업 시작 - 프로필 */
+    /** 프로필 **/
 
     // findMember
     public MemberDto findMemberDtoByEmail(String email) {
@@ -92,7 +96,7 @@ public class MemberService {
         return MemberDto.toMemberDto(member);
     }
 
-    // ProfileDto
+    // Member 엔티티 -> ProfileDto
     public ProfileDto toProfileDto(String email) {
         Member member = memberRepository.findMemberByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
@@ -150,9 +154,6 @@ public class MemberService {
 
         save(member);
     }
-
-
-    /* 지영 작업 끝 */
 
 
     // Member 데이터 수정
