@@ -21,10 +21,10 @@ public class DummyData {
     @Autowired
     ChatMessageRepository chatMessageRepository;
 
-//    @EventListener(ApplicationReadyEvent.class)
-//    @Transactional
-//    public void init() {
-//        // 더미 데이터 저장 로직
+    @EventListener(ApplicationReadyEvent.class)
+    @Transactional
+    public void init() {
+        // 더미 데이터 저장 로직
 //        ChatRoom chatRoom = ChatRoom.builder()
 //                .id(2L)
 //                .chatRoomMembers(List.of
@@ -34,5 +34,5 @@ public class DummyData {
 //                .productId(2L)
 //                .build();
 //        chatRoomRepository.save(chatRoom);
-//    }
+    }
 }

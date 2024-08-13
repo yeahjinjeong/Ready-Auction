@@ -17,11 +17,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -75,13 +79,6 @@ public class ProductService {
         return convertToProductRepDto(product);
     }
 
-    @Transactional(readOnly = true)
-    public List<ProductDto> getAllProducts() {
-        return productRepository.findAll().stream()
-                .map(this::convertToProductDto)
-                .collect(Collectors.toList());
-    }
-
     @Transactional
     public Integer updateBidPrice(Product product, Integer bidPrice) {
         try {
@@ -92,6 +89,7 @@ public class ProductService {
             throw new RuntimeException("Update bid price failed", e);
         }
     }
+
     @Transactional
     public Integer findCurrentPriceById(Long productId)
     {
@@ -111,7 +109,43 @@ public class ProductService {
         productRepository.save(product);
         return true;
     }
+    @Transactional
+    public List<Product> getProductsWithEndTimeAtCurrentMinute() {
+        try {
+            // 현재 시간의 시분으로 설정, 초와 나노초를 0으로 만듦
+            LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 
+            // 현재 시분 00초 (startTime)
+            Timestamp startTime = Timestamp.valueOf(now);
+
+            // 현재 시분 59초 (endTime)
+            Timestamp endTime = Timestamp.valueOf(now.plusMinutes(1).minusSeconds(1));
+
+            // 해당 범위에 속하는 Product 목록 조회
+            return productRepository.findByEndTimeBetween(startTime, endTime);
+        } catch (DataAccessException e) {
+            // 데이터베이스 관련 예외 처리
+            throw new RuntimeException("Database error occurred while fetching products with end time at current minute: " + e.getMessage(), e);
+        } catch (Exception e) {
+            // 기타 예외 처리
+            throw new RuntimeException("Unexpected error occurred while fetching products: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional
+    public List<Product> setProductsStatus(List<Product> products) {
+        try {
+            // Product 목록 저장
+            products.forEach(product -> product.setAuctionStatus(AuctionStatus.END));
+            return productRepository.saveAll(products);
+        } catch (DataAccessException e) {
+            // 데이터베이스 관련 예외 처리
+            throw new RuntimeException("Database error occurred while saving products status: " + e.getMessage(), e);
+        } catch (Exception e) {
+            // 기타 예외 처리
+            throw new RuntimeException("Unexpected error occurred while saving products status: " + e.getMessage(), e);
+        }
+    }
     @Transactional
     public ProductDto startWinnerProcess(String email, WinnerReqDto winnerReqDto) {
         Long userId = getUserIdFromRequest(email);
@@ -157,6 +191,39 @@ public class ProductService {
             throw new RuntimeException("Unexpected error occurred during winner process: " + e.getMessage(), e);
         }
     }
+
+    @Transactional
+    public Product progressWinnerPending(Long productId) {
+        try {
+
+            Product product = findProductById(productId);
+
+            if (product == null) {
+                throw new EntityNotFoundException("Product not found with ID: " + productId);
+            }
+
+            if (product.hasWinner()) {
+                product.getWinner().setStatus(PurchaseStatus.PENDING);
+            }
+
+            Product savedProduct = productRepository.save(product);
+            if (savedProduct == null) {
+                throw new RuntimeException("Failed to save the product");
+            }
+
+            return savedProduct;
+        } catch (EntityNotFoundException e) {
+            // 제품을 찾지 못했을 때의 예외 처리
+            throw new RuntimeException("Error during product search: " + e.getMessage(), e);
+        } catch (DataAccessException e) {
+            // 데이터베이스 관련 예외 처리
+            throw new RuntimeException("Database error during saving product: " + e.getMessage(), e);
+        } catch (Exception e) {
+            // 기타 예외 처리
+            throw new RuntimeException("Unexpected error occurred during winner process: " + e.getMessage(), e);
+        }
+    }
+
 
 
     @Transactional
@@ -240,9 +307,14 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> searchProductsByName(String query) {
-        return productRepository.findByNameContainingIgnoreCase(query).stream()
-                .map(this::convertToProductDto)
-                .collect(Collectors.toList());
+    public Page<ProductDto> searchProductsByName(String name, Pageable pageable) {
+        return productRepository.searchByNameAndStatus(name, AuctionStatus.END, pageable)
+                .map(this::convertToProductDto);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductDto> getAllProducts(Pageable pageable) {
+        return productRepository.findActiveProducts(AuctionStatus.END, pageable)
+                .map(this::convertToProductDto);
     }
 }

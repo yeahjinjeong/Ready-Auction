@@ -37,4 +37,17 @@ public class CashRestController {
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(createPayment);
     }
+
+
+    @PostMapping("/success")
+    public ResponseEntity<PaymentResDto> createSuccess(@RequestBody PaymentReqDto paymentReqDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        PaymentResDto createPayment = paymentService.createPayment(email, paymentReqDto);
+        if (createPayment == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(createPayment);
+    }
 }

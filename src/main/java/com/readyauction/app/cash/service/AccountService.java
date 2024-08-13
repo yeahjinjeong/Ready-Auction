@@ -58,4 +58,27 @@ public class AccountService {
         }
     }
 
+    public Account deposit(Long userId, Integer depositPrice) {
+        try {
+            Account account = accountRepository.findByMemberId(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("Account not found for user ID: " + userId));
+
+            // 출금 시도
+            if (!account.deposit(depositPrice)) {
+                throw new RuntimeException("Insufficient funds for error");
+            }
+            // 변경된 계좌 정보를 저장
+            return accountRepository.save(account);
+        } catch (EntityNotFoundException e) {
+            // 계좌를 찾지 못했을 때의 예외 처리
+            throw new RuntimeException("Error during withdrawal: " + e.getMessage(), e);
+        } catch (DataAccessException e) {
+            // 데이터베이스 관련 예외 처리
+            throw new RuntimeException("Database error during withdrawal: " + e.getMessage(), e);
+        } catch (Exception e) {
+            // 기타 예외 처리
+            throw new RuntimeException("Unexpected error occurred during withdrawal: " + e.getMessage(), e);
+        }
+    }
+
 }

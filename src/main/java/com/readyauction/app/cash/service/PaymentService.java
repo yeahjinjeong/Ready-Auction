@@ -9,6 +9,7 @@ import com.readyauction.app.cash.dto.PaymentReqDto;
 import com.readyauction.app.cash.dto.PaymentResDto;
 import com.readyauction.app.cash.entity.Account;
 import com.readyauction.app.cash.entity.Payment;
+import com.readyauction.app.cash.entity.PaymentStatus;
 import com.readyauction.app.cash.repository.AccountRepository;
 import com.readyauction.app.cash.repository.PaymentRepository;
 import com.readyauction.app.user.repository.MemberRepository;
@@ -74,6 +75,7 @@ public class PaymentService {
                     .senderAccount(senderAccount)
                     .receiverAccount(receiverAccount)
                     .memberId(senderId)
+                    .status(PaymentStatus.PROCESSING)
                     .build();
 
             // Payment 저장
@@ -96,6 +98,53 @@ public class PaymentService {
             throw new RuntimeException("Unexpected error occurred during payment creation: " + e.getMessage(), e);
         }
     }
+
+//
+//    public PaymentResDto updatePayment(String email, PaymentReqDto paymentReqDto) {
+//        try {
+//            // 보낸이 조회
+//            Long senderId = memberService.findByEmail(email).getId();
+//            if (senderId == null) {
+//                throw new EntityNotFoundException("Sender not found for email: " + email);
+//            }
+//
+//            // 보낸이 계좌에서 출금
+//            accountService.deposit(senderId, paymentReqDto.getAmount());
+//
+//            // 낙찰로그에서 거래중으로 상태값 바꾸기
+//            Product product = productService.progressWinnerPending(paymentReqDto.getProductId());
+//            if (product == null) {
+//                throw new EntityNotFoundException("Product not found for ID: " + paymentReqDto.getProductId());
+//            }
+//
+//            //페이먼트 서치
+//
+//            // 위너 저장
+//
+//
+//            // Payment 저장
+//            Payment savedPayment = paymentRepository.save(payment);
+//            if (savedPayment == null) {
+//                throw new RuntimeException("Failed to save the payment");
+//            }
+//
+//            return convertToPaymentResDto(savedPayment);
+//
+//        } catch (EntityNotFoundException e) {
+//            // 특정 엔티티를 찾지 못했을 때의 예외 처리
+//            throw new RuntimeException("Error during payment creation: " + e.getMessage(), e);
+//        }  catch (DataAccessException e) {
+//            // 데이터베이스 관련 예외 처리
+//            throw new RuntimeException("Database error during saving payment: " + e.getMessage(), e);
+//        } catch (Exception e) {
+//            // 기타 예외 처리
+//            // 출금할 때 잔액 부족 예외 처리
+//            throw new RuntimeException("Unexpected error occurred during payment creation: " + e.getMessage(), e);
+//        }
+//    }
+//
+
+
     private PaymentResDto convertToPaymentResDto(Payment payment) {
         return PaymentResDto.builder()
                 .amount(payment.getPayAmount())

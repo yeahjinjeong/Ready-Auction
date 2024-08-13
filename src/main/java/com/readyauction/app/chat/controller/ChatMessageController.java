@@ -2,10 +2,7 @@ package com.readyauction.app.chat.controller;
 
 import com.readyauction.app.auction.dto.ProductDto;
 import com.readyauction.app.auth.principal.AuthPrincipal;
-import com.readyauction.app.chat.dto.ChatProductDto;
-import com.readyauction.app.chat.dto.ChatProfileDto;
-import com.readyauction.app.chat.dto.ChatRoomDto;
-import com.readyauction.app.chat.dto.MessageDto;
+import com.readyauction.app.chat.dto.*;
 import com.readyauction.app.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -75,5 +72,14 @@ public class ChatMessageController {
                 "profile", chatProfileDto,
                 "product", chatProductDto
         ));
+    }
+
+    @GetMapping("/chat/list/count")
+    public ResponseEntity<?> chatCountList(
+            @AuthenticationPrincipal AuthPrincipal principal) {
+        // 상대방이 보낸 메시지 중(멤버아이디가 다름) 0인 메시지 상태에 대해 카운트한다.
+        List<ChatUnreadCountDto> countList = chatService.findCountStatusByNotMemberId(principal.getMember().getId());
+        log.info("countList = {}", countList);
+        return ResponseEntity.ok(countList);
     }
 }

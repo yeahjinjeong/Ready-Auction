@@ -17,6 +17,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             ChatRoom c join c.chatRoomMembers m
         where
             m.memberId = :memberId
+        order by
+            c.createdAt desc
         """)
     Optional<List<ChatRoom>> findChatRoomsByMemberId(@Param("memberId") Long memberId);
     Optional<ChatRoom> findChatRoomByProductId(Long productId);
