@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<body>
+<div layout:fragment="content1">
+    <div class="breadcrumb breadcrumb-style-one mb-0 ">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">Charge Cash</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item active">Charge Cash</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <form action="/cash-charge" method="post">
+        <input type="hidden" name="memberId" value="${memberId}" />
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" name="chargeAmount" step="0.01" required />
+        <button type="submit">Charge</button>
+    </form>
+</div>
+</body>
+</html>

@@ -1,5 +1,6 @@
 package com.readyauction.app.mypage.controller;
 
+import com.readyauction.app.cash.dto.AccountDto;
 import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.user.dto.MemberDto;
@@ -38,15 +39,24 @@ public class MypageController {
         System.out.println("currentUserName : " + currentUserName);
 
         try {
+            // MemberDto 가져오기
             MemberDto memberDto = memberService.findMemberDtoByEmail(currentUserName);
-            ProfileDto profileDto = memberService.toProfileDto(currentUserName);
             log.debug("memberDto: {}", memberDto);
-            log.debug("profileDto: {}", profileDto);
             model.addAttribute("memberDto", memberDto);
+
+            // ProfileDto 가져오기
+            ProfileDto profileDto = memberService.toProfileDto(currentUserName);
+            log.debug("profileDto: {}", profileDto);
             model.addAttribute("profileDto", profileDto);
+
+            // AccountDto 가져오기
+            AccountDto accountDto = accountService.findAccountDtoByMemberId(memberDto.getId());
+            log.debug("accountDto: {}", accountDto);
+            model.addAttribute("accountDto", accountDto);
+
         } catch (UserNotFoundException e) {
             log.error("Member not found: {}", e.getMessage());
-//            return "error/404";
+            return "error/404";
         }
 
         return "mypage/mypage";
@@ -67,6 +77,7 @@ public class MypageController {
         return "mypage/profile-update";
     }
 
+    // 프로필 수정
     @PostMapping("/profile-update")
     public String updateProfile(@RequestParam("nickname") String nickname,
                                 @RequestParam("image") MultipartFile image,

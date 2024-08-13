@@ -1,7 +1,10 @@
 package com.readyauction.app.cash.service;
 
+import com.readyauction.app.cash.dto.AccountDto;
 import com.readyauction.app.cash.entity.Account;
 import com.readyauction.app.cash.repository.AccountRepository;
+import com.readyauction.app.common.handler.AccountNotFoundException;
+import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.user.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AccountService {
 
-
     private final AccountRepository accountRepository;
+
     public Account findByMemberId(Long memberId) {
         return accountRepository.findByMemberId(memberId).orElseThrow();
     }
@@ -24,7 +27,8 @@ public class AccountService {
     public Account create(Long userId) {
         try {
             Account account = Account.builder()
-                    .cash(500000)
+//                    .cash(500000)
+                    .cash(0)
                     .memberId(userId)
                     .build();
             return accountRepository.save(account);
@@ -56,6 +60,15 @@ public class AccountService {
             // 기타 예외 처리
             throw new RuntimeException("Unexpected error occurred during withdrawal: " + e.getMessage(), e);
         }
+    }
+
+
+    /** 캐시 **/
+
+    public AccountDto findAccountDtoByMemberId(Long memberId) {
+        Account account = accountRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found for memberId: " + memberId));
+        return new AccountDto(account);
     }
 
 }
