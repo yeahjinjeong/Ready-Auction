@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -113,8 +114,20 @@ public class ChatService {
     }
 
     // 채팅방별 내가 안 읽은 메시지 개수 조회하기
-    public List<ChatUnreadCountDto> findCountStatusByNotMemberId(Long id) {
-        Optional<List<ChatUnreadCountDto>> unreadCounts = chatMessageRepository.findUnreadCountsByNotMemberId(id);
-        return unreadCounts.get();
+    public List<ChatUnreadCountDto> findCountStatusByNotMemberId(Long memberId) {
+        List<ChatUnreadCountDto> chatUnreadCountDtos = new ArrayList<>();
+        Optional<List<Long>> chatRoomIdList = chatRoomRepository.findChatRoomIdsByMemberId(memberId);
+        chatRoomIdList.get().stream().forEach((chatRoomId) -> {
+            Optional<ChatUnreadCountDto> chatUnreadCountDto = chatMessageRepository.findUnreadCountsByNotMemberId(memberId, chatRoomId);
+            chatUnreadCountDto.ifPresent(chatUnreadCountDtos::add);
+            }
+        );
+//        Optional<ChatUnreadCountDto> unreadCounts = chatMessageRepository.findUnreadCountsByNotMemberId(memberId, chatRoomId);
+        return chatUnreadCountDtos;
+    }
+
+    public List<Long> findChatRoomIdsByMemberId(Long id) {
+        Optional<List<Long>> chatRoomIdList = chatRoomRepository.findChatRoomIdsByMemberId(id);
+        return chatRoomIdList.get();
     }
 }

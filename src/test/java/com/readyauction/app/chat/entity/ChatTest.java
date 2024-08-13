@@ -5,6 +5,7 @@ import com.readyauction.app.chat.dto.ChatUnreadCountDto;
 import com.readyauction.app.chat.dto.MessageDto;
 import com.readyauction.app.chat.repository.ChatMessageRepository;
 import com.readyauction.app.chat.repository.ChatRoomRepository;
+import com.readyauction.app.chat.service.ChatService;
 import com.readyauction.app.user.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,8 @@ public class ChatTest {
     private ChatRoomRepository chatRoomRepository;
     @Autowired
     private ChatMessageRepository chatMessageRepository;
+    @Autowired
+    private ChatService chatService;
 
     @Test
     @DisplayName("ddl-auto=create 확인")
@@ -75,14 +78,13 @@ public class ChatTest {
         System.out.println(messageDtos);
     }
 
-    @Test
-    @DisplayName("[채팅-조회] 내가 안 읽은 채팅 개수 조회")
-    void findUnreadCountsByNotMemberId() {
-        // given
-        Optional<List<ChatUnreadCountDto>> unreadCounts = chatMessageRepository.findUnreadCountsByNotMemberId(2L);
-        List<ChatUnreadCountDto> countList = unreadCounts.get();
-        System.out.println(countList);
-        // when
-        // then
-    }
+//    @Test
+//    @DisplayName("[채팅-조회] 내가 안 읽은 채팅 개수 조회")
+//    void findUnreadCountsByNotMemberId() {
+//        // given
+//        List<ChatUnreadCountDto> unreadCounts = chatService.findCountStatusByNotMemberId(1L);
+//        System.out.println(unreadCounts);
+//        // when
+//        // then
+//    }
 }
