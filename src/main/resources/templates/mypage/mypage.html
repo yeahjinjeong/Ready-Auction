@@ -79,7 +79,7 @@
         <div class="single-widget">
          <h5 class="wdget-title">My Cash</h5>
          <ul class="widget-list">
-          <li><span>잔액 :</span><span th:text="${accountDto.cash}"></span></li>
+          <li><span>잔액 :</span><span th:text="${accountDto.cash} + '원'"></span></li>
          </ul>
          <div style="text-align: right">
           <a th:href="@{/cash/cash-charge}" class="alpha-btn-md-dark">Charge</a>
