@@ -125,9 +125,4 @@ public class ChatService {
 //        Optional<ChatUnreadCountDto> unreadCounts = chatMessageRepository.findUnreadCountsByNotMemberId(memberId, chatRoomId);
         return chatUnreadCountDtos;
     }
-
-    public List<Long> findChatRoomIdsByMemberId(Long id) {
-        Optional<List<Long>> chatRoomIdList = chatRoomRepository.findChatRoomIdsByMemberId(id);
-        return chatRoomIdList.get();
-    }
 }

@@ -308,6 +308,11 @@
         });
     });
 
+    $(document).ready(function() {
+        // 페이지가 로드되면 첫 번째 채팅방을 자동으로 클릭
+        $('.chat_list').first().trigger('click');
+    });
+
     function displayChatProfiles(infos, currentMemberId) {
         const profileBox = document.getElementById('profile-target');
         profileBox.innerHTML = '';

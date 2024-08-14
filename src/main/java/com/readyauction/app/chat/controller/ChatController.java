@@ -13,9 +13,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,8 +33,8 @@ public class ChatController {
     }
 
     @ResponseBody
-    @GetMapping("/chat/create/{productId}")
-    public ResponseEntity<?> createChatRoom(@PathVariable Long productId) {
+    @PostMapping("/chat/create")
+    public ResponseEntity<?> createChatRoom(@RequestBody Long productId) {
         log.info("productId : {}", productId);
         chatService.saveChatRooms(productId);
         return ResponseEntity.ok("채팅방이 생성되었습니다");
