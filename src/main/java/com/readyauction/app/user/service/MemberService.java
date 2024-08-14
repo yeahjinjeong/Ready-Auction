@@ -69,7 +69,7 @@ public class MemberService {
         if (member == null) {
             throw new UserNotFoundException("No member found with email: " + email);
         }
-        return MemberDto.toMemberDto(member);
+        return new MemberDto(member);
     }
 
     // Member 엔티티 -> ProfileDto

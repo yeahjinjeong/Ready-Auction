@@ -24,7 +24,6 @@ public class AccountService {
     public Account create(Long userId) {
         try {
             Account account = Account.builder()
-//                    .cash(500000)
                     .cash(0)
                     .memberId(userId)
                     .build();

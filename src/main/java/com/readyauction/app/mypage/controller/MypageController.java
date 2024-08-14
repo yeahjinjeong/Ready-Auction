@@ -80,8 +80,7 @@ public class MypageController {
     @PostMapping("/profile-update")
     public String updateProfile(@RequestParam("nickname") String nickname,
                                 @RequestParam("image") MultipartFile image,
-                                @RequestParam(value="removeImage", required = false) String removeImage,
-                                Model model) throws IOException {
+                                @RequestParam(value="removeImage", required = false) String removeImage) {
         log.info("POST /profile-update");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
@@ -90,11 +89,8 @@ public class MypageController {
             memberService.updateProfile(currentUserName, nickname, image, removeImage);
         } catch (IOException e) {
             log.error("Error updating profile", e);
+            return "error/404";
         }
-
-        ProfileDto profileDto = memberService.toProfileDto(currentUserName);
-        log.debug("ProfileDto: {}", profileDto);
-        model.addAttribute("profileDto", profileDto);
 
         return "redirect:/mypage";
     }

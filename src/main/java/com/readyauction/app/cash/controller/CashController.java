@@ -87,10 +87,6 @@ public class CashController {
             redirectAttributes.addFlashAttribute("errorMessage", "충전 중 문제가 발생했습니다.");
         }
 
-        ChargeDto chargeDto = chargeService.findChargeDtoByMemberId(userId);
-        log.debug("ChargeDto: {}", chargeDto);
-        model.addAttribute("chargeDto", chargeDto);
-
         return "redirect:/mypage";
     }
 
