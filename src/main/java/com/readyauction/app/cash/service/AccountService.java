@@ -4,11 +4,8 @@ import com.readyauction.app.cash.dto.AccountDto;
 import com.readyauction.app.cash.entity.Account;
 import com.readyauction.app.cash.repository.AccountRepository;
 import com.readyauction.app.common.handler.AccountNotFoundException;
-import com.readyauction.app.common.handler.UserNotFoundException;
-import com.readyauction.app.user.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +18,7 @@ public class AccountService {
     private final AccountRepository accountRepository;
 
     public Account findByMemberId(Long memberId) {
-        return accountRepository.findByMemberId(memberId).orElseThrow();
+        return accountRepository.findAccountByMemberId(memberId).orElseThrow();
     }
 
     public Account create(Long userId) {
@@ -40,7 +37,7 @@ public class AccountService {
 
     public Account withdrawal(Long userId, Integer withdrawalPrice) {
         try {
-            Account account = accountRepository.findByMemberId(userId)
+            Account account = accountRepository.findAccountByMemberId(userId)
                     .orElseThrow(() -> new EntityNotFoundException("Account not found for user ID: " + userId));
 
             // 출금 시도
@@ -66,9 +63,12 @@ public class AccountService {
     /** 캐시 **/
 
     public AccountDto findAccountDtoByMemberId(Long memberId) {
-        Account account = accountRepository.findByMemberId(memberId)
+        Account account = accountRepository.findAccountByMemberId(memberId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found for memberId: " + memberId));
         return new AccountDto(account);
     }
 
+    public void save(Account account) {
+        accountRepository.save(account);
+    }
 }
