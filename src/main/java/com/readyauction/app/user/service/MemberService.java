@@ -31,21 +31,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
 
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private AmazonS3Client amazonS3Client;
-
-    @Autowired
-    private AccountService accountService;
-
-    @Autowired
-    private NcpObjectStorageService ncpObjectStorageService;
-
+    private final MemberRepository memberRepository;
+    private final NcpObjectStorageService ncpObjectStorageService;
+    private final AmazonS3Client amazonS3Client;
     @Value("${spring.s3.bucket}")
     private String bucketName;
-
 
     public Member register(MemberRegisterRequestDto dto) {
         // 1. dto -> entity 변환
@@ -66,17 +56,6 @@ public class MemberService {
         return memberOptional.orElseThrow(() -> new UserNotFoundException(email));
     }
 
-    public List<MemberDto> findAll() {
-        List<Member> memberEntityList = memberRepository.findAll();
-        List<MemberDto> memberDtoList = new ArrayList<>();
-        for (Member memberEntity: memberEntityList) {
-            memberDtoList.add(MemberDto.toMemberDto(memberEntity));
-            MemberDto memberDTO = MemberDto.toMemberDto(memberEntity);
-            memberDtoList.add(memberDTO);
-        }
-        return memberDtoList;
-    }
-
     @Transactional(readOnly = true)
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email);
@@ -85,14 +64,11 @@ public class MemberService {
 
     /** 프로필 **/
 
-    // findMember
     public MemberDto findMemberDtoByEmail(String email) {
         Member member = memberRepository.findByEmail(email);
-
         if (member == null) {
             throw new UserNotFoundException("No member found with email: " + email);
         }
-
         return MemberDto.toMemberDto(member);
     }
 
@@ -168,6 +144,7 @@ public class MemberService {
 //        return memberRepository.save(existingMember);
 //    }
 
+    // Member 데이터 삭제
     @Transactional
     public void deleteById(Long id) {
         memberRepository.deleteById(id);

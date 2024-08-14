@@ -8,7 +8,6 @@ import com.readyauction.app.user.dto.ProfileDto;
 import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -24,16 +23,15 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MypageController {
 
-    @Autowired
-    private MemberService memberService;
-
-    @Autowired
-    private AccountService accountService;
+    private final MemberService memberService;
+    private final AccountService accountService;
 
     // 마이페이지
     @GetMapping("")
     public String getMyPage(Model model) {
         log.info("GET /mypage");
+
+        // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName(); // 로그인한 이메일
         System.out.println("currentUserName : " + currentUserName);
@@ -66,9 +64,10 @@ public class MypageController {
     @GetMapping("/profile-update")
     public String updateProfile(Model model) {
         log.info("GET /profile-update");
+
+        // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
-        System.out.println("currentUserName : " + currentUserName);
 
         ProfileDto profileDto = memberService.toProfileDto(currentUserName);
         log.debug("profileDto: {}", profileDto);

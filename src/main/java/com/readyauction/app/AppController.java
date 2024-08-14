@@ -42,16 +42,6 @@ public class AppController {
 //    public String privacy() {
 //        return "/privacy";
 //    }
-
-//    @GetMapping("/register")
-//    public String register() {
-//        return "/register";
-//    }
-
-//    @GetMapping("/register-origin")
-//    public String registerOrigin() {
-//        return "register-origin";
-//    }
 //
 //    @GetMapping("/winner")
 //    public String winner() {
