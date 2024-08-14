@@ -228,6 +228,7 @@
 
                 const url = `/sub/${$chatRoomId}`;
 
+                // 메시지 개수 배지 없애기
                 const badge = document.querySelector(`.badge[data-chat-room-id="${$chatRoomId}"]`);
                 if (badge) {
                     badge.textContent = ''; // 메시지 개수 삽입
@@ -261,6 +262,7 @@
                         console.error('Error fetching chat:', status, error);
                     }
                 })
+                // 채팅방 구독하기
                 stompClient.connect(
                     {},
                     (frame) => {
@@ -337,7 +339,7 @@
                 <a href="#" className="btn btn-primary">경매 상품 보러가기</a>
              </div>`;
         console.log(`${infos.profile.sellerId}`);
-        if (currentMemberId === Number(infos.profile.sellerId)) {
+        if (currentMemberId == Number(infos.profile.sellerId)) {
             profileBox.innerHTML += winnerProfileHTML;
         }
         else
@@ -406,12 +408,12 @@
                             <div class="chat_ib">
                                 <div class="display-inline-block">
                                     <!-- 상대방 이름 -->
-<!--                                    <div th:if="${chatRoom.chatRoomMembers[0].memberId eq #authentication.principal.member.id}">-->
+                                    <div th:if="${chatRoom.chatRoomMembers[0].memberId == #authentication.principal.member.id}">
                                         <h5 th:text="*{chatRoomMembers[1].memberNickname}"></h5>
-<!--                                    </div>-->
-<!--                                    <div th:if="${chatRoom.chatRoomMembers[1].memberId eq #authentication.principal.member.id}">-->
+                                    </div>
+                                    <div th:if="${chatRoom.chatRoomMembers[1].memberId == #authentication.principal.member.id}">
                                         <h5 th:text="*{chatRoomMembers[0].memberNickname}"></h5>
-<!--                                    </div>-->
+                                    </div>
                                     <span class="chat_date" th:text="${chatRoom.lastMessageUpdatedAt}"></span> <!-- 메시지 마지막 업데이트 시간 -->
                                     <span class="badge text-bg-primary rounded-pill" th:data-chat-room-id="${chatRoom.id}"></span> <!-- 쌓인 메시지 개수 -->
                                 </div>
