@@ -1,10 +1,16 @@
 package com.readyauction.app.cash.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.sql.Timestamp;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Charge{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +26,7 @@ public class Charge{
     private Timestamp date;
 
     @Enumerated(EnumType.STRING)
-    private ChargeStatus status;
+    private ChargeStatus chargeStatus;
 
     // Getters and Setters
 }

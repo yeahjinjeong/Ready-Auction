@@ -118,11 +118,7 @@
                             </li>
                             <!-- 로그인한 경우 authenticated -->
                             <li sec:authorize="isAuthenticated()" class="has-child-menu">
-                                <a href="javascript:void(0)">로그아웃</a>
-                                <i class="fl flaticon-plus">+</i>
-                                <ul class="sub-menu">
-                                    <li><a th:href="@{/auth/logout}" method="post">로그아웃</a></li>
-                                </ul>
+                                <a th:href="@{/auth/logout}" method="post">로그아웃</a>
                             </li>
                         </ul>
                         <div class="contact-mail inner-contact-mail mt-5 d-block d-xl-none">

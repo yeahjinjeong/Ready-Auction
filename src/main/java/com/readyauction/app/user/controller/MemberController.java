@@ -2,8 +2,12 @@ package com.readyauction.app.user.controller;
 
 import com.readyauction.app.auth.principal.AuthPrincipal;
 import com.readyauction.app.auth.service.AuthService;
+import com.readyauction.app.cash.dto.AccountDto;
+import com.readyauction.app.cash.entity.Account;
+import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.user.dto.MemberRegisterRequestDto;
 import com.readyauction.app.user.dto.MemberUpdateRequestDto;
+import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,23 +28,34 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final AccountService accountService;
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
 
     @GetMapping("/register")
-    public void register() {}
+    public void register() {
+        log.info("GET /register");
+    }
 
     @PostMapping("/register")
     public String register(
-            @Valid @ModelAttribute MemberRegisterRequestDto dto,
+            @Valid @ModelAttribute MemberRegisterRequestDto memberDto,
             RedirectAttributes redirectAttributes) {
-        // 1. 비밀번호 암호화
-        String encryptedPassword = passwordEncoder.encode(dto.getPassword());
-        dto.setPassword(encryptedPassword);
-        log.debug("dto = {}", dto);
-        // 2. 회원등록요청
-        memberService.register(dto);
-        redirectAttributes.addFlashAttribute("message", "축하합니다🎉 회원가입되었습니다.");
+        log.info("POST /register");
+        // 비밀번호 암호화
+        String encryptedPassword = passwordEncoder.encode(memberDto.getPassword());
+        memberDto.setPassword(encryptedPassword);
+
+        // 회원 등록 요청
+        Member member = memberService.register(memberDto); // Member 엔티티 반환
+        log.debug("memberDto = {}", memberDto);
+
+        // 계좌 생성
+        Account account = accountService.create(member.getId());  // Account 생성
+        AccountDto accountDto = new AccountDto(account); // AccountDto로 변환
+        log.debug("accountDto = {}", accountDto);
+
+        redirectAttributes.addFlashAttribute("message", "Register successful");
         return "redirect:/auth/login";
     }
 
@@ -97,11 +112,10 @@ public class MemberController {
     }
 
 
-    /* 지영 작업 시작 - 외부 프로필 */
+    /** 외부 프로필 **/
 
-    // 외부 프로필
     @GetMapping("/profile")
-    public void profile() {}
-
-    /* 지영 작업 끝 */
+    public String profile() {
+        return "member/profile";
+    }
 }

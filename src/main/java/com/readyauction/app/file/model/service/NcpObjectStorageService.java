@@ -30,7 +30,7 @@ public class NcpObjectStorageService {
     private String uploadDir;
 
     public String getUuidFileName(String fileName) {
-        String ext = fileName.substring(fileName.indexOf(".") + 1);
+        String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
         return UUID.randomUUID().toString() + "." + ext;
     }
 
@@ -53,7 +53,6 @@ public class NcpObjectStorageService {
 
             // Check if the file already exists in S3
             if (amazonS3Client.doesObjectExist(bucketName, keyName)) {
-                System.out.println("사진 이미 올라가있음");
                 // File exists, get its URL
                 uploadFileUrl = "https://kr.object.ncloudstorage.com/" + bucketName + "/" + keyName;
             } else {

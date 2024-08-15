@@ -43,14 +43,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
             and
             cm.memberId != :memberId
             and
-            cm.chatRoomId =
-            (select
-                c.id
-            from
-                ChatRoom c join c.chatRoomMembers m
-            where
-                m.memberId = :memberId)
-        group by cm.chatRoomId
+            cm.chatRoomId = :chatRoomId
     """)
-    Optional<List<ChatUnreadCountDto>> findUnreadCountsByNotMemberId(Long memberId);
+    Optional<ChatUnreadCountDto> findUnreadCountsByNotMemberId(Long memberId, Long chatRoomId);
 }
