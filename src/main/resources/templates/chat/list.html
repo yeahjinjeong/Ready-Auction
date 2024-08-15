@@ -274,12 +274,12 @@
                             url,
                             (frame) => {
                                 console.log(url + "을 구독하였습니다");
-                                const data = JSON.parse(frame.body);
-                                const $container = document.querySelector("#target");
                                 //특정 채팅방 안읽은 문자 갯수 ui업데이트 메서드
-
+                                document.querySelector(`.chat_list[data-chat-room-id="${$chatRoomId}"]`).click();
                                 //수신한 채팅이 일반채팅이 아닌 채팅방 입장알림 이면 내가 보낸 문자들의 안읽음 처리를 => 읽음처리로 수정 ui 업데이트 메서드
 
+                                const data = JSON.parse(frame.body);
+                                const $container = document.querySelector("#target");
                                 const {chatMsgId, chatRoomId, senderId, message, createdAt, status} = data;
                                 if (chatRoomId == $chatRoomId && senderId == $memberId) { // 만약 내가 보낸 거면
                                     $container.insertAdjacentHTML('beforeend',
@@ -315,10 +315,10 @@
                                     if (badge) {
                                         badge.textContent = Number(badge.textContent) + 1; // 메시지 개수 삽입
                                     }
-                                    // 마지막 메시지랑 시간도 바로바로 바뀌게 한다.
-                                    const lastMessage = document.querySelector(`#last_message`);
-                                    lastMessage.textContent = message;
                                 }
+                                // 채팅방 목록의 마지막 메시지도 바로바로 바뀌게 한다.
+                                const lastMessage = document.querySelector(`.last_message[data-chat-room-id="${chatRoomId}"]`);
+                                lastMessage.textContent = message;
                             }
                         )
                     }
@@ -420,8 +420,7 @@
 <!--                            </div>-->
 <!--                        </div>-->
 <!--                    </div>-->
-<!--                    <div th:each="count, stat : ${countList}" th:object="${count}">-->
-                    <div class="chat_list" th:each="chatRoom, stat : ${chatRoomList}" th:object="${chatRoom}" th:attr="data-product-id=${chatRoom.productId}, data-chat-room-id=${chatRoom.id}">
+                    <div class="chat_list" th:each="chatRoom, stat : ${chatRoomList}" th:object="${chatRoom}" th:attr="data-product-id=${chatRoom.productId}, data-chat-room-id=${chatRoom.id}" th:data-chat-room-id="${chatRoom.id}">
                         <div class="chat_people">
                             <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
                             <div class="chat_ib">
@@ -433,14 +432,13 @@
                                     <div th:if="${chatRoom.chatRoomMembers[1].memberId == #authentication.principal.member.id}">
                                         <h5 th:text="*{chatRoomMembers[0].memberNickname}"></h5>
                                     </div>
-                                    <span class="chat_date" th:text="${chatRoom.lastMessageUpdatedAt}"></span> <!-- 메시지 마지막 업데이트 시간 -->
+<!--                                    <span class="chat_date" th:text="${chatRoom.lastMessageUpdatedAt}"></span> &lt;!&ndash; 메시지 마지막 업데이트 시간 &ndash;&gt;-->
                                     <span class="badge text-bg-primary rounded-pill" th:data-chat-room-id="${chatRoom.id}"></span> <!-- 쌓인 메시지 개수 -->
                                 </div>
-                                <p id="last_message" th:text="*{lastMessage}"></p> <!-- 메시지 마지막 대화 내용 -->
+                                <p class="last_message" th:data-chat-room-id="${chatRoom.id}" th:text="*{lastMessage}"></p> <!-- 메시지 마지막 대화 내용 -->
                             </div>
                         </div>
                     </div>
-<!--                    </div>-->
                 </div>
             </div>
             <div class="mesgs">
