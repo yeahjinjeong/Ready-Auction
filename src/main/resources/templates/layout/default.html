@@ -55,12 +55,14 @@
             <div class="row">
                 <div class="col-xl-2 align-items-center d-xl-flex d-lg-block">
                     <div class="nav-logo d-flex justify-content-between align-items-center">
-                        <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" alt="logo" width="50" height="50"></a>
+                        <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" alt="logo" width="50"
+                                               height="50"></a>
                         <div class="d-flex align-items-center gap-4">
                             <span style="font-size: 16px; font-weight: bold; color: white; margin-left: 10px;">READY? AUCTION!</span>
                             <ul class="nav-actions nav-inner-actions d-flex d-xl-none">
                                 <!-- search-btn은 auction 페이지에서만 보입니다 -->
-                                <li class="search-btn" th:if="${currentPage == 'auction'}"><i class="bi bi-search"></i></li>
+                                <li class="search-btn" th:if="${currentPage == 'auction'}"><i class="bi bi-search"></i>
+                                </li>
                             </ul>
                             <div class="mobile-menu d-flex ">
                                 <a href="javascript:void(0)" class="hamburger d-block d-xl-none">
@@ -94,6 +96,13 @@
                             </li>
                             <li class="has-child-menu">
                                 <a th:href="@{/faq}" method="post">FAQ</a>
+                            </li>
+                            <li class="has-child-menu">
+                                <a href="javascript:void(0)">관리자</a>
+                                <i class="fl flaticon-plus">+</i>
+                                <ul class="sub-menu">
+                                    <li><a th:href="@{/dashboard/dashboard}">통계관리!</a></li>
+                                </ul>
                             </li>
                             <li sec:authorize="isAuthenticated()" class="has-child-menu">
                                 <a th:href="@{/mypage}" method="post">마이페이지</a>
@@ -189,7 +198,7 @@
         $.ajax({
             url: /*[[@{/auction-searching-api/searching}]]*/,
             type: 'GET',
-            data: { query: query },
+            data: {query: query},
             success: function (data) {
                 console.log('Received data:', data); // 로그를 통해 데이터 구조를 확인합니다.
                 let suggestionsList = '';
