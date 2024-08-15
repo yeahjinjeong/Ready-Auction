@@ -25,11 +25,11 @@ import java.util.Map;
 public class ChatMessageController {
     private final ChatService chatService;
 
-    @GetMapping("/api/authentication/memberId")
+    @GetMapping("/api/authentication/member")
     public ResponseEntity<?> getMemberId(
             @AuthenticationPrincipal AuthPrincipal principal
     ) {
-        return ResponseEntity.ok(principal.getMember().getId());
+        return ResponseEntity.ok(principal.getMember());
     }
 
     @GetMapping("chat/message/{chatRoomId}")

@@ -17,17 +17,18 @@ import java.time.ZoneId;
 public class MessageDto {
     private Long id;
     private Long chatRoomId;
-    private Long memberId;
+    private Long senderId;
     private String message;
     private Long createdAt;
     private LocalDateTime createdAt2;
     private Short status;
+    private Long receiverId;
 
     public ChatMessage toChatMessageEntity() {
         return ChatMessage.builder()
                 .id(createdAt)
                 .chatRoomId(this.chatRoomId)
-                .memberId(this.memberId)
+                .memberId(this.senderId)
                 .message(this.message)
                 .createdAt(LocalDateTime.ofInstant(Instant.ofEpochMilli(this.createdAt), ZoneId.systemDefault()))
                 .status(this.status)
@@ -42,7 +43,8 @@ public class MessageDto {
                 chatRoomMessage.getMessage(),
                 null,
                 chatRoomMessage.getCreatedAt(),
-                chatRoomMessage.getStatus()
+                chatRoomMessage.getStatus(),
+                null
         );
     }
 }

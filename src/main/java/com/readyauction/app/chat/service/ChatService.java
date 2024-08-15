@@ -125,4 +125,9 @@ public class ChatService {
 //        Optional<ChatUnreadCountDto> unreadCounts = chatMessageRepository.findUnreadCountsByNotMemberId(memberId, chatRoomId);
         return chatUnreadCountDtos;
     }
+
+    public String findReceiverEmailByMemberId(Long receiverId) {
+        Optional<Member> member = memberRepository.findById(receiverId);
+        return member.get().getEmail();
+    }
 }
