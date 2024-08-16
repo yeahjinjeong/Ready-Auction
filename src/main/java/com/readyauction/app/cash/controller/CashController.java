@@ -3,9 +3,9 @@ package com.readyauction.app.cash.controller;
 import com.readyauction.app.auction.dto.ProductRepDto;
 import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.cash.dto.AccountDto;
-import com.readyauction.app.cash.entity.Charge;
+import com.readyauction.app.cash.entity.Cash;
 import com.readyauction.app.cash.service.AccountService;
-import com.readyauction.app.cash.service.ChargeService;
+import com.readyauction.app.cash.service.CashService;
 import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class CashController {
 
     private final MemberService memberService;
-    private final ChargeService chargeService;
+    private final CashService cashService;
     private final ProductService productService;
     private final AccountService accountService;
 
@@ -69,7 +69,7 @@ public class CashController {
 
     // 캐시 충전
     @PostMapping("/cash-charge")
-    public String chargeCash(@ModelAttribute Charge charge, RedirectAttributes redirectAttributes) {
+    public String chargeCash(@ModelAttribute Cash cash, RedirectAttributes redirectAttributes) {
         log.info("POST /cash-charge");
 
         // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
@@ -80,7 +80,7 @@ public class CashController {
         Long memberId = memberService.findMemberByEmail(currentUserName).getId();
 
         try {
-            chargeService.chargeCash(memberId, charge);
+            cashService.chargeCash(memberId, cash);
             redirectAttributes.addFlashAttribute("message", "성공적으로 충전되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "충전 중 문제가 발생했습니다.");
@@ -110,7 +110,7 @@ public class CashController {
 
     // 캐시 환불
     @PostMapping("/cash-withdrawal")
-    public String refundCash(@ModelAttribute Charge charge, RedirectAttributes redirectAttributes, @RequestParam(value="withdrawal") Integer withdrawal) {
+    public String refundCash(@ModelAttribute Cash cash, RedirectAttributes redirectAttributes, @RequestParam(value="withdrawal") Integer withdrawal) {
         log.info("POST /cash-withdrawal");
 
         // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
@@ -121,7 +121,7 @@ public class CashController {
         Long memberId = memberService.findMemberByEmail(currentUserName).getId();
 
         try {
-            chargeService.withdrawCash(memberId, charge, withdrawal);
+            cashService.withdrawCash(memberId, cash, withdrawal);
             redirectAttributes.addFlashAttribute("message", "성공적으로 출금되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "출금 중 문제가 발생했습니다.");
