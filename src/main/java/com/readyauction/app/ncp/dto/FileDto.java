@@ -1,4 +1,4 @@
-package com.readyauction.app.file.model.dto;
+package com.readyauction.app.ncp.dto;
 
 import lombok.Builder;
 import lombok.Getter;

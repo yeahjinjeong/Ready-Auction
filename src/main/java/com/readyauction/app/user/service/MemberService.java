@@ -2,12 +2,9 @@ package com.readyauction.app.user.service;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.readyauction.app.cash.dto.AccountDto;
-import com.readyauction.app.cash.entity.Account;
-import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.common.handler.UserNotFoundException;
-import com.readyauction.app.file.model.dto.FileDto;
-import com.readyauction.app.file.model.service.NcpObjectStorageService;
+import com.readyauction.app.ncp.dto.FileDto;
+import com.readyauction.app.ncp.service.NcpObjectStorageService;
 import com.readyauction.app.user.dto.MemberDto;
 import com.readyauction.app.user.dto.MemberRegisterRequestDto;
 import com.readyauction.app.user.dto.MemberUpdateRequestDto;
@@ -15,13 +12,14 @@ import com.readyauction.app.user.dto.ProfileDto;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -87,8 +85,8 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public String uploadImage(MultipartFile image, String email) throws IOException {
-        String filePath = "profile/" + email + "/";
+    public String uploadImage(String email, MultipartFile image) {
+        String filePath = "profile/" + email;
         List<MultipartFile> files = new ArrayList<>();
         files.add(image);
         List<FileDto> uploadedFiles = ncpObjectStorageService.uploadFiles(files, filePath);
@@ -98,36 +96,33 @@ public class MemberService {
     public void deleteImage(String imageUrl) {
         if (imageUrl != null && !imageUrl.isEmpty()) {
             String key = imageUrl.substring(imageUrl.indexOf(bucketName) + bucketName.length() + 1);
-            deleteFile(key);
+            ncpObjectStorageService.deleteFile(key);
         }
     }
 
-    public void deleteFile(String key) {
-        try {
-            amazonS3Client.deleteObject(bucketName, key);
-            System.out.println("파일이 성공적으로 삭제되었습니다.");
-        } catch (AmazonServiceException e) {
-            e.printStackTrace();
-            System.out.println("파일 삭제 중 오류가 발생했습니다: " + e.getMessage());
-        }
-    }
-
-    public void updateProfile(String email, String nickname, MultipartFile image, String removeImage) throws IOException {
-        Member member = findMemberByEmail(email);
+    public void updateProfile(String email, String nickname, MultipartFile image, @RequestParam("isRemovedImage") boolean isRemovedImage) throws IOException {
+        Member member = memberRepository.findByEmail(email);
         member.setNickname(nickname);
 
-        boolean removeImageFlag = "true".equalsIgnoreCase(removeImage);
-
-        if (removeImageFlag && member.getProfilePicture() != null) {
+        // 이미지 제거 요청이 있을 경우
+        if (isRemovedImage) {
+            // 기존 프로필 이미지 삭제
             deleteImage(member.getProfilePicture());
+
+            // Member 엔티티의 profilePicture를 null로 업데이트
             member.setProfilePicture(null);
+        } else {
+            // 기존 프로필 이미지가 있는 경우 삭제
+            if (member.getProfilePicture() != null) {
+                deleteImage(member.getProfilePicture());
+            }
+
+            // 새 프로필 이미지 업로드
+            String newProfilePicture = uploadImage(email, image);
+            member.setProfilePicture(newProfilePicture);
         }
 
-        if (!image.isEmpty()) {
-            String imageUrl = uploadImage(image, email);
-            member.setProfilePicture(imageUrl);
-        }
-
+        member.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         save(member);
     }
 
@@ -143,12 +138,6 @@ public class MemberService {
 //        existingMember.setMannerScore(member.getMannerScore());
 //        return memberRepository.save(existingMember);
 //    }
-
-    // Member 데이터 삭제
-    @Transactional
-    public void deleteById(Long id) {
-        memberRepository.deleteById(id);
-    }
 
     public String emailCheck(String memberEmail) {
         Member byMemberEmail = memberRepository.findByEmail(memberEmail);

@@ -80,13 +80,13 @@ public class MypageController {
     @PostMapping("/profile-update")
     public String updateProfile(@RequestParam("nickname") String nickname,
                                 @RequestParam("image") MultipartFile image,
-                                @RequestParam(value="removeImage", required = false) String removeImage) {
+                                @RequestParam(value="isRemovedImage") boolean isRemovedImage) {
         log.info("POST /profile-update");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
 
         try {
-            memberService.updateProfile(currentUserName, nickname, image, removeImage);
+            memberService.updateProfile(currentUserName, nickname, image, isRemovedImage);
         } catch (IOException e) {
             log.error("Error updating profile", e);
             return "error/404";
