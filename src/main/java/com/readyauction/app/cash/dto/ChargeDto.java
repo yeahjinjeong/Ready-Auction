@@ -16,16 +16,16 @@ public class ChargeDto {
     private Long id;
     private Long memberId;
     private Account account;
-    private Integer chargeAmount;
+    private Integer amount;
     private Timestamp date;
-    private ChargeStatus chargeStatus;
+    private ChargeStatus status;
 
     public ChargeDto(Charge charge) {
         this.id = charge.getId();
         this.memberId = charge.getMemberId();
         this.account = charge.getAccount();
-        this.chargeAmount = charge.getChargeAmount();
+        this.amount = charge.getAmount();
         this.date = charge.getDate();
-        this.chargeStatus = charge.getChargeStatus();
+        this.status = charge.getStatus();
     }
 }

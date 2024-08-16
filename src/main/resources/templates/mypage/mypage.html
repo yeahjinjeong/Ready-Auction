@@ -79,11 +79,11 @@
         <div class="single-widget">
          <h5 class="wdget-title">My Cash</h5>
          <ul class="widget-list">
-          <li><span>잔액 :</span><span th:text="${accountDto.cash} + '원'"></span></li>
+          <li><label>잔액 :</label><span id="cash"></span></li>
          </ul>
          <div style="text-align: right">
-          <a th:href="@{/cash/cash-charge}" class="alpha-btn-md-dark">Charge</a>
-          <a th:href="@{/cash/cash-refund}" class="alpha-btn-md-dark">Refund</a>
+          <a th:href="@{/cash/cash-charge}" class="alpha-btn-md-dark">충전</a>
+          <a th:href="@{/cash/cash-withdrawal}" class="alpha-btn-md-dark">출금</a>
          </div>
         </div>
        </div>
@@ -168,6 +168,17 @@
    </div>
   </div>
  </div>
+
+ <script>
+  function formatNumber(number) {
+   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+   var cash = [[${accountDto.cash}]]; // Thymeleaf에서 값을 삽입
+   document.getElementById('cash').textContent = formatNumber(cash) + '원';
+  });
+ </script>
 </div>
 
 </body>

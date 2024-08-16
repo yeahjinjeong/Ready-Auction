@@ -21,12 +21,12 @@ public class Charge{
     @ManyToOne(fetch = FetchType.LAZY)
     private Account account;
 
-    private Integer chargeAmount;
+    private Integer amount;
 
     private Timestamp date;
 
     @Enumerated(EnumType.STRING)
-    private ChargeStatus chargeStatus;
+    private ChargeStatus status;
 
     // Getters and Setters
 }

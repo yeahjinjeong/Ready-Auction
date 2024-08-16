@@ -1,7 +1,5 @@
 package com.readyauction.app.user.service;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.ncp.dto.FileDto;
 import com.readyauction.app.ncp.service.NcpObjectStorageService;
@@ -31,7 +29,6 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
-    private final AmazonS3Client amazonS3Client;
     @Value("${spring.s3.bucket}")
     private String bucketName;
 
