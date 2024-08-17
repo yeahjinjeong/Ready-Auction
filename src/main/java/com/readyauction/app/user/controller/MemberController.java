@@ -45,10 +45,9 @@ public class MemberController {
         // 비밀번호 암호화
         String encryptedPassword = passwordEncoder.encode(memberDto.getPassword());
         memberDto.setPassword(encryptedPassword);
-
+        log.debug("memberDto = {}", memberDto);
         // 회원 등록 요청
         Member member = memberService.register(memberDto); // Member 엔티티 반환
-        log.debug("memberDto = {}", memberDto);
 
         // 계좌 생성
         Account account = accountService.create(member.getId());  // Account 생성

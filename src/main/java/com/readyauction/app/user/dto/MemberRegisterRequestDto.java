@@ -42,7 +42,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberRegisterRequestDto {
-    private Long id;
+
     @Email(message = "아이디는 이메일 형식이어야 합니다.")
     @NotNull(message = "아이디는 null일 수 없습니다.")
     private String email;
@@ -65,7 +65,6 @@ public class MemberRegisterRequestDto {
 
     public Member toMember(){
         return Member.builder()
-                .id(this.id)
                 .email(this.email)
                 .password(this.password)
                 .name(this.name)

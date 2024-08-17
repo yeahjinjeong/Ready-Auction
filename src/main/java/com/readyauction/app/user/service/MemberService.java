@@ -45,11 +45,11 @@ public class MemberService {
         Member member = dto.toMember();
         // 기본권한 설정
         member.setDefaultAuthorities();
-
         // repository의 save메서드 호출 (조건. entity객체를 넘겨줘야 함)
         member = memberRepository.save(member);
+
         accountService.create(member.getId());
-        return memberRepository.save(member); // 저장 후 Member 반환
+        return member; // 저장 후 Member 반환
     }
 
     public void update(MemberUpdateRequestDto dto) {
