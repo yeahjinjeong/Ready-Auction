@@ -40,9 +40,10 @@ public class MemberService {
         // 기본권한 설정
         member.setDefaultAuthorities();
         // 계좌 자동 생성
+        member = memberRepository.save(member);
         accountService.create(member.getId());
         // repository의 save메서드 호출 (조건. entity객체를 넘겨줘야 함)
-        return memberRepository.save(member); // 저장 후 Member 반환
+        return member;// 저장 후 Member 반환
     }
 
     public void update(MemberUpdateRequestDto dto) {
