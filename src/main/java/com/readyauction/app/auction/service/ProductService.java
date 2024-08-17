@@ -9,8 +9,8 @@ import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.entity.PurchaseStatus;
 import com.readyauction.app.auction.entity.Winner;
 import com.readyauction.app.auction.repository.ProductRepository;
-import com.readyauction.app.file.model.dto.FileDto;
-import com.readyauction.app.file.model.service.NcpObjectStorageService;
+import com.readyauction.app.ncp.dto.FileDto;
+import com.readyauction.app.ncp.service.NcpObjectStorageService;
 import com.readyauction.app.user.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +27,6 @@ import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor

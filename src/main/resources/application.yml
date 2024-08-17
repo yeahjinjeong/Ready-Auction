@@ -34,9 +34,6 @@ server:
   servlet:
     context-path: /app
 
-file:
-  upload-dir: /path/to/upload/directory
-
   spring:
     redis:
       host: localhost
