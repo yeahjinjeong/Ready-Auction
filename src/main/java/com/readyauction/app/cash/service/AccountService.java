@@ -2,10 +2,8 @@ package com.readyauction.app.cash.service;
 
 import com.readyauction.app.cash.entity.Account;
 import com.readyauction.app.cash.repository.AccountRepository;
-import com.readyauction.app.user.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AccountService {
 
-
     private final AccountRepository accountRepository;
+
     public Account findByMemberId(Long memberId) {
         return accountRepository.findByMemberId(memberId).orElseThrow();
     }
@@ -38,7 +36,7 @@ public class AccountService {
         try {
             Account account = accountRepository.findByMemberId(userId)
                     .orElseThrow(() -> new EntityNotFoundException("Account not found for user ID: " + userId));
-
+            System.out.println("출금 시도");
             // 출금 시도
             if (!account.withdrawal(withdrawalPrice)) {
                 throw new RuntimeException("Insufficient funds for withdrawal");
@@ -58,15 +56,17 @@ public class AccountService {
         }
     }
 
-    public Account deposit(Long userId, Integer depositPrice) {
+    public Account deposit(Long receiverAccountId, Integer depositPrice) {
         try {
-            Account account = accountRepository.findByMemberId(userId)
-                    .orElseThrow(() -> new EntityNotFoundException("Account not found for user ID: " + userId));
+            //받은이 계 좌조회
+            Account account = accountRepository.findById(receiverAccountId)
+                    .orElseThrow(() -> new EntityNotFoundException("Account not found for user ID: " + receiverAccountId));
 
-            // 출금 시도
+            // 입금 시도
             if (!account.deposit(depositPrice)) {
                 throw new RuntimeException("Insufficient funds for error");
             }
+            System.out.println(account.getId() +" 계좌 아이디");
             // 변경된 계좌 정보를 저장
             return accountRepository.save(account);
         } catch (EntityNotFoundException e) {
@@ -80,5 +80,6 @@ public class AccountService {
             throw new RuntimeException("Unexpected error occurred during withdrawal: " + e.getMessage(), e);
         }
     }
+
 
 }

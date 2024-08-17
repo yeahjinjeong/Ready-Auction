@@ -12,10 +12,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuctionCloseScheduler {
 //일분 마다 업데이트
-    final ProductService productService;
+    final BidService bidService;
     @Scheduled(cron = "0 * * * * *")	// 1분마다
     public void closeAuction() throws Exception {
-        log.info("{}",productService.setProductsStatus(productService.getProductsWithEndTimeAtCurrentMinute()));
+        System.out.println("옥션마감!");
+        bidService.endAuction();
+
         alarmToWinner();
     }
     public void alarmToWinner(){

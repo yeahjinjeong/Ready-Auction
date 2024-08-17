@@ -1,6 +1,7 @@
 package com.readyauction.app.auction.controller;
 
 import com.readyauction.app.auction.dto.*;
+import com.readyauction.app.auction.entity.PurchaseCategoty;
 import com.readyauction.app.auction.service.BidService;
 import com.readyauction.app.auction.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +13,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -41,13 +47,21 @@ public class AuctionRestController {
     }
 
     @PostMapping("/img-upload")
-    public String uploadImg(@RequestParam("file") MultipartFile file) {
-        System.out.println("사진 올라감");
-
+    public ResponseEntity<Map<String, Object>> uploadImg(@RequestParam("files[]") List<MultipartFile> files) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
+        List<String> results = new ArrayList<>();
 
-        return productService.uploadFile(email,file);
+        // 파일 리스트를 순회하며 각 파일 처리
+        for (MultipartFile file : files) {
+            System.out.println("사진 올라감");
+            String result = productService.uploadFile(email, file);
+            results.add(result);  // 결과를 리스트에 추가
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("images", results);  // "images" 키에 파일 URL 리스트 저장
+        return ResponseEntity.ok(response);  // JSON 형태로 결과 반환
     }
 
     @PostMapping("/bid")
@@ -72,6 +86,7 @@ public class AuctionRestController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
             System.out.println("즉시구매중" + winnerReqDto);
+            winnerReqDto.setCategory(PurchaseCategoty.IMMEDIATE);
             return ResponseEntity.ok(productService.startWinnerProcess(email,winnerReqDto));
         }
         catch (RuntimeException e) {
