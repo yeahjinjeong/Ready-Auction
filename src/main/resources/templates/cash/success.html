@@ -168,6 +168,24 @@
                                                 console.log('Payment created successfully:', response);
                                                 alert('결제가 성공적으로 처리되었습니다!');
                                                 // 필요에 따라 페이지 리다이렉션, 메시지 표시 등을 수행할 수 있습니다.
+                                                // 예진 작업 시작
+                                                // console.log([[${productDetail.id}]]);
+                                                // console.log(productId);
+                                                fetch(`[[@{/chat/create}]]`, {
+                                                    method : 'post',
+                                                    headers: {
+                                                        'Content-Type': 'application/json' // 요청 헤더 설정
+                                                    },
+                                                    body: JSON.stringify([[${productDetail.id}]])
+                                                }).then(response => {
+                                                    // 응답이 성공적인지 확인
+                                                    if (!response.ok) {
+                                                        throw new Error('Network response was not ok');
+                                                    }
+                                                    // JSON 형식으로 응답 본문을 파싱
+                                                    window.location.href= `[[@{/chat/list}]]`;
+                                                })
+                                                // 예진 작업 끝
                                             },
                                             error: function(xhr, status, error) {
                                                 // 요청이 실패한 경우 실행됩니다.
