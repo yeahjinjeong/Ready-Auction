@@ -25,4 +25,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<List<Payment>> findByProductIdAndMemberIdAndCategoryAndStatusOrStatus(Long productId,Long memberId,PaymentCategory category, PaymentStatus status, PaymentStatus status2);
     Optional<List<Payment>> findByProductIdAndMemberIdAndCategoryNotAndStatusOrStatus(Long productId,Long memberId,PaymentCategory category, PaymentStatus status, PaymentStatus status2);
     Optional<List<Payment>> findByProductIdAndStatus(Long productId, PaymentStatus status);
+
+    // 송신 계좌 또는 수신 계좌와 연관된 모든 결제 내역을 조회
+    @Query("SELECT p FROM Payment p WHERE p.senderAccount.id = :accountId OR p.receiverAccount.id = :accountId ORDER BY p.date DESC")
+    List<Payment> findAllByAccountIdOrderByDateDesc(@Param("accountId") Long accountId);
  }
