@@ -1,14 +1,9 @@
 package com.readyauction.app.auction.service;
 
-import com.readyauction.app.auction.dto.ProductDto;
-import com.readyauction.app.auction.dto.ProductRepDto;
-import com.readyauction.app.auction.dto.ProductReqDto;
-import com.readyauction.app.auction.dto.WinnerReqDto;
-import com.readyauction.app.auction.entity.AuctionStatus;
-import com.readyauction.app.auction.entity.Product;
-import com.readyauction.app.auction.entity.PurchaseStatus;
-import com.readyauction.app.auction.entity.Winner;
+import com.readyauction.app.auction.dto.*;
+import com.readyauction.app.auction.entity.*;
 import com.readyauction.app.auction.repository.ProductRepository;
+import com.readyauction.app.cash.service.PaymentService;
 import com.readyauction.app.file.model.dto.FileDto;
 import com.readyauction.app.file.model.service.NcpObjectStorageService;
 import com.readyauction.app.user.service.MemberService;
@@ -26,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -34,16 +30,22 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
-    @Transactional
+
+
+    public List<Product> findAll(){
+        return productRepository.findAll();
+    }
     public ProductRepDto createProduct(String email, ProductReqDto productReqDto) {
         Long userId = getUserIdFromRequest(email);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
+        System.out.println(productReqDto.getImgUrls().get(0));
         Product product = Product.builder()
                 .memberId(userId)
                 .name(productReqDto.getName())
@@ -52,9 +54,10 @@ public class ProductService {
                 .bidUnit(productReqDto.getBidUnit())
                 .endTime(productReqDto.getEndTime())
                 .startTime(timestamp)
+                .startPrice(productReqDto.getCurrentPrice())
                 .currentPrice(productReqDto.getCurrentPrice())
                 .immediatePrice(productReqDto.getImmediatePrice())
-                .image(productReqDto.getImgUrl())
+                .images(productReqDto.getImgUrls())
                 .auctionStatus(AuctionStatus.START)
                 .build();
         product = productRepository.save(product);
@@ -62,7 +65,6 @@ public class ProductService {
         return convertToProductRepDto(product);
     }
 
-    @Transactional
     public String uploadFile(String email, MultipartFile multipartFile) {
         validateMultipartFile(multipartFile);
         List<FileDto> s3Files = ncpObjectStorageService.uploadFiles(Collections.singletonList(multipartFile), "productIMG/"+ email);
@@ -73,13 +75,12 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalStateException("File upload failed"));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public ProductRepDto productDetail(Long productId) {
         Product product = findProductById(productId);
         return convertToProductRepDto(product);
     }
 
-    @Transactional
     public Integer updateBidPrice(Product product, Integer bidPrice) {
         try {
             product.setCurrentPrice(bidPrice + product.getBidUnit());
@@ -90,7 +91,7 @@ public class ProductService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Integer findCurrentPriceById(Long productId)
     {
         Product productResult = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
@@ -102,14 +103,13 @@ public class ProductService {
         return productRepository.findById(productId);
     }
 
-    @Transactional
     public boolean statusUpdate(HttpServletRequest request, Long productId, PurchaseStatus purchaseStatus) {
         Product product = findProductById(productId);
         product.getWinner().setStatus(purchaseStatus);
         productRepository.save(product);
         return true;
     }
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Product> getProductsWithEndTimeAtCurrentMinute() {
         try {
             // 현재 시간의 시분으로 설정, 초와 나노초를 0으로 만듦
@@ -132,7 +132,7 @@ public class ProductService {
         }
     }
 
-    @Transactional
+
     public List<Product> setProductsStatus(List<Product> products) {
         try {
             // Product 목록 저장
@@ -146,7 +146,7 @@ public class ProductService {
             throw new RuntimeException("Unexpected error occurred while saving products status: " + e.getMessage(), e);
         }
     }
-    @Transactional
+
     public ProductDto startWinnerProcess(String email, WinnerReqDto winnerReqDto) {
         Long userId = getUserIdFromRequest(email);
         Product product = findProductById(winnerReqDto.getProductId());
@@ -156,11 +156,15 @@ public class ProductService {
         if (product.hasWinner()) {
             throw new RuntimeException("The product has already been won");
         }
-
-        return convertToProductDto(createWinner(userId, product, winnerReqDto));
+        WinnerDto winnerDto = WinnerDto.builder().
+                userId(userId).
+                product(product).
+                winnerReqDto(winnerReqDto).
+                build();
+        return convertToProductDto(createWinner(winnerDto));
     }
 
-    @Transactional
+
     public Product progressWinnerProcess(Long productId) {
         try {
 
@@ -192,7 +196,7 @@ public class ProductService {
         }
     }
 
-    @Transactional
+
     public Product progressWinnerPending(Long productId) {
         try {
 
@@ -226,29 +230,61 @@ public class ProductService {
 
 
 
-    @Transactional
-    public Product createWinner(Long userId, Product product, WinnerReqDto winnerReqDto) {
+
+    public Product createWinner(WinnerDto winnerDto) {
         try {
             // Winner 객체를 생성하고 제품에 설정
             Winner winner = Winner.builder()
-                    .memberId(userId)
+                    .memberId(winnerDto.getUserId())
                     .status(PurchaseStatus.CONFIRMED)
-                    .price(winnerReqDto.getBuyPrice())
-                    .winnerTime(winnerReqDto.getBuyTime())
+                    .price(winnerDto.getWinnerReqDto().getBuyPrice())
+                    .winnerTime(winnerDto.getWinnerReqDto().getBuyTime())
+                    .category(winnerDto.getWinnerReqDto().getCategory())
                     .build();
-            product.setWinner(winner);
-            product.setAuctionStatus(AuctionStatus.END);
-
-            log.info("Winner created successfully for product ID: {}", product.getId());
+            winnerDto.getProduct().setWinner(winner);
+            winnerDto.getProduct().setAuctionStatus(AuctionStatus.END);
+            winnerDto.getProduct().setCurrentPrice(winnerDto.getWinnerReqDto().getBuyPrice());
+            log.info("Winner created successfully for product ID: {}", winnerDto.getProduct().getId());
 
             // 제품을 저장
-            Product savedProduct = productRepository.save(product);
+            Product savedProduct = productRepository.save(winnerDto.getProduct());
 
             if (savedProduct == null) {
                 throw new RuntimeException("Failed to save the product with the winner");
             }
 
             return savedProduct;
+        } catch (DataAccessException e) {
+            // 데이터베이스 관련 예외 처리
+            throw new RuntimeException("Database error during saving the product with the winner: " + e.getMessage(), e);
+        } catch (Exception e) {
+            // 기타 예외 처리
+            throw new RuntimeException("Unexpected error occurred during creating the winner: " + e.getMessage(), e);
+        }
+    }
+
+
+    public List<Product> createWinners(List<WinnerDto> winnerDtos) {
+        try {
+            System.out.println("입찰자 낙찰자로 진짜 변환!");
+            // Winner 객체를 생성하고 제품에 설정
+            List<Product> products = new ArrayList<>();
+            for(WinnerDto winnerDto : winnerDtos){
+                Winner winner = Winner.builder()
+                        .memberId(winnerDto.getUserId())
+                        .status(PurchaseStatus.CONFIRMED)
+                        .price(winnerDto.getWinnerReqDto().getBuyPrice())
+                        .winnerTime(winnerDto.getWinnerReqDto().getBuyTime())
+                        .category(PurchaseCategoty.BID)
+                        .build();
+                winnerDto.getProduct().setWinner(winner);
+                winnerDto.getProduct().setAuctionStatus(AuctionStatus.END);
+
+            log.info("Winner created successfully for product ID: {}", winnerDto.getProduct().getId());
+            // 제품을 저장
+                products.add(winnerDto.getProduct());
+            }
+            return productRepository.saveAll(products);
         } catch (DataAccessException e) {
             // 데이터베이스 관련 예외 처리
             throw new RuntimeException("Database error during saving the product with the winner: " + e.getMessage(), e);
@@ -287,9 +323,10 @@ public class ProductService {
                 .bidUnit(product.getBidUnit())
                 .endTime(product.getEndTime())
                 .startTime(product.getStartTime())
+                .startPrice(product.getStartPrice())
                 .currentPrice(product.getCurrentPrice())
                 .immediatePrice(product.getImmediatePrice())
-                .imgUrl(product.getImage())
+                .imgUrl(product.getImages())
                 .build();
     }
 
@@ -302,9 +339,10 @@ public class ProductService {
                 product.getEndTime(),
                 product.getCurrentPrice(),
                 product.getImmediatePrice(),
-                product.getImage()
+                (product.getImages() != null && !product.getImages().isEmpty()) ? product.getImages().get(0) : null
         );
     }
+
 
     @Transactional(readOnly = true)
     public Page<ProductDto> searchProductsByName(String name, Pageable pageable) {

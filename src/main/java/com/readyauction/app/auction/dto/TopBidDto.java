@@ -1,6 +1,6 @@
 package com.readyauction.app.auction.dto;
 
-import com.readyauction.app.auction.entity.BidStatus;
+import com.readyauction.app.auction.entity.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +12,9 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class BidResDto {
-    BidStatus bidStatus;
-    Integer bidCurrentPrice;
-    Timestamp bidSuccessTime;
+public class TopBidDto {
+    Long memberId;
+    Product product;
+    Integer myPrice;
+    Timestamp bidTime;
 }

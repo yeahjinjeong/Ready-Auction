@@ -51,6 +51,8 @@ public class AuctionController {
             products = productService.getAllProducts(pageable);
         }
 
+
+
         model.addAttribute("products", products);
         model.addAttribute("currentPage", "auction");  // currentPage 값을 "auction"으로 설정
         model.addAttribute("currentPageNumber", products.getNumber());
@@ -81,6 +83,24 @@ public class AuctionController {
             if (productDetail != null) {
                 model.addAttribute("productDetail", productDetail);
                 return "auction/auctionDetails"; // 여기 수정
+            } else {
+                System.out.println("에러");
+                return "error/404"; // 객체가 null일 경우 에러 페이지로 리다이렉션
+            }
+        } catch (IllegalStateException e) {
+            log.error("Error fetching product details", e);
+            return "error/404"; // 예외 발생 시 에러 페이지로 리다이렉션
+        }
+    }
+
+    @GetMapping("/bid-product/{id}")
+    public String getBidProduct(@PathVariable("id") Long id, Model model) {
+        try {
+            System.out.println("실행중");
+            ProductRepDto productDetail = productService.productDetail(id);
+            if (productDetail != null) {
+                model.addAttribute("productDetail", productDetail);
+                return "auction/bidProduct"; // 여기 수정
             } else {
                 System.out.println("에러");
                 return "error/404"; // 객체가 null일 경우 에러 페이지로 리다이렉션

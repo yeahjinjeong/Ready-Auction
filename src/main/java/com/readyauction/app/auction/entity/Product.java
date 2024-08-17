@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Getter
@@ -36,11 +37,16 @@ public class Product {
 
     private Timestamp startTime;
 
+    private Integer startPrice;
+
     private Integer currentPrice;
 
     private Integer immediatePrice;
 
-    private String image;
+    @ElementCollection
+    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "image_url")
+    private List<String> images;
 
     @Enumerated(EnumType.STRING)
     private AuctionStatus auctionStatus;
