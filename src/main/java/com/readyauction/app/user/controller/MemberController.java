@@ -2,8 +2,6 @@ package com.readyauction.app.user.controller;
 
 import com.readyauction.app.auth.principal.AuthPrincipal;
 import com.readyauction.app.auth.service.AuthService;
-import com.readyauction.app.cash.dto.AccountDto;
-import com.readyauction.app.cash.entity.Account;
 import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.user.dto.MemberRegisterRequestDto;
 import com.readyauction.app.user.dto.MemberUpdateRequestDto;
@@ -42,17 +40,14 @@ public class MemberController {
             @Valid @ModelAttribute MemberRegisterRequestDto memberDto,
             RedirectAttributes redirectAttributes) {
         log.info("POST /register");
+
         // 비밀번호 암호화
         String encryptedPassword = passwordEncoder.encode(memberDto.getPassword());
         memberDto.setPassword(encryptedPassword);
         log.debug("memberDto = {}", memberDto);
+
         // 회원 등록 요청
         Member member = memberService.register(memberDto); // Member 엔티티 반환
-
-        // 계좌 생성
-        Account account = accountService.create(member.getId());  // Account 생성
-        AccountDto accountDto = new AccountDto(account); // AccountDto로 변환
-        log.debug("accountDto = {}", accountDto);
 
         redirectAttributes.addFlashAttribute("message", "Register successful");
         return "redirect:/auth/login";

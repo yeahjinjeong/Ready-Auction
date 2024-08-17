@@ -42,7 +42,7 @@
                     <ul class="widget-list">
                         <li><label>닉네임 :</label><input type="text" id="nickname" name="nickname" th:value="${profileDto.nickname}"></li>
                         <li><label>이미지 :</label><input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)"></li>
-                        <li><button type="button" onclick="removeImage()">Remove Image</button>
+                        <li><button type="button" class="btn btn-outline-danger" onclick="removeImage()">Remove Image</button>
                             <input type="hidden" id="isRemovedImage" name="isRemovedImage" value="false"/></li>
                     </ul>
                     <div>
