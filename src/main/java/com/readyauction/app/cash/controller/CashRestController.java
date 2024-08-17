@@ -1,13 +1,10 @@
 package com.readyauction.app.cash.controller;
 
-import com.readyauction.app.auction.dto.ProductRepDto;
-import com.readyauction.app.auction.dto.ProductReqDto;
 import com.readyauction.app.auction.service.BidService;
-import com.readyauction.app.auction.service.ProductService;
+import com.readyauction.app.cash.entity.PaymentCategory;
 import com.readyauction.app.cash.dto.PaymentReqDto;
 import com.readyauction.app.cash.dto.PaymentResDto;
 import com.readyauction.app.cash.service.PaymentService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,8 +27,23 @@ public class CashRestController {
     public ResponseEntity<PaymentResDto> createAuction(@RequestBody PaymentReqDto paymentReqDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-
+        paymentReqDto.setCategory(PaymentCategory.BID_COMPLETE);
         PaymentResDto createPayment = paymentService.createPayment(email, paymentReqDto);
+
+
+        if (createPayment == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(createPayment);
+    }
+
+
+    @PostMapping("/success")
+    public ResponseEntity<PaymentResDto> createSuccess(@RequestBody PaymentReqDto paymentReqDto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        PaymentResDto createPayment = paymentService.completePayment(email, paymentReqDto);
         if (createPayment == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }

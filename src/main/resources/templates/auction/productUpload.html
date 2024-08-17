@@ -25,6 +25,65 @@
             color: white;
             border-radius: 5px;
         }
+
+        /* 추가 스타일을 원한다면 여기에 작성하세요 */
+        .swiper-container {
+            width: 80%;
+            max-width: 600px;
+            margin: 50px auto;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        /* 썸네일 이미지 박스 스타일 */
+        .nav-item div {
+            width: 80px; /* 썸네일 이미지와 동일한 너비 */
+            height: 10px; /* 썸네일 이미지와 동일한 높이 */
+            overflow: hidden; /* 이미지가 박스를 초과하지 않도록 설정 */
+            display: flex;
+            justify-content: center; /* 이미지 박스 내에서 이미지 중앙 정렬 */
+            align-items: center; /* 이미지 박스 내에서 이미지 수직 중앙 정렬 */
+        }
+
+        /* 썸네일 이미지 스타일 */
+        .small-image-list img {
+            width: 80px; /* 썸네일 이미지의 너비 */
+            height: auto; /* 종횡비 유지 */
+            max-height: 10px; /* 썸네일 이미지의 최대 높이 */
+        }
+
+        /* 상품 이미지 박스 스타일 */
+        .product-image-box {
+            display: flex;
+            justify-content: center; /* 박스 내에서 이미지를 중앙에 정렬 */
+            border: 1px solid #ddd; /* 선택 사항: 이미지 박스에 테두리를 추가 */
+            padding: 10px; /* 선택 사항: 이미지 주위에 여백을 추가 */
+            max-width: 100%; /* 이미지 박스가 컨테이너를 초과하지 않도록 설정 */
+        }
+
+        /* 상품 이미지 스타일 */
+        .product-image {
+            max-width: 100%; /* 이미지가 컨테이너 너비를 초과하지 않도록 설정 */
+            max-height: 300px; /* 이미지의 최대 높이를 설정 */
+            height: auto; /* 이미지의 종횡비 유지 */
+            width: auto; /* 이미지의 종횡비 유지 */
+        }
+
+        /* 작은 이미지 썸네일 스타일 */
+        .small-image-list img {
+            width: 80px; /* 썸네일의 너비 설정 */
+            height: auto; /* 종횡비 유지 */
+            max-height: 80px; /* 선택 사항: 최대 높이 제한 */
+
+            .description {
+                white-space: pre-wrap;
+            }
+        }
+
+        .description {
+            white-space: pre-wrap;
+        }
+
     </style>
 </head>
 <body>
@@ -50,13 +109,31 @@
                     </div>
                     <div class="contact-input-group">
                         <label for="image">상품 이미지</label>
-                        <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)">
-                        <img id="imagePreview" style="display:none; max-width: 100%; height: auto; margin-top: 10px;">
+                        <input type="file" id="image" name="image[]" accept="image/*" multiple>
                         <!-- Progress bar container -->
-                        <div id="progress-bar-container">
-                            <div id="progress-bar"></div>
+                        <div id="progress-bar-container" style="display:none;">
+                            <div id="progress-bar" style="width: 0%; background-color: blue; height: 20px;"></div>
                         </div>
                     </div>
+                    <div class="contact-input-group">
+                        <div class="swiper-container">
+                            <div class="swiper-wrapper">
+                                <!-- 여기에 이미지 슬라이드가 동적으로 추가됩니다 -->
+                            </div>
+                            <div class="swiper-pagination"></div>
+                            <div class="swiper-button-next"></div>
+                            <div class="swiper-button-prev"></div>
+                        </div>
+
+                    </div>
+                    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+                    <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">
+                        <li class="nav-item">
+
+                        </li>
+                    </ul>
+
+
                     <div class="blog-widget widget-categories">
                         <h5 class="widget-title">Sports Categories</h5>
                         <ul class="sidebar-tag-list">
@@ -126,7 +203,7 @@
     </div>
 
     <script>
-        var imgUrl = null;
+        var imgUrls = [];
 
         function previewImage(event) {
             const input = event.target;
@@ -160,25 +237,23 @@
             // Change the color of the clicked element
             event.target.style.color = "red"; // Or any color you prefer
         }
-
-
-
         $(document).ready(function () {
-            // Image upload on file select
             $('#image').on('change', function () {
-                var fileData = $(this).prop('files')[0];
+                var files = $(this).prop('files');
                 var formData = new FormData();
-                formData.append('file', fileData);
+
+                // 파일 여러 개 추가
+                $.each(files, function (key, file) {
+                    formData.append('files[]', file); // 파일을 formData에 추가
+                });
 
                 $.ajax({
-                    url: '[[@{/auction-api/img-upload}]]', // Address as a relative path
+                    url: '[[@{/auction-api/img-upload}]]', // 주소는 상황에 맞게 조정하세요.
                     type: 'POST',
                     data: formData,
-                    processData: false, // Prevent jQuery from converting the data into a query string
-                    contentType: false, // Prevent jQuery from overriding the content type
-                    beforeSend: function (xhr) {
-                        // Add email to the request header
-                        xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function () {
                         $('#progress-bar-container').show();
                         $('#progress-bar').css('width', '0%').text('0%');
                     },
@@ -186,152 +261,88 @@
                         var xhr = new window.XMLHttpRequest();
                         xhr.upload.addEventListener('progress', function (e) {
                             if (e.lengthComputable) {
-                                var percentComplete = (e.loaded / e.total) * 100;
+                                var percentComplete = e.loaded / e.total * 100;
                                 $('#progress-bar').css('width', percentComplete + '%').text(Math.round(percentComplete) + '%');
                             }
                         }, false);
                         return xhr;
                     },
                     success: function (response) {
-                        console.log('Image uploaded successfully:', response);
-                        imgUrl = response;
+                        console.log('Images uploaded successfully:', response);
+                        // 이미지 슬라이더에 이미지 추가
+                        updateSwiperWithImages(response.images);
+                        response.images.forEach(function(imgUrl) {
+                            imgUrls.push(imgUrl);  // 배열에 추가
+                        });
                         $('#progress-bar').css('width', '100%').text('Upload Complete');
                     },
                     error: function (xhr, status, error) {
-                        console.error('Failed to upload image:', error);
+                        console.error('Failed to upload images:', error);
                         $('#progress-bar').css('width', '0%').text('Upload Failed');
                     }
                 });
             });
+        });
 
-            function resizeImage(file, maxWidth, maxHeight, callback) {
-                const reader = new FileReader();
-
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        let canvas = document.createElement('canvas');
-                        let ctx = canvas.getContext('2d');
-
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > maxWidth || height > maxHeight) {
-                            if (width > height) {
-                                height = Math.round((maxHeight / width) * height);
-                                width = maxWidth;
-                            } else {
-                                width = Math.round((maxWidth / height) * width);
-                                height = maxHeight;
-                            }
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        canvas.toBlob(function(blob) {
-                            callback(blob);
-                        }, file.type);
-                    };
-
-                    img.src = event.target.result;
-                };
-
-                reader.readAsDataURL(file);
-            }
-
-            $(document).ready(function () {
-                // Image upload on file select
-                $('#image').on('change', function () {
-                    var fileData = $(this).prop('files')[0];
-
-                    resizeImage(fileData, 1920, 1080, function(resizedBlob) {
-                        var formData = new FormData();
-                        formData.append('file', resizedBlob, fileData.name); // Set the resized image with the original file name
-
-                        $.ajax({
-                            url: '[[@{/auction-api/img-upload}]]', // Address as a relative path
-                            type: 'POST',
-                            data: formData,
-                            processData: false, // Prevent jQuery from converting the data into a query string
-                            contentType: false, // Prevent jQuery from overriding the content type
-                            beforeSend: function (xhr) {
-                                // Add email to the request header
-                                xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
-                                $('#progress-bar-container').show();
-                                $('#progress-bar').css('width', '0%').text('0%');
-                            },
-                            xhr: function () {
-                                var xhr = new window.XMLHttpRequest();
-                                xhr.upload.addEventListener('progress', function (e) {
-                                    if (e.lengthComputable) {
-                                        var percentComplete = (e.loaded / e.total) * 100;
-                                        $('#progress-bar').css('width', percentComplete + '%').text(Math.round(percentComplete) + '%');
-                                    }
-                                }, false);
-                                return xhr;
-                            },
-                            success: function (response) {
-                                console.log('Image uploaded successfully:', response);
-                                imgUrl = response;
-                                $('#progress-bar').css('width', '100%').text('Upload Complete');
-                            },
-                            error: function (xhr, status, error) {
-                                console.error('Failed to upload image:', error);
-                                $('#progress-bar').css('width', '0%').text('Upload Failed');
-                            }
-                        });
-                    });
-                });
-
-                $('#contact_form').on('submit', function (e) {
-                    e.preventDefault();
-
-                    var formData = new FormData(this);
-                    formData.delete('image'); // Removes the image entry from the formData
-
-                    // Add the image URL to the form data if it exists
-                    if (imgUrl !== null) {
-                        console.log(imgUrl + " 상품 url");
-                        formData.append('imgUrl', imgUrl);
-                    }
-
-                    var productData = {
-                        name: $('#first-Name').val(),
-                        imgUrl: imgUrl, // Already uploaded image URL
-                        category: $('#categoryInput').val(),
-                        bidUnit: $('#bidUnit').val(),
-                        immediatePrice: $('#immediatePrice').val(),
-                        endTime: $('#endTime').val(),
-                        description: $('#discription').val(),
-                        currentPrice: $('#currentPrice').val()
-                    };
-
-                    console.log(productData);
-                    // Send JSON data with AJAX request
-                    $.ajax({
-                        url: '[[@{/auction-api/create}]]', // Server URL
-                        type: 'POST',
-                        contentType: 'application/json', // Send as JSON
-                        data: JSON.stringify(productData), // Serialize JSON
-                        beforeSend: function (xhr) {
-                            // Add email to the request header
-                            xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
-                        },
-                        success: function (data) {
-                            alert('상품이 성공적으로 등록되었습니다.');
-                            console.log('Success:', data);
-                        },
-                        error: function (xhr, status, error) {
-                            alert('상품 등록에 실패했습니다.');
-                            console.error('Error:', error);
-                        }
-                    });
-                });
+        function updateSwiperWithImages(images) {
+            var swiperContainer = $('.swiper-wrapper');
+            images.forEach(function (imgUrl) {
+                var slideContent = '<div class="swiper-slide"><img src="' + imgUrl + '" class="product-image"></div>';
+                swiperContainer.append(slideContent);
             });
 
-        });
+            // 스와이퍼 초기화 (이미지를 새로 추가했기 때문에 다시 초기화 해야합니다)
+            const swiper = new Swiper('.swiper-container', {
+                loop: true,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                }
+            });
+
+            $('#contact_form').on('submit', function (e) {
+                e.preventDefault();
+
+
+
+                var productData = {
+                    name: $('#first-Name').val(),
+                    imgUrls: imgUrls, // Already uploaded image URL
+                    category: $('#categoryInput').val(),
+                    bidUnit: $('#bidUnit').val(),
+                    immediatePrice: $('#immediatePrice').val(),
+                    endTime: $('#endTime').val(),
+                    description: $('#discription').val(),
+                    currentPrice: $('#currentPrice').val()
+                };
+
+                console.log(productData);
+                // Send JSON data with AJAX request
+                $.ajax({
+                    url: '[[@{/auction-api/create}]]', // Server URL
+                    type: 'POST',
+                    contentType: 'application/json', // Send as JSON
+                    data: JSON.stringify(productData), // Serialize JSON
+                    beforeSend: function (xhr) {
+                        // Add email to the request header
+                        xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
+                    },
+                    success: function (data) {
+                        alert('상품이 성공적으로 등록되었습니다.');
+                        console.log('Success:', data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert('상품 등록에 실패했습니다.');
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        }
+
     </script>
 </div>
 </body>

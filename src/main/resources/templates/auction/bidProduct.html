@@ -71,7 +71,7 @@
     <div class="breadcrumb breadcrumb-style-one mb-0">
         <div class="container">
             <div class="col-lg-12 text-center">
-                <h1 class="breadcrumb-title">결제하기</h1>
+                <h1 class="breadcrumb-title">내 입찰</h1>
                 <ul class="d-flex justify-content-center breadcrumb-items">
                     <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/static}">Home</a></li>
                     <li class="breadcrumb-item active">Payment</li>
@@ -85,7 +85,7 @@
                 <div class="col-lg-6">
                     <div class="item-bid-timer">
                         <div class="auction-bid">
-                            <p>낙찰가</p>
+                            <p>낙찰 가</p>
                             <h5 th:text="'₩' + ${#numbers.formatDecimal(productDetail.immediatePrice, 0, 'COMMA', 0, 'POINT')}"></h5>
                         </div>
                     </div>
@@ -135,71 +135,11 @@
                                 <li><span>판매자 ID :</span><span th:text="${productDetail.memberId}">판매자</span></li>
                                 <li><span>카테고리 :</span><span th:text="${productDetail.category}">카테고리</span></li>
                                 <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
-                                <li><span>즉시 구매가 :</span><span th:text="'₩' + ${productDetail.currentPrice}">즉시 구매가</span></li>
+                                <li><span>즉시 구매가 :</span><span th:text="'₩' + ${productDetail.immediatePrice}">즉시 구매가</span></li>
                                 <li><span>상품 설명 :</span><span th:text="${productDetail.description}">상품 설명</span></li>
                             </ul>
                         </div>
 
-                        <div class="single-widget">
-                            <form class="widget-form" id="PaymentForm" >
-                                <div class="form-group d-flex justify-content-center align-items-center">
-                                      <button type="submit" class="widget-btn">결제 하기</button>
-                                </div>
-                            </form>
-                            <script>
-                                // const productId = /*[[${productDetail.id}]]*/ 'defaultId';
-                                $(document).ready(function() {
-                                    $('#PaymentForm').on('submit', function(event) {
-                                        event.preventDefault(); // 폼의 기본 제출 동작을 막습니다.
-                                        // 요청에 보낼 데이터 (PaymentReqDto에 해당하는 데이터 구성)
-                                        var paymentData = {
-                                            productId: [[${productDetail.id}]],  // 상품 ID
-                                            amount: [[${productDetail.currentPrice}]],  // 즉시 구매가
-                                            payTime: new Date().toISOString()  // 현재 시간을 ISO 8601 형식으로 설정
-                                        };
-
-                                        $.ajax({
-                                            url: '[[@{/cash-api/payment}]]',
-                                            type: 'POST',
-                                            contentType: 'application/json',
-                                            dataType: 'json',
-                                            data: JSON.stringify(paymentData),
-                                            success: function(response) {
-                                                // 성공적으로 응답을 받은 경우 실행됩니다.
-                                                console.log('Payment created successfully:', response);
-                                                alert('결제가 성공적으로 처리되었습니다!');
-                                                window.location.href = '/app/cash/success/' + productId;
-                                                // 필요에 따라 페이지 리다이렉션, 메시지 표시 등을 수행할 수 있습니다.
-                                                // 예진 작업 시작
-                                                // console.log([[${productDetail.id}]]);
-                                                // console.log(productId);
-                                                fetch(`[[@{/chat/create}]]`, {
-                                                    method : 'post',
-                                                    headers: {
-                                                        'Content-Type': 'application/json' // 요청 헤더 설정
-                                                    },
-                                                    body: JSON.stringify([[${productDetail.id}]])
-                                                }).then(response => {
-                                                    // 응답이 성공적인지 확인
-                                                    if (!response.ok) {
-                                                        throw new Error('Network response was not ok');
-                                                    }
-                                                    // JSON 형식으로 응답 본문을 파싱
-                                                    window.location.href= `[[@{/chat/list}]]`;
-                                                })
-                                                // 예진 작업 끝
-                                            },
-                                            error: function(xhr, status, error) {
-                                                // 요청이 실패한 경우 실행됩니다.
-                                                console.error('Error occurred while creating payment:', error);
-                                                alert('결제 중 오류가 발생했습니다. 다시 시도해주세요.');
-                                            }
-                                        });
-                                    });
-                                });
-                            </script>
-
-                        </div>
                     </div>
                 </div>
             </div>

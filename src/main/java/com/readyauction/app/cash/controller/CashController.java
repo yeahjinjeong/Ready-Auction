@@ -44,6 +44,23 @@ public class CashController {
             return "error/404"; // 예외 발생 시 에러 페이지로 리다이렉션
         }
     }
+    @GetMapping("/success/{id}")
+    public String getSuccess(@PathVariable("id") Long id, Model model) {
+        try {
+            System.out.println("실행중");
+            ProductRepDto productDetail = productService.productDetail(id);
+            if (productDetail != null) {
+                model.addAttribute("productDetail", productDetail);
+                return "cash/success"; // 여기 수정
+            } else {
+                System.out.println("에러");
+                return "error/404"; // 객체가 null일 경우 에러 페이지로 리다이렉션
+            }
+        } catch (IllegalStateException e) {
+            log.error("Error fetching product details", e);
+            return "error/404"; // 예외 발생 시 에러 페이지로 리다이렉션
+        }
+    }
 
 
     /** 캐시 **/
