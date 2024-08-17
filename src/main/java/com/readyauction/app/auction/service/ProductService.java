@@ -3,9 +3,7 @@ package com.readyauction.app.auction.service;
 import com.readyauction.app.auction.dto.*;
 import com.readyauction.app.auction.entity.*;
 import com.readyauction.app.auction.repository.ProductRepository;
-import com.readyauction.app.cash.service.PaymentService;
-import com.readyauction.app.file.model.dto.FileDto;
-import com.readyauction.app.file.model.service.NcpObjectStorageService;
+
 import com.readyauction.app.ncp.dto.FileDto;
 import com.readyauction.app.ncp.service.NcpObjectStorageService;
 import com.readyauction.app.user.service.MemberService;
