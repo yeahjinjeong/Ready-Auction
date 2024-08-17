@@ -16,6 +16,7 @@ import com.readyauction.app.user.dto.ProfileDto;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +34,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class MemberService {
 
-    @Autowired
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
     private final AmazonS3Client amazonS3Client;
     private final AccountService accountService;
     private final NcpObjectStorageService ncpObjectStorageService;
