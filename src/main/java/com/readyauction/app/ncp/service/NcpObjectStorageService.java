@@ -31,6 +31,12 @@ public class NcpObjectStorageService {
         return UUID.randomUUID().toString() + "." + ext;
     }
 
+    // 업로드 시 ncp에서 폴더 생성 후 폴더명 넣기
+    public List<FileDto> uploadFilesSample(List<MultipartFile> multipartFiles){
+        return uploadFiles(multipartFiles, "product-image/");
+    }
+
+    // NOTICE: filePath의 맨 앞에 /는 안 붙여도 됨 ex) history/images
     public List<FileDto> uploadFiles(List<MultipartFile> multipartFiles, String filePath) {
 
         List<FileDto> s3files = new ArrayList<>();

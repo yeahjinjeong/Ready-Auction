@@ -27,4 +27,8 @@ public class Account {
         }
         else return false;
     }
+    public Boolean deposit(Integer cash) {
+        this.cash += cash;
+        return true;
+    }
 }
