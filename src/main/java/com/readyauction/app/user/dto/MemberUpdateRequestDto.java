@@ -1,7 +1,6 @@
 package com.readyauction.app.user.dto;
 
 import com.readyauction.app.user.entity.Gender;
-import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.entity.UserStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

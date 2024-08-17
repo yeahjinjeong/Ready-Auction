@@ -5,7 +5,6 @@ import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.entity.UserStatus;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -44,25 +43,19 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class MemberRegisterRequestDto {
     private Long id;
-
     @Email(message = "아이디는 이메일 형식이어야 합니다.")
     @NotNull(message = "아이디는 null일 수 없습니다.")
     private String email;
-
     @NotEmpty(message = "비밀번호는 null 또는 공백일 수 없습니다.")
     private String password;
-
     @NotEmpty(message = "이름은 null 또는 공백일 수 없습니다.")
     private String name;
-
     private String phone;
     private String address;
     private Integer mannerScore;
     private Gender gender;
-
     @Past(message = "생일은 미래일 수 없습니다.")
     private LocalDate birth;
-
     private String nickname;
     private String profilePicture;
     private Timestamp createdAt;
