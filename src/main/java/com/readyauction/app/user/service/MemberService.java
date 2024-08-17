@@ -35,9 +35,8 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final AmazonS3Client amazonS3Client;
-    private final AccountService accountService;
     private final NcpObjectStorageService ncpObjectStorageService;
+    private final AccountService accountService;
     @Value("${spring.s3.bucket}")
     private String bucketName;
 
