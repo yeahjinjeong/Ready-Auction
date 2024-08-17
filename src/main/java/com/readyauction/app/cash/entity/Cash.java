@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Charge{
+public class Cash {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,12 +21,12 @@ public class Charge{
     @ManyToOne(fetch = FetchType.LAZY)
     private Account account;
 
-    private Integer chargeAmount;
+    private Integer amount;
 
     private Timestamp date;
 
     @Enumerated(EnumType.STRING)
-    private ChargeStatus chargeStatus;
+    private CashStatus status;
 
     // Getters and Setters
 }

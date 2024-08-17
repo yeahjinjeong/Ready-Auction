@@ -45,7 +45,7 @@ import java.time.LocalDate;
 public class MemberRegisterRequestDto {
     private Long id;
 
-//    @Email(message = "아이디는 이메일 형식이어야 합니다.")
+    @Email(message = "아이디는 이메일 형식이어야 합니다.")
     @NotNull(message = "아이디는 null일 수 없습니다.")
     private String email;
 
