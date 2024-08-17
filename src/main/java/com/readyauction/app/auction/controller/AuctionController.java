@@ -51,8 +51,6 @@ public class AuctionController {
             products = productService.getAllProducts(pageable);
         }
 
-
-
         model.addAttribute("products", products);
         model.addAttribute("currentPage", "auction");  // currentPage 값을 "auction"으로 설정
         model.addAttribute("currentPageNumber", products.getNumber());
