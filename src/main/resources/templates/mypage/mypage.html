@@ -41,10 +41,10 @@
        <button class="nav-link" id="v-btn-pp2" data-bs-toggle="pill" data-bs-target="#v-pills-pp2" type="button" role="tab" aria-controls="v-pills-pp2" aria-selected="false">캐시</button>
        <button class="nav-link" id="v-btn-pp3" data-bs-toggle="pill" data-bs-target="#v-pills-pp3" type="button" role="tab" aria-controls="v-pills-pp3" aria-selected="false">계정</button>
        <button class="nav-link" id="v-btn-pp4" data-bs-toggle="pill" data-bs-target="#v-pills-pp4" type="button" role="tab" aria-controls="v-pills-pp4" aria-selected="false">경매 참여 내역</button>
-       <button class="nav-link" id="v-btn-pp5" data-bs-toggle="pill" data-bs-target="#v-pills-pp4" type="button" role="tab" aria-controls="v-pills-pp5" aria-selected="false">경매 등록 내역</button>
-       <button class="nav-link" id="v-btn-pp6" data-bs-toggle="pill" data-bs-target="#v-pills-pp4" type="button" role="tab" aria-controls="v-pills-pp6" aria-selected="false">찜한 상품</button>
-       <button class="nav-link" id="v-btn-pp7" data-bs-toggle="pill" data-bs-target="#v-pills-pp4" type="button" role="tab" aria-controls="v-pills-pp7" aria-selected="false">키워드 알림</button>
-       <button class="nav-link" id="v-btn-pp8" data-bs-toggle="pill" data-bs-target="#v-pills-pp4" type="button" role="tab" aria-controls="v-pills-pp8" aria-selected="false">1:1 문의 내역</button>
+       <button class="nav-link" id="v-btn-pp5" data-bs-toggle="pill" data-bs-target="#v-pills-pp5" type="button" role="tab" aria-controls="v-pills-pp5" aria-selected="false">경매 등록 내역</button>
+       <button class="nav-link" id="v-btn-pp6" data-bs-toggle="pill" data-bs-target="#v-pills-pp6" type="button" role="tab" aria-controls="v-pills-pp6" aria-selected="false">찜한 상품</button>
+       <button class="nav-link" id="v-btn-pp7" data-bs-toggle="pill" data-bs-target="#v-pills-pp7" type="button" role="tab" aria-controls="v-pills-pp7" aria-selected="false">키워드 알림</button>
+       <button class="nav-link" id="v-btn-pp8" data-bs-toggle="pill" data-bs-target="#v-pills-pp8" type="button" role="tab" aria-controls="v-pills-pp8" aria-selected="false">1:1 문의 내역</button>
       </div>
      </div>
     </div>
@@ -79,11 +79,11 @@
         <div class="single-widget">
          <h5 class="wdget-title">My Cash</h5>
          <ul class="widget-list">
-<!--          <li><span>잔액 :</span><span th:text="${account.cash}"></span></li>-->
+          <li><label>잔액 :</label><span id="cash"></span></li>
          </ul>
          <div style="text-align: right">
-          <a th:href="@{/mypage/cash-charge}" class="alpha-btn-md-dark">Charge</a>
-          <a th:href="@{/mypage/cash-refund}" class="alpha-btn-md-dark">Refund</a>
+          <a th:href="@{/cash/cash-charge}" class="alpha-btn-md-dark">충전</a>
+          <a th:href="@{/cash/cash-withdrawal}" class="alpha-btn-md-dark">출금</a>
          </div>
         </div>
        </div>
@@ -168,6 +168,17 @@
    </div>
   </div>
  </div>
+
+ <script>
+  function formatNumber(number) {
+   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+   var cash = [[${accountDto.cash}]]; // Thymeleaf에서 값을 삽입
+   document.getElementById('cash').textContent = formatNumber(cash) + '원';
+  });
+ </script>
 </div>
 
 </body>

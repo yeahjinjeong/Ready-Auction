@@ -7,8 +7,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.common.handler.UserNotFoundException;
-import com.readyauction.app.file.model.dto.FileDto;
-import com.readyauction.app.file.model.service.NcpObjectStorageService;
+import com.readyauction.app.ncp.dto.FileDto;
+import com.readyauction.app.ncp.service.NcpObjectStorageService;
 import com.readyauction.app.user.dto.MemberDto;
 import com.readyauction.app.user.dto.MemberRegisterRequestDto;
 import com.readyauction.app.user.dto.MemberUpdateRequestDto;
@@ -16,35 +16,31 @@ import com.readyauction.app.user.dto.ProfileDto;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class MemberService {
 
-    @Autowired
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
+    private final NcpObjectStorageService ncpObjectStorageService;
     private final AmazonS3Client amazonS3Client;
     private final AccountService accountService;
     @Value("${spring.s3.bucket}")
     private String bucketName;
-    @Autowired
-    private NcpObjectStorageService ncpObjectStorageService;
 
-
-    public void register(MemberRegisterRequestDto dto) {
+    public Member register(MemberRegisterRequestDto dto) {
         // 1. dto -> entity 변환
         Member member = dto.toMember();
         // 기본권한 설정
@@ -53,6 +49,7 @@ public class MemberService {
         // repository의 save메서드 호출 (조건. entity객체를 넘겨줘야 함)
         member = memberRepository.save(member);
         accountService.create(member.getId());
+        return memberRepository.save(member); // 저장 후 Member 반환
     }
 
     public void update(MemberUpdateRequestDto dto) {
@@ -65,37 +62,23 @@ public class MemberService {
         return memberOptional.orElseThrow(() -> new UserNotFoundException(email));
     }
 
-    public List<MemberDto> findAll() {
-        List<Member> memberEntityList = memberRepository.findAll();
-        List<MemberDto> memberDtoList = new ArrayList<>();
-        for (Member memberEntity: memberEntityList) {
-            memberDtoList.add(MemberDto.toMemberDto(memberEntity));
-            MemberDto memberDTO = MemberDto.toMemberDto(memberEntity);
-            memberDtoList.add(memberDTO);
-        }
-        return memberDtoList;
-    }
-
     @Transactional(readOnly = true)
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
 
 
-    /* 지영 작업 시작 - 프로필 */
+    /** 프로필 **/
 
-    // findMember
     public MemberDto findMemberDtoByEmail(String email) {
         Member member = memberRepository.findByEmail(email);
-
         if (member == null) {
             throw new UserNotFoundException("No member found with email: " + email);
         }
-
-        return MemberDto.toMemberDto(member);
+        return new MemberDto(member);
     }
 
-    // ProfileDto
+    // Member 엔티티 -> ProfileDto
     public ProfileDto toProfileDto(String email) {
         Member member = memberRepository.findMemberByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
@@ -110,8 +93,8 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    public String uploadImage(MultipartFile image, String email) throws IOException {
-        String filePath = "profile/" + email + "/";
+    public String uploadImage(String email, MultipartFile image) {
+        String filePath = "profile/" + email;
         List<MultipartFile> files = new ArrayList<>();
         files.add(image);
         List<FileDto> uploadedFiles = ncpObjectStorageService.uploadFiles(files, filePath);
@@ -121,41 +104,35 @@ public class MemberService {
     public void deleteImage(String imageUrl) {
         if (imageUrl != null && !imageUrl.isEmpty()) {
             String key = imageUrl.substring(imageUrl.indexOf(bucketName) + bucketName.length() + 1);
-            deleteFile(key);
+            ncpObjectStorageService.deleteFile(key);
         }
     }
 
-    public void deleteFile(String key) {
-        try {
-            amazonS3Client.deleteObject(bucketName, key);
-            System.out.println("파일이 성공적으로 삭제되었습니다.");
-        } catch (AmazonServiceException e) {
-            e.printStackTrace();
-            System.out.println("파일 삭제 중 오류가 발생했습니다: " + e.getMessage());
-        }
-    }
-
-    public void updateProfile(String email, String nickname, MultipartFile image, String removeImage) throws IOException {
-        Member member = findMemberByEmail(email);
+    public void updateProfile(String email, String nickname, MultipartFile image, @RequestParam("isRemovedImage") boolean isRemovedImage) throws IOException {
+        Member member = memberRepository.findByEmail(email);
         member.setNickname(nickname);
 
-        boolean removeImageFlag = "true".equalsIgnoreCase(removeImage);
-
-        if (removeImageFlag && member.getProfilePicture() != null) {
+        // 이미지 제거 요청이 있을 경우
+        if (isRemovedImage) {
+            // 기존 프로필 이미지 삭제
             deleteImage(member.getProfilePicture());
+
+            // Member 엔티티의 profilePicture를 null로 업데이트
             member.setProfilePicture(null);
+        } else {
+            // 기존 프로필 이미지가 있는 경우 삭제
+            if (member.getProfilePicture() != null) {
+                deleteImage(member.getProfilePicture());
+            }
+
+            // 새 프로필 이미지 업로드
+            String newProfilePicture = uploadImage(email, image);
+            member.setProfilePicture(newProfilePicture);
         }
 
-        if (!image.isEmpty()) {
-            String imageUrl = uploadImage(image, email);
-            member.setProfilePicture(imageUrl);
-        }
-
+        member.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         save(member);
     }
-
-
-    /* 지영 작업 끝 */
 
 
     // Member 데이터 수정
@@ -169,11 +146,6 @@ public class MemberService {
 //        existingMember.setMannerScore(member.getMannerScore());
 //        return memberRepository.save(existingMember);
 //    }
-
-    @Transactional
-    public void deleteById(Long id) {
-        memberRepository.deleteById(id);
-    }
 
     public String emailCheck(String memberEmail) {
         Member byMemberEmail = memberRepository.findByEmail(memberEmail);

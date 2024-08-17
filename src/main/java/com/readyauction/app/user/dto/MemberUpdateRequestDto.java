@@ -32,20 +32,4 @@ public class MemberUpdateRequestDto {
     private Timestamp updatedAt;
     private Timestamp deletedAt;
     private UserStatus userStatus;
-
-    public static MemberUpdateRequestDto toUpdateMemberDto(Member memberEntity) {
-        MemberUpdateRequestDto dto = new MemberUpdateRequestDto();
-        dto.setPassword(memberEntity.getPassword());
-        dto.setName(memberEntity.getName());
-        dto.setPhone(memberEntity.getPhone());
-        dto.setAddress(memberEntity.getAddress());
-        dto.setBirth(dto.getBirth());
-        dto.setNickname(memberEntity.getNickname());
-        dto.setProfilePicture(memberEntity.getProfilePicture());
-        dto.setMannerScore(memberEntity.getMannerScore());
-        dto.setCreatedAt(memberEntity.getCreatedAt());
-//        memberDTO.setUpdatedAt(memberEntity.getUpdatedAt());
-        dto.setUserStatus(memberEntity.getUserStatus());
-        return dto;
-    }
 }

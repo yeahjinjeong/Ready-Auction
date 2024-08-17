@@ -62,7 +62,6 @@ public class AuctionController {
 
         return "auction/auction";
 
-
     }
 
     @GetMapping("/auctionDetails")// 경매 입찰 하는 상품 상세 페이지
