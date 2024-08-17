@@ -354,4 +354,11 @@ public class ProductService {
         return productRepository.findActiveProducts(AuctionStatus.END, pageable)
                 .map(this::convertToProductDto);
     }
+
+    /** 지영 - 계좌 내역 조회 시 필요**/
+    public String findProductNameById(Long productId) {
+        return productRepository.findById(productId)
+                .map(Product::getName)
+                .orElse("N/A");
+    }
 }

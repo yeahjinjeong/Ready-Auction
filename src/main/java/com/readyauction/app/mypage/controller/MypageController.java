@@ -1,7 +1,9 @@
 package com.readyauction.app.mypage.controller;
 
 import com.readyauction.app.cash.dto.AccountDto;
+import com.readyauction.app.cash.dto.TransactionDto;
 import com.readyauction.app.cash.service.AccountService;
+import com.readyauction.app.cash.service.TransactionService;
 import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.user.dto.MemberDto;
 import com.readyauction.app.user.dto.ProfileDto;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 @RequestMapping("/mypage")
@@ -25,6 +28,7 @@ public class MypageController {
 
     private final MemberService memberService;
     private final AccountService accountService;
+    private final TransactionService transactionService;
 
     // 마이페이지
     @GetMapping("")
@@ -51,6 +55,11 @@ public class MypageController {
             AccountDto accountDto = accountService.findAccountDtoByMemberId(memberDto.getId());
             log.debug("accountDto: {}", accountDto);
             model.addAttribute("accountDto", accountDto);
+
+            // 캐시와 결제 내역 조회
+            List<TransactionDto> transactionHistory = transactionService.getTransactionHistory(accountDto.getId());
+            log.debug("transactionHistory: {}", transactionHistory);
+            model.addAttribute("transactionHistory", transactionHistory);
 
         } catch (UserNotFoundException e) {
             log.error("Member not found: {}", e.getMessage());
