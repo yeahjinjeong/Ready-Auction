@@ -18,8 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @Slf4j
-@RequestMapping("/cash")
 @RequiredArgsConstructor
+@RequestMapping("/cash")
 public class CashController {
 
     private final MemberService memberService;
@@ -44,6 +44,7 @@ public class CashController {
             return "error/404"; // 예외 발생 시 에러 페이지로 리다이렉션
         }
     }
+
     @GetMapping("/success/{id}")
     public String getSuccess(@PathVariable("id") Long id, Model model) {
         try {

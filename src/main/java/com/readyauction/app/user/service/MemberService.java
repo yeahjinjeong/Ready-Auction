@@ -1,5 +1,10 @@
 package com.readyauction.app.user.service;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.ncp.dto.FileDto;
@@ -11,6 +16,7 @@ import com.readyauction.app.user.dto.ProfileDto;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,11 +45,11 @@ public class MemberService {
         Member member = dto.toMember();
         // 기본권한 설정
         member.setDefaultAuthorities();
-
         // repository의 save메서드 호출 (조건. entity객체를 넘겨줘야 함)
         member = memberRepository.save(member);
+
         accountService.create(member.getId());
-        return memberRepository.save(member); // 저장 후 Member 반환
+        return member; // 저장 후 Member 반환
     }
 
     public void update(MemberUpdateRequestDto dto) {

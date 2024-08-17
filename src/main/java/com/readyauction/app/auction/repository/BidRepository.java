@@ -18,6 +18,7 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     Optional<Bid> findByMemberIdAndProduct(Long memberId, Product product);
     Optional<List<Bid>> findByProduct(Product product);
 
-    @Query("SELECT new com.readyauction.app.auction.dto.TopBidDto(b.memberId, b.product, MAX(b.myPrice),b.bidTime) " +
+    @Query("SELECT new com.readyauction.app.auction.dto.TopBidDto(b.memberId, b.product, MAX(b.myPrice), MAX(b.bidTime)) " +
             "FROM Bid b WHERE b.product IN :products GROUP BY b.memberId, b.product")
-    Optional<List<TopBidDto>> findTopBidsByProducts(@Param("products") List<Product> products);}
+    Optional<List<TopBidDto>> findTopBidsByProducts(@Param("products") List<Product> products);
+}
