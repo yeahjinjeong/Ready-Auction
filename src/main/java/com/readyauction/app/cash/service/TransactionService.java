@@ -38,21 +38,49 @@ public class TransactionService {
 
         // Cash 내역 추가
         for (Cash cash : cashList) {
-            String status = cash.getStatus() != null ? cash.getStatus().name() : "UNKNOWN";
-            transactions.add(new TransactionDto(cash.getDate(), "CASH", cash.getAmount(), status, null));
+            // 캐시 상태
+            String cashStatus = cash.getStatus() != null ? cash.getStatus().name() : "UNKNOWN";
+
+            transactions.add(new TransactionDto(cash.getDate(), "CASH", cash.getAmount(), cashStatus, null));
         }
 
         // Payment 내역 추가
         for (Payment payment : filteredPayments) {
-            String type = payment.getSenderAccount().getId().equals(accountId) ? "PAYMENT_SENT" : "PAYMENT_RECEIVED";
-            String status = payment.getStatus() != null ? payment.getStatus().name() : "UNKNOWN";
-            // 결제 완료일 경우 amount 음수로 표시
-            Integer amount = payment.getStatus() == PaymentStatus.COMPLETED ? -payment.getPayAmount() : payment.getPayAmount();
+            // senderAccountId와 회원 accountId가 같으면 구매자, receiverAccountId와 회원 accountId가 같으면 판매자
+            String paymentType = payment.getSenderAccount().getId().equals(accountId) ? "PAYMENT_SENT" : "PAYMENT_RECEIVED";
+
+            // 결제 상태 (Completed 결제완료, Rollback_Completed 환불완료)
+            String paymentStatus = payment.getStatus() != null ? payment.getStatus().name() : "UNKNOWN";
+            
+            Integer payAmount;
+            
+            // 회원 본인이 구매자일 경우
+            if (paymentType.equals("PAYMENT_SENT")) {
+                // 결제 완료인 경우
+                if (paymentStatus.equals("COMPLETED")) {
+                    payAmount = -payment.getPayAmount(); // 음수로 설정 (빨간색)
+                // 환불 완료인 경우
+                } else if (paymentStatus.equals("ROLLBACK_COMPLETED")) {
+                    payAmount = payment.getPayAmount(); // 양수로 설정 (파란색)
+                } else {
+                    continue; // 다른 상태는 무시
+                }
+            // 회원 본인이 판매자일 경우
+            } else { // PAYMENT_RECEIVED
+                // 결제 완료인 경우
+                if (paymentStatus.equals("COMPLETED")) {
+                    payAmount = payment.getPayAmount(); // 양수로 설정 (파란색)
+                } else if (paymentStatus.equals("ROLLBACK_COMPLETED")) {
+                    payAmount = -payment.getPayAmount(); // 음수로 설정 (빨간색)
+                } else {
+                    continue; // 다른 상태는 무시
+                }
+            }
 
             // Product 이름 조회
             String productName = payment.getProductId() != null ? productService.findProductNameById(payment.getProductId()) : "N/A";
 
-            transactions.add(new TransactionDto(payment.getDate(), type, amount, status, productName));
+            transactions.add(new TransactionDto(payment.getDate(), paymentType, payAmount, paymentStatus, productName));
         }
 
         // 날짜 기준으로 내림차순 정렬
