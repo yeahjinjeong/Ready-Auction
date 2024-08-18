@@ -33,6 +33,7 @@ public class PaymentService {
 
     @Transactional
     public Payment createBidPayment(Long userId, PaymentReqDto paymentReqDto) {
+        System.out.println("상품 입찰 선불금 지불 중!");
         try {
             Optional<List<Payment>> payments = paymentRepository.findByProductIdAndMemberIdAndCategoryAndStatusOrStatus(
                     paymentReqDto.getProductId(),
@@ -92,7 +93,7 @@ public class PaymentService {
             // Payment 저장
             Payment savedPayment = paymentRepository.save(payment);
             if (savedPayment == null) {
-                throw new RuntimeException("Failed to save the payment");
+                throw new EntityNotFoundException("Failed to save the payment");
             }
 
             return (savedPayment);
