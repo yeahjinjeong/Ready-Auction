@@ -37,6 +37,8 @@ public class BidService {
 
 
     public boolean createBid(Long userId, Product product, Integer price, Timestamp timestamp) {
+
+        System.out.println("상품 입찰 크릿 진행!");
         if (product == null) {
             throw new IllegalArgumentException("Product cannot be null");
         }
@@ -48,6 +50,7 @@ public class BidService {
                 .build();
 
         paymentService.createBidPayment(userId, paymentReqDto);
+        System.out.println("상품 입찰 크릿에서 선불 지불 완료!");
         try {
             Bid bid = Bid.builder()
                     .memberId(userId)
@@ -59,6 +62,7 @@ public class BidService {
             bidRepository.save(bid);
             product.setCurrentPrice(price);
             productRepository.save(product);
+            System.out.println("상품 입찰 저장 완료!");
             return true;  // Successfully saved
         } catch (Exception e) {
             log.error("Failed to create bid for userId {} on productId {}: {}", userId, product.getId(), e.getMessage());
@@ -68,6 +72,7 @@ public class BidService {
 
     public boolean updateBid(Bid bid, Integer price, Timestamp timestamp) {
 
+        System.out.println("상품 입찰 업뎃 진행!");
         try {
             bid.setMyPrice(price);
             bid.setBidTime(timestamp);
@@ -131,16 +136,19 @@ public class BidService {
             if(userId.equals(product.getMemberId())) {
                 throw new IllegalStateException("Seller can't start bid for product with ID: " + bidDto.getProductId());
             }
+            System.out.println("상품 조회 성공");
             // 제품이 이미 낙찰되었는지 확인
             if (product.hasWinner()) {
                 throw new IllegalStateException("The product has already been won");
             }
 
+            System.out.println("낙찰 여부 체크 성공");
             // 입찰 가격 유효성 검사
             if (bidDto.getBidPrice() < product.getCurrentPrice()) {
                 throw new IllegalArgumentException("Bid price must be higher than the current product price");
             }
 
+            System.out.println("가격 유효성 체크 성공");
             // 입찰 가격 갱신
 
             product.setAuctionStatus(AuctionStatus.PROGRESS);
@@ -164,6 +172,8 @@ public class BidService {
                 bidResDto = createBidResDto(product.getImmediatePrice(), BidStatus.ACCEPTED,Timestamp.from(Instant.now()));
 
             } else {
+
+                System.out.println("상품 입찰 진행!");
                 Integer currentPrice = updateBidPrice(product, bidDto.getBidPrice());
                 // 기존 입찰이 있는 경우 갱신, 없는 경우 새로 생성
                 bidRepository.findByMemberIdAndProduct(userId, product)
@@ -261,5 +271,10 @@ public class BidService {
             log.error("Failed to update bid price for productId {}: {}", product.getId(), e.getMessage());
             throw new RuntimeException("Failed to update bid price", e);
         }
+    }
+
+    /** 지영 - 마이페이지 경매 내역 조회 시 필요 **/
+    public List<Bid> getBidsByStatus(Long memberId, BidStatus status) {
+        return bidRepository.findByMemberIdAndBidStatus(memberId, status);
     }
  }

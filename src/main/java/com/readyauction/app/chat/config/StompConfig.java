@@ -15,6 +15,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
 //        for (String endpoint : endpoints) {
 //            registry.addEndpoint("/chat/" + endpoint).withSockJS();
 //        }
+        registry.addEndpoint("/auction").withSockJS();
     }
 
     @Override
@@ -22,5 +23,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker("/sub");
         registry.setApplicationDestinationPrefixes("/pub");
         registry.setUserDestinationPrefix("/user");
+
+
     }
 }
