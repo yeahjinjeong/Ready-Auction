@@ -13,6 +13,7 @@
             border: 2px solid #ddd;
             border-radius: 5px;
             overflow: hidden;
+            position: relative;
         }
         /* 썸네일 이미지 박스 스타일 */
         .nav-item div {
@@ -62,6 +63,46 @@
         .description {
             white-space: pre-wrap;
         }
+            .swiper-pagination {
+                position: absolute;
+                bottom: 10px; /* 페이지네이션을 이미지 아래로 배치 */
+                right: 10px; /* 오른쪽 정렬 */
+                text-align: right; /* 오른쪽 정렬 */
+                display: flex; /* 가로 배치 */
+                gap: 5px; /* 페이지네이션 간격 */
+            }
+
+            .swiper-pagination-bullet {
+                background-color: #ddd;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                opacity: 1;
+            }
+
+            .swiper-pagination-bullet-active {
+                background-color: #000;
+            }
+            .swiper-button-prev,
+            .swiper-button-next {
+                color: #000; /* 화살표 색상 */
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background-color: rgba(255, 255, 255, 0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .swiper-button-prev {
+                left: 10px; /* 왼쪽 버튼 위치 */
+            }
+
+            .swiper-button-next {
+                right: 10px; /* 오른쪽 버튼 위치 */
+            }
+
 
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -257,33 +298,27 @@
                     </div>
 
                     <!-- 상품 이미지를 하얀 박스 위에 표시 -->
-                    <div class="swiper-container">
-                        <div class="swiper-wrapper">
-                            <div class="swiper-slide">
-                                <img alt="상품 이미지" class="product-image" th:src="${productDetail.imgUrl}">
-                                <div class="swiper-pagination"></div>
-                            </div>
-                        </div>
-
-
-                    <!-- 내비게이션 버튼 -->
-                        <div class="swiper-button-next"></div>
+                    <div class="swiper-container product-image-box">
+                    <img th:src="${productDetail.imgUrl}" alt="상품 이미지" class="product-image">
+                        <div class="swiper-pagination"></div> <!-- 페이지네이션 위치 -->
+                        <!-- 이전, 다음 버튼 추가 -->
                         <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
+                    <!-- 내비게이션 버튼 -->
                     </div>
                     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 
                     <!-- Initialize Swiper -->
                     <script>
-                        const swiper = new Swiper('.swiper-container', {
-                            loop: true,
+                        var swiper = new Swiper('.swiper-container', {
+                            navigation: {
+                                nextEl: '.swiper-button-next',
+                                prevEl: '.swiper-button-prev',
+                            },
                             pagination: {
                                 el: '.swiper-pagination',
                                 clickable: true,
                             },
-                            navigation: {
-                                nextEl: '.swiper-button-next',
-                                prevEl: '.swiper-button-prev',
-                            }
                         });
                     </script>
                     <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">
