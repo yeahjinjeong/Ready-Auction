@@ -50,6 +50,7 @@
         <!-- Left side columns -->
         <div class="col-lg-8" style="padding-left: 24px">
             <div class="row">
+
                 <!-- Sales Card -->
                 <div class="col-xxl-4 col-md-6">
                     <div class="card info-card sales-card">
@@ -75,13 +76,14 @@
                                     <i class="bi bi-cart"></i>
                                 </div>
                                 <div class="ps-3">
-                                    <h6 id="salesCount" th:text="${completedTransactionsToday}">0</h6>
+                                    <h6 id="salesCount">100</h6> <!-- 하드코딩된 데이터 -->
                                 </div>
                             </div>
                         </div>
 
                     </div>
-                </div><!-- End Sales Card -->
+                </div>
+                <!-- End Sales Card -->
 
                 <!-- Revenue Card -->
                 <div class="col-xxl-4 col-md-6">
@@ -94,68 +96,82 @@
                                     <h6>Filter</h6>
                                 </li>
 
-                                <li><a class="dropdown-item" href="#">Today</a></li>
-                                <li><a class="dropdown-item" href="#">This Month</a></li>
-                                <li><a class="dropdown-item" href="#">This Year</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadRevenue('today')">Today</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadRevenue('month')">This Month</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadRevenue('year')">This Year</a></li>
                             </ul>
                         </div>
 
                         <div class="card-body">
-                            <h5 class="card-title">Revenue <span>| This Month</span></h5>
+                            <h5 class="card-title">Revenue <span id="revenuePeriod">| This Month</span></h5>
 
                             <div class="d-flex align-items-center">
                                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                     <i class="bi bi-currency-dollar"></i>
                                 </div>
                                 <div class="ps-3">
-                                    <h6>$3,264</h6>
-                                    <span class="text-success small pt-1 fw-bold">8%</span> <span
-                                        class="text-muted small pt-2 ps-1">increase</span>
-
+                                    <h6 id="revenueAmount">$5000</h6> <!-- 하드코딩된 데이터 -->
+                                    <span id="revenueChange" class="text-success small pt-1 fw-bold">10%</span>
+                                    <span class="text-muted small pt-2 ps-1">increase</span>
                                 </div>
                             </div>
                         </div>
 
                     </div>
-                </div><!-- End Revenue Card -->
+                </div>
+                <!-- End Revenue Card -->
 
-                <!-- Customers Card -->
-                <div class="col-xxl-4 col-xl-12">
-
+                <!-- Members Card with Active/Deleted Filter -->
+                <div class="col-xxl-4 col-md-6">
                     <div class="card info-card customers-card">
-
                         <div class="filter">
                             <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                 <li class="dropdown-header text-start">
                                     <h6>Filter</h6>
                                 </li>
-
-                                <li><a class="dropdown-item" href="#">Today</a></li>
-                                <li><a class="dropdown-item" href="#">This Month</a></li>
-                                <li><a class="dropdown-item" href="#">This Year</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadMembers('active')">활동중인 회원</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadMembers('deleted')">탈퇴한 회원</a></li>
                             </ul>
                         </div>
 
                         <div class="card-body">
-                            <h5 class="card-title">Customers <span>| This Year</span></h5>
-
+                            <h5 class="card-title">Members <span id="memberStatusLabel">| Active</span></h5>
                             <div class="d-flex align-items-center">
                                 <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                     <i class="bi bi-people"></i>
                                 </div>
                                 <div class="ps-3">
-                                    <h6>1244</h6>
-                                    <span class="text-danger small pt-1 fw-bold">12%</span> <span
-                                        class="text-muted small pt-2 ps-1">decrease</span>
-
+                                    <h6 id="membersCount">0</h6>
                                 </div>
                             </div>
-
                         </div>
                     </div>
+                </div>
 
-                </div><!-- End Customers Card -->
+                <script>
+                    function loadMembers(status) {
+                        const url = `/app/api/statistics/members?status=${status}`; // API 호출 시 상태를 파라미터로 전달
+
+                        fetch(url)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                document.getElementById('membersCount').textContent = data.length; // 필터링된 회원 수를 표시
+                                document.getElementById('memberStatusLabel').textContent = `| ${status === 'active' ? 'active' : 'deleted'}`; // 필터 상태 표시
+                            })
+                            .catch(error => console.error('Error fetching member data:', error));
+                    }
+
+                    // 페이지 로드 시 기본적으로 active 회원을 조회
+                    document.addEventListener("DOMContentLoaded", () => loadMembers('active'));
+                </script>
+
+
 
                 <!-- Reports -->
                 <div class="col-12">
@@ -168,30 +184,35 @@
                                     <h6>Filter</h6>
                                 </li>
 
-                                <li><a class="dropdown-item" href="#">Today</a></li>
-                                <li><a class="dropdown-item" href="#">This Month</a></li>
-                                <li><a class="dropdown-item" href="#">This Year</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadReports('today')">Today</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadReports('month')">This Month</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadReports('year')">This Year</a></li>
                             </ul>
                         </div>
 
                         <div class="card-body">
-                            <h5 class="card-title">Reports <span>/Today</span></h5>
+                            <h5 class="card-title">Reports <span id="reportsPeriod">| Today</span></h5>
 
                             <!-- Line Chart -->
                             <div id="reportsChart"></div>
 
                             <script>
-                                document.addEventListener("DOMContentLoaded", () => {
+                                function loadReports(period) {
+                                    const salesData = [100, 200, 300]; // 하드코딩된 데이터
+                                    const revenueData = [4000, 5000, 6000]; // 하드코딩된 데이터
+                                    const customersData = [50, 60, 70]; // 하드코딩된 데이터
+                                    const categories = ['2024-08-01', '2024-08-02', '2024-08-03']; // 하드코딩된 날짜 데이터
+
                                     new ApexCharts(document.querySelector("#reportsChart"), {
                                         series: [{
                                             name: 'Sales',
-                                            data: [31, 40, 28, 51, 42, 82, 56],
+                                            data: salesData
                                         }, {
                                             name: 'Revenue',
-                                            data: [11, 32, 45, 32, 34, 52, 41]
+                                            data: revenueData
                                         }, {
                                             name: 'Customers',
-                                            data: [15, 11, 32, 18, 9, 24, 11]
+                                            data: customersData
                                         }],
                                         chart: {
                                             height: 350,
@@ -222,7 +243,7 @@
                                         },
                                         xaxis: {
                                             type: 'datetime',
-                                            categories: ["2018-09-19T00:00:00.000Z", "2018-09-19T01:30:00.000Z", "2018-09-19T02:30:00.000Z", "2018-09-19T03:30:00.000Z", "2018-09-19T04:30:00.000Z", "2018-09-19T05:30:00.000Z", "2018-09-19T06:30:00.000Z"]
+                                            categories: categories
                                         },
                                         tooltip: {
                                             x: {
@@ -230,14 +251,18 @@
                                             },
                                         }
                                     }).render();
-                                });
+                                }
+
+                                // 기본적으로 오늘의 리포트 로드
+                                document.addEventListener("DOMContentLoaded", () => loadReports('today'));
                             </script>
                             <!-- End Line Chart -->
 
                         </div>
 
                     </div>
-                </div><!-- End Reports -->
+                </div>
+                <!-- End Reports -->
 
                 <!-- Recent Sales -->
                 <div class="col-12">
@@ -250,14 +275,14 @@
                                     <h6>Filter</h6>
                                 </li>
 
-                                <li><a class="dropdown-item" href="#">Today</a></li>
-                                <li><a class="dropdown-item" href="#">This Month</a></li>
-                                <li><a class="dropdown-item" href="#">This Year</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadRecentSales('today')">Today</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadRecentSales('month')">This Month</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadRecentSales('year')">This Year</a></li>
                             </ul>
                         </div>
 
                         <div class="card-body">
-                            <h5 class="card-title">Recent Sales <span>| Today</span></h5>
+                            <h5 class="card-title">Recent Sales <span id="recentSalesPeriod">| Today</span></h5>
 
                             <table class="table table-borderless datatable">
                                 <thead>
@@ -269,50 +294,29 @@
                                     <th scope="col">Status</th>
                                 </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="recentSalesTableBody">
+                                <!-- 하드코딩된 데이터 -->
                                 <tr>
-                                    <th scope="row"><a href="#">#2457</a></th>
-                                    <td>Brandon Jacob</td>
-                                    <td><a href="#" class="text-primary">At praesentium minu</a></td>
-                                    <td>$64</td>
+                                    <th scope="row"><a href="#">#1234</a></th>
+                                    <td>John Doe</td>
+                                    <td><a href="#" class="text-primary">Product A</a></td>
+                                    <td>$100</td>
                                     <td><span class="badge bg-success">Approved</span></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row"><a href="#">#2147</a></th>
-                                    <td>Bridie Kessler</td>
-                                    <td><a href="#" class="text-primary">Blanditiis dolor omnis similique</a>
-                                    </td>
-                                    <td>$47</td>
+                                    <th scope="row"><a href="#">#1235</a></th>
+                                    <td>Jane Smith</td>
+                                    <td><a href="#" class="text-primary">Product B</a></td>
+                                    <td>$150</td>
                                     <td><span class="badge bg-warning">Pending</span></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><a href="#">#2049</a></th>
-                                    <td>Ashleigh Langosh</td>
-                                    <td><a href="#" class="text-primary">At recusandae consectetur</a></td>
-                                    <td>$147</td>
-                                    <td><span class="badge bg-success">Approved</span></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><a href="#">#2644</a></th>
-                                    <td>Angus Grady</td>
-                                    <td><a href="#" class="text-primar">Ut voluptatem id earum et</a></td>
-                                    <td>$67</td>
-                                    <td><span class="badge bg-danger">Rejected</span></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><a href="#">#2644</a></th>
-                                    <td>Raheem Lehner</td>
-                                    <td><a href="#" class="text-primary">Sunt similique distinctio</a></td>
-                                    <td>$165</td>
-                                    <td><span class="badge bg-success">Approved</span></td>
                                 </tr>
                                 </tbody>
                             </table>
-
                         </div>
 
                     </div>
-                </div><!-- End Recent Sales -->
+                </div>
+                <!-- End Recent Sales -->
 
                 <!-- Top Selling -->
                 <div class="col-12">
@@ -325,14 +329,14 @@
                                     <h6>Filter</h6>
                                 </li>
 
-                                <li><a class="dropdown-item" href="#">Today</a></li>
-                                <li><a class="dropdown-item" href="#">This Month</a></li>
-                                <li><a class="dropdown-item" href="#">This Year</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadTopSelling('today')">Today</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadTopSelling('month')">This Month</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadTopSelling('year')">This Year</a></li>
                             </ul>
                         </div>
 
                         <div class="card-body pb-0">
-                            <h5 class="card-title">Top Selling <span>| Today</span></h5>
+                            <h5 class="card-title">Top Selling <span id="topSellingPeriod">| Today</span></h5>
 
                             <table class="table table-borderless">
                                 <thead>
@@ -344,58 +348,28 @@
                                     <th scope="col">Revenue</th>
                                 </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="topSellingTableBody">
+                                <!-- 하드코딩된 데이터 -->
                                 <tr>
-                                    <th scope="row"><a href="#"><img src="assets/img/product-1.jpg" alt=""></a>
-                                    </th>
-                                    <td><a href="#" class="text-primary fw-bold">Ut inventore ipsa voluptas
-                                        nulla</a></td>
-                                    <td>$64</td>
-                                    <td class="fw-bold">124</td>
-                                    <td>$5,828</td>
+                                    <th scope="row"><a href="#"><img src="path/to/image.jpg" alt=""></a></th>
+                                    <td><a href="#" class="text-primary fw-bold">Product A</a></td>
+                                    <td>$100</td>
+                                    <td class="fw-bold">10</td>
+                                    <td>$1000</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row"><a href="#"><img src="assets/img/product-2.jpg" alt=""></a>
-                                    </th>
-                                    <td><a href="#" class="text-primary fw-bold">Exercitationem similique
-                                        doloremque</a></td>
-                                    <td>$46</td>
-                                    <td class="fw-bold">98</td>
-                                    <td>$4,508</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><a href="#"><img src="assets/img/product-3.jpg" alt=""></a>
-                                    </th>
-                                    <td><a href="#" class="text-primary fw-bold">Doloribus nisi
-                                        exercitationem</a></td>
-                                    <td>$59</td>
-                                    <td class="fw-bold">74</td>
-                                    <td>$4,366</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><a href="#"><img src="assets/img/product-4.jpg" alt=""></a>
-                                    </th>
-                                    <td><a href="#" class="text-primary fw-bold">Officiis quaerat sint rerum
-                                        error</a></td>
-                                    <td>$32</td>
-                                    <td class="fw-bold">63</td>
-                                    <td>$2,016</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><a href="#"><img src="assets/img/product-5.jpg" alt=""></a>
-                                    </th>
-                                    <td><a href="#" class="text-primary fw-bold">Sit unde debitis delectus
-                                        repellendus</a></td>
-                                    <td>$79</td>
-                                    <td class="fw-bold">41</td>
-                                    <td>$3,239</td>
+                                    <th scope="row"><a href="#"><img src="path/to/image.jpg" alt=""></a></th>
+                                    <td><a href="#" class="text-primary fw-bold">Product B</a></td>
+                                    <td>$150</td>
+                                    <td class="fw-bold">15</td>
+                                    <td>$2250</td>
                                 </tr>
                                 </tbody>
                             </table>
-
                         </div>
                     </div>
-                </div><!-- End Top Selling -->
+                </div>
+                <!-- End Top Selling -->
 
             </div>
         </div>
@@ -413,67 +387,31 @@
                             <h6>Filter</h6>
                         </li>
 
-                        <li><a class="dropdown-item" href="#">Today</a></li>
-                        <li><a class="dropdown-item" href="#">This Month</a></li>
-                        <li><a class="dropdown-item" href="#">This Year</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="loadRecentActivity('today')">Today</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="loadRecentActivity('month')">This Month</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="loadRecentActivity('year')">This Year</a></li>
                     </ul>
                 </div>
 
                 <div class="card-body">
-                    <h5 class="card-title">Recent Activity <span>| Today</span></h5>
+                    <h5 class="card-title">Recent Activity <span id="recentActivityPeriod">| Today</span></h5>
 
-                    <div class="activity">
-
+                    <div class="activity" id="recentActivityContainer">
+                        <!-- 하드코딩된 데이터 -->
                         <div class="activity-item d-flex">
-                            <div class="activite-label">32 min</div>
+                            <div class="activite-label">10 mins ago</div>
                             <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
                             <div class="activity-content">
-                                Quia quae rerum <a href="#" class="fw-bold text-dark">explicabo officiis</a>
-                                beatae
+                                User John Doe purchased <a href="#" class="fw-bold text-primary">Product A</a>
                             </div>
-                        </div><!-- End activity item-->
-
+                        </div>
                         <div class="activity-item d-flex">
-                            <div class="activite-label">56 min</div>
-                            <i class='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
-                            <div class="activity-content">
-                                Voluptatem blanditiis blanditiis eveniet
-                            </div>
-                        </div><!-- End activity item-->
-
-                        <div class="activity-item d-flex">
-                            <div class="activite-label">2 hrs</div>
-                            <i class='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
-                            <div class="activity-content">
-                                Voluptates corrupti molestias voluptatem
-                            </div>
-                        </div><!-- End activity item-->
-
-                        <div class="activity-item d-flex">
-                            <div class="activite-label">1 day</div>
-                            <i class='bi bi-circle-fill activity-badge text-info align-self-start'></i>
-                            <div class="activity-content">
-                                Tempore autem saepe <a href="#" class="fw-bold text-dark">occaecati
-                                voluptatem</a> tempore
-                            </div>
-                        </div><!-- End activity item-->
-
-                        <div class="activity-item d-flex">
-                            <div class="activite-label">2 days</div>
+                            <div class="activite-label">1 hour ago</div>
                             <i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
                             <div class="activity-content">
-                                Est sit eum reiciendis exercitationem
+                                User Jane Smith added <a href="#" class="fw-bold text-primary">Product B</a> to cart
                             </div>
-                        </div><!-- End activity item-->
-
-                        <div class="activity-item d-flex">
-                            <div class="activite-label">4 weeks</div>
-                            <i class='bi bi-circle-fill activity-badge text-muted align-self-start'></i>
-                            <div class="activity-content">
-                                Dicta dolorem harum nulla eius. Ut quidem quidem sit quas
-                            </div>
-                        </div><!-- End activity item-->
-
+                        </div>
                     </div>
                 </div>
             </div>
@@ -488,7 +426,7 @@
                         <script>
                             $(document).ready(function () {
                                 // 성별 데이터를 서버에서 받아옴
-                                fetch('[[@{/api/statistics/members}]]')
+                                fetch('/app/api/statistics/members?status=active')
                                     .then(response => response.json())
                                     .then(data => {
                                         const genderCounts = {
@@ -524,6 +462,7 @@
                         </script>
                     </div>
                 </div>
+            <!-- END 성별 비율 Pie Chart -->
 
             <!-- 성별 연령 피라미드 Bar Chart -->
                 <div class="card">
@@ -533,7 +472,7 @@
                         <div id="ageGenderBarChart"></div>
                         <script>
                             $(document).ready(function () {
-                                fetch('[[@{/api/statistics/members}]]')
+                                fetch('/app/api/statistics/members?status=active')
                                     .then(response => response.json())
                                     .then(data => {
                                         const ageGroups = [
@@ -633,6 +572,7 @@
                         </script>
                     </div>
                 </div>
+            <!-- END -->
 
         </div>
         <!-- End Right side columns -->
@@ -665,6 +605,7 @@
             });
     }
 </script>
+
 
 <!-- Vendor JS Files -->
 <script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
