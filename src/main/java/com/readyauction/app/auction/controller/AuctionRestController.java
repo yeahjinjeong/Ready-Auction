@@ -1,7 +1,7 @@
 package com.readyauction.app.auction.controller;
 
 import com.readyauction.app.auction.dto.*;
-import com.readyauction.app.auction.entity.PurchaseCategoty;
+import com.readyauction.app.auction.entity.PurchaseCategory;
 import com.readyauction.app.auction.service.BidService;
 import com.readyauction.app.auction.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -86,7 +86,7 @@ public class AuctionRestController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             String email = authentication.getName();
             System.out.println("즉시구매중" + winnerReqDto);
-            winnerReqDto.setCategory(PurchaseCategoty.IMMEDIATE);
+            winnerReqDto.setCategory(PurchaseCategory.IMMEDIATE);
             return ResponseEntity.ok(productService.startWinnerProcess(email,winnerReqDto));
         }
         catch (RuntimeException e) {

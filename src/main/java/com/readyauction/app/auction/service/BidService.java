@@ -4,7 +4,7 @@ import com.readyauction.app.auction.dto.*;
 import com.readyauction.app.auction.entity.AuctionStatus;
 import com.readyauction.app.auction.entity.Bid;
 import com.readyauction.app.auction.entity.Product;
-import com.readyauction.app.auction.entity.PurchaseCategoty;
+import com.readyauction.app.auction.entity.PurchaseCategory;
 import com.readyauction.app.auction.repository.BidRepository;
 import com.readyauction.app.auction.repository.ProductRepository;
 import com.readyauction.app.cash.entity.PaymentCategory;
@@ -152,7 +152,7 @@ public class BidService {
                         .buyPrice(bidDto.getBidPrice())
                         .buyTime(bidDto.getBidTime())
                         .productId(product.getId())
-                        .category(PurchaseCategoty.BID)
+                        .category(PurchaseCategory.BID)
                         .build();
                 WinnerDto winnerDto = WinnerDto.builder().
                         userId(userId)
