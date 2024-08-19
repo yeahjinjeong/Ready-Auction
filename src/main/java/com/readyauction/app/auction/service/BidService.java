@@ -263,8 +263,10 @@ public class BidService {
         }
     }
 
-    /** 지영 - 마이페이지 경매 내역 조회 시 필요 **/
+    /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
     public List<Bid> getBidsByStatus(Long memberId, BidStatus status) {
-        return bidRepository.findByMemberIdAndBidStatus(memberId, status);
+        List<Bid> bids = bidRepository.findByMemberIdAndBidStatus(memberId, status);
+        System.out.println("Bids for status " + status + ": " + bids);
+        return bids;
     }
  }
