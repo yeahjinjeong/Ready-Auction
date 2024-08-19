@@ -279,8 +279,8 @@ public class ProductService {
                 winnerDto.getProduct().setWinner(winner);
                 winnerDto.getProduct().setAuctionStatus(AuctionStatus.END);
 
-            log.info("Winner created successfully for product ID: {}", winnerDto.getProduct().getId());
-            // 제품을 저장
+                log.info("Winner created successfully for product ID: {}", winnerDto.getProduct().getId());
+                // 제품을 저장
                 products.add(winnerDto.getProduct());
             }
             return productRepository.saveAll(products);
@@ -326,6 +326,7 @@ public class ProductService {
                 .currentPrice(product.getCurrentPrice())
                 .immediatePrice(product.getImmediatePrice())
                 .imgUrl(product.getImages())
+                .nickName(memberService.findMemberById(product.getMemberId()).getNickname())
                 .build();
     }
 
@@ -361,4 +362,5 @@ public class ProductService {
                 .map(Product::getName)
                 .orElse("N/A");
     }
+
 }
