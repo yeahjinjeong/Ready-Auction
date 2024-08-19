@@ -262,4 +262,9 @@ public class BidService {
             throw new RuntimeException("Failed to update bid price", e);
         }
     }
+
+    /** 지영 - 마이페이지 경매 내역 조회 시 필요 **/
+    public List<Bid> getBidsByStatus(Long memberId, BidStatus status) {
+        return bidRepository.findByMemberIdAndBidStatus(memberId, status);
+    }
  }
