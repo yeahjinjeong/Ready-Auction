@@ -131,18 +131,27 @@
                     beforeSend: function (xhr) {
                         xhr.setRequestHeader("email", "ssg2@gmail.com");
                     },
-                    success: function (data) {
-                        console.log('Bid successful:', data);
+                    success: function (bidRes) {
+                        console.log('Bid successful:', bidRes);
                         alert('Bid placed successfully!');
                         // Update the current price on the page
-                        document.getElementById('currentPrice').value = data;
+
+                        document.getElementById('currentPrice').value = bidRes.bidCurrentPrice;
+                        if(bidRes.bidStatus === "ACCEPTED") {
+                            if (productId) {
+                                // Redirect to the payment page using the product ID
+                                window.location.href = '/app/cash/payment/' + productId;
+                            } else {
+                                alert('Product ID not found. Unable to proceed to payment.');
+                            }
+                        }
                     },
                     error: function (xhr, status, error) {
                         console.error('Error placing bid:', error);
                         alert('Failed to place bid. Please try again.');
                         // Even in case of an error, update the current price on the page
                         const responseJson = JSON.parse(xhr.responseText);
-                        document.getElementById('currentPrice').value = responseJson;
+                        document.getElementById('currentPrice').value = responseJson.bidCurrentPrice;
                     }
                 });
             });
@@ -208,8 +217,8 @@
                 <div class="col-lg-6">
                     <div class="item-bid-timer">
                         <div class="auction-bid">
-                            <p>현재입찰가</p>
-                            <h5 th:text="'₩'+ ${#numbers.formatDecimal(productDetail.currentPrice, 0, 'COMMA', 0, 'POINT')}"></h5>
+                            <p>시작 입찰가</p>
+                            <h5 th:text="'₩'+ ${#numbers.formatDecimal(productDetail.startPrice, 0, 'COMMA', 0, 'POINT')}"></h5>
                         </div>
                         <div class="auction-timer">
                             <div class="countdown">
@@ -296,6 +305,41 @@
                             </script>
                         </div>
                     </div>
+                    <!-- 상품 이미지를 하얀 박스 위에 표시 -->
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <img alt="상품 이미지" class="product-image" th:src="${productDetail.imgUrl}">
+                                <div class="swiper-pagination"></div>
+                            </div>
+                        </div>
+
+
+                        <!-- 내비게이션 버튼 -->
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+                    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+                    <!-- Initialize Swiper -->
+                    <script>
+                        const swiper = new Swiper('.swiper-container', {
+                            loop: true,
+                            pagination: {
+                                el: '.swiper-pagination',
+                                clickable: true,
+                            },
+                            navigation: {
+                                nextEl: '.swiper-button-next',
+                                prevEl: '.swiper-button-prev',
+                            }
+                        });
+                    </script>
+                    <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">
+                        <li class="nav-item">
+
+                        </li>
+                    </ul>
 
                     <!-- 상품 이미지를 하얀 박스 위에 표시 -->
                     <div class="swiper-container product-image-box">

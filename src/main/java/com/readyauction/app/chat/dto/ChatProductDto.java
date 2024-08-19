@@ -25,7 +25,7 @@ public class ChatProductDto {
                 product.getWinner().getMemberId(), // winnerId
                 product.getName(), // productName
                 product.getCategory(),
-                product.getImage(),
+                (product.getImages() != null && !product.getImages().isEmpty()) ? product.getImages().get(0) : null,
                 product.getWinner().getPrice(),
                 product.getWinner().getStatus()
         );

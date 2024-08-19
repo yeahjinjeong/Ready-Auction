@@ -1,11 +1,10 @@
 package com.readyauction.app.user.entity;
 
-import jakarta.persistence.*;
+import com.readyauction.app.user.dto.ProfileDto;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
-import com.readyauction.app.user.dto.MemberUpdateRequestDto;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
@@ -43,23 +42,12 @@ public class Member extends User {
         this.setName(name);
     }
 
-    public static Member toUpdateMember(MemberUpdateRequestDto dto) {
-        Member Member = new Member();
-        Member.setId(dto.getId());
-        Member.setEmail(dto.getEmail());
-        Member.setPassword(dto.getPassword());
-        Member.setAddress(dto.getAddress());
-        Member.setBirth(dto.getBirth());
-        Member.setCreatedAt(dto.getCreatedAt());
-        Member.setDeletedAt(dto.getDeletedAt());
-        Member.setGender(dto.getGender());
-        Member.setName(dto.getName());
-        Member.setNickname(dto.getNickname());
-        Member.setPhone(dto.getPhone());
-        Member.setProfilePicture(dto.getProfilePicture());
-        Member.setUpdatedAt(dto.getUpdatedAt());
-        Member.setUserStatus(dto.getUserStatus());
-        Member.setMannerScore(dto.getMannerScore());
-        return Member;
+    public ProfileDto toProfileDto() {
+        return new ProfileDto(this.getNickname(), this.getAddress(), this.getMannerScore(), this.getProfilePicture());
+    }
+
+    public Member(String nickname, String address, String profilePicture, Integer mannerScore) {
+        super(nickname, address, profilePicture);  // User 필드 초기화
+        this.mannerScore = mannerScore;
     }
 }

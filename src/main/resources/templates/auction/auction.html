@@ -3,128 +3,163 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/default}">
 <head>
- <meta charset="UTF-8">
- <title>경매 목록</title>
- <link rel="stylesheet" th:href="@{/css/styles.css}">
- <script th:inline="javascript">
-  function startCountdown(endTime, elementId) {
-   var countDownDate = new Date(endTime).getTime();
-   var x = setInterval(function() {
-    var now = new Date().getTime();
-    var distance = countDownDate - now;
+    <meta charset="UTF-8">
+    <title>경매 목록</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+    <script th:inline="javascript">
 
-    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
-    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    var minutes = Math.floor((distance % (1000 * 60)) / (1000 * 60));
-    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        function setCategory(category) {
+            document.getElementById('categoryInput').value = category;
+            filterProducts();
+        }
 
-    document.getElementById(elementId).innerHTML = days + "일 " + hours + "시 "
-            + minutes + "분 " + seconds + "초 ";
+        function filterProducts() {
+            var category = document.getElementById('categoryInput').value;
+            var products = document.getElementById('productList').getElementsByClassName('col-lg-4 col-md-6');
 
-    if (distance < 0) {
-     clearInterval(x);
-     document.getElementById(elementId).innerHTML = "EXPIRED";
-    }
-   }, 1000);
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-   var products = /*[[${products}]]*/ [];
-   products.forEach(product => {
-    let endTime = product.endTime;
-    let elementId = 'week-countdown-' + product.id;
-    startCountdown(endTime, elementId);
-   });
-  });
-
-  function setCategory(category) {
-   document.getElementById('categoryInput').value = category;
-   filterProducts();
-  }
-
-  function filterProducts() {
-   var category = document.getElementById('categoryInput').value;
-   var products = document.getElementById('productList').getElementsByClassName('col-lg-4 col-md-6');
-
-   for (var i = 0; i < products.length; i++) {
-    var productCategory = products[i].getAttribute('data-category');
-    if (category === "ALL" || category === productCategory) {
-     products[i].style.display = "";
-    } else {
-     products[i].style.display = "none";
-    }
-   }
-  }
- </script>
+            for (var i = 0; i < products.length; i++) {
+                var productCategory = products[i].getAttribute('data-category');
+                if (category === "ALL" || category === productCategory) {
+                    products[i].style.display = "";
+                } else {
+                    products[i].style.display = "none";
+                }
+            }
+        }
+    </script>
 </head>
 <body>
 <div layout:fragment="content1">
- <div class="breadcrumb breadcrumb-style-one mb-0">
-  <div class="container">
-   <div class="col-lg-12 text-center">
-    <h1 class="breadcrumb-title">경매 목록</h1>
-    <ul class="d-flex justify-content-center breadcrumb-items">
-     <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/index.html}">메인화면으로</a></li>
-     <li class="breadcrumb-item active">경매 목록</li>
-    </ul>
-   </div>
-  </div>
- </div>
-
- <!-- Filter Section -->
- <div class="blog-widget widget-categories">
-  <h5 class="widget-title">Sports Categories</h5>
-  <ul class="sidebar-tag-list">
-   <li><a href="javascript:void(0);" onclick="setCategory('ALL')">전체</a></li>
-   <li><a href="javascript:void(0);" onclick="setCategory('SOCCER')">축구</a></li>
-   <li><a href="javascript:void(0);" onclick="setCategory('BASKETBALL')">농구</a></li>
-   <li><a href="javascript:void(0);" onclick="setCategory('BASEBALL')">야구</a></li>
-   <li><a href="javascript:void(0);" onclick="setCategory('ESPORTS')">e스포츠</a></li>
-   <li><a href="javascript:void(0);" onclick="setCategory('OTHER')">기타</a></li>
-  </ul>
- </div>
- <input type="hidden" name="category" id="categoryInput" value="ALL">
-
- <div class="auction-wrapper pt-110">
-  <div class="container">
-   <div class="row g-4" id="productList">
-    <div class="col-lg-4 col-md-6" th:each="product : ${products}" th:attr="data-category=${product.category}">
-     <div class="product-card product-beta-md" style="min-width: 300px; max-width: 350px;">
-      <div class="product-header">
-       <h5 class="product-title"><a th:href="@{/auction-details.html}">[[${product.name}]]</a></h5>
-       <h4 class="price">₩[[${product.immediatePrice}]]</h4>
-      </div>
-      <div class="product">
-       <img th:src="@{${product.imgUrl}}" alt="product image" style="width: 100%; height: auto;">
-       <div class="id"><span>ID [[${product.id}]]</span></div>
-      </div>
-      <div class="product-disc">
-       <div class="product-acution">
-        <div class="cv">
-         <span>현재 입찰가</span>
-         <h6>₩[[${product.currentPrice}]]</h6>
+    <div class="breadcrumb breadcrumb-style-one mb-0">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">경매 목록</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/index.html}">메인화면으로</a>
+                    </li>
+                    <li class="breadcrumb-item active">경매 목록</li>
+                </ul>
+            </div>
         </div>
-        <div class="countdown" style="font-weight: 800; font-size: 20px; text-transform: capitalize; color: #00152b;" th:id="'week-countdown-' + ${product.id}">
-         <h6> </h6>
-         <span>경매 마감 시간</span>
-        </div>
-       </div>
-       <a th:href="@{/auction/product/{id}(id=${product.id})}" class="bid-btn">입찰하기</a>
-
-      </div>
-     </div>
     </div>
-   </div>
-   <ul class="pagination pagination-style-one justify-content-center pt-50">
-    <li class="page-item page-arrow"><a class="page-link" href="#"> <i class="bi bi-arrow-left"></i></a></li>
-    <li class="page-item active"><a class="page-link" href="#">01</a></li>
-    <li class="page-item"><a class="page-link" href="#">02</a></li>
-    <li class="page-item"><a class="page-link" href="#">03</a></li>
-    <li class="page-item"><a class="page-link" href="#">04</a></li>
-    <li class="page-item page-arrow"><a class="page-link" href="#"> <i class="bi bi-arrow-right"></i></a></li>
-   </ul>
-  </div>
- </div>
+
+    <!-- Filter Section -->
+    <div class="blog-widget widget-categories">
+        <h5 class="widget-title">Sports Categories</h5>
+        <ul class="sidebar-tag-list">
+            <li><a href="javascript:void(0);" onclick="setCategory('ALL')">전체</a></li>
+            <li><a href="javascript:void(0);" onclick="setCategory('SOCCER')">축구</a></li>
+            <li><a href="javascript:void(0);" onclick="setCategory('BASKETBALL')">농구</a></li>
+            <li><a href="javascript:void(0);" onclick="setCategory('BASEBALL')">야구</a></li>
+            <li><a href="javascript:void(0);" onclick="setCategory('ESPORTS')">e스포츠</a></li>
+            <li><a href="javascript:void(0);" onclick="setCategory('OTHER')">기타</a></li>
+        </ul>
+    </div>
+    <input type="hidden" name="category" id="categoryInput" value="ALL">
+
+    <div class="auction-wrapper pt-110">
+        <div class="container">
+            <div class="row g-4" id="productList">
+                <div class="col-lg-4 col-md-6" th:each="product : ${products}"
+                     th:attr="data-category=${product.category}">
+                    <div class="product-card product-beta-md" style="min-width: 300px; max-width: 350px;">
+                        <div class="product-header">
+                            <h5 class="product-title"><a th:href="@{/auction-details.html}">[[${product.name}]]</a></h5>
+                            <h4 class="price">₩[[${product.immediatePrice}]]</h4>
+                        </div>
+                        <div class="product">
+                            <img th:src="@{${product.imgUrl}}" alt="product image" style="width: 100%; height: auto;">
+                            <div class="id"><span>ID [[${product.id}]]</span></div>
+                        </div>
+                        <div class="product-disc">
+                            <div class="product-acution">
+                                <div class="cv">
+                                    <span>현재 입찰가</span>
+                                    <h6>₩[[${product.currentPrice}]]</h6>
+                                </div>
+                                <div class="auction-timer">
+                                    <div class="countdown">
+                                        <h6>
+                                            <span th:id="|days-${product.id}|">0</span>일 :
+                                            <span th:id="|hours-${product.id}|">0</span>시 :
+                                            <span th:id="|minutes-${product.id}|">0</span>분 :
+                                            <span th:id="|seconds-${product.id}|">0</span>초
+                                        </h6>
+                                    </div>
+                                    <script th:inline="javascript">
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            var product = /*[[${product}]]*/ {};
+
+                                            if (product && product.endTime && product.id) {
+                                                const endTime = new Date(product.endTime).toISOString();
+                                                const productId = product.id;
+
+                                                console.log(`Starting countdown for product ID: ${productId}`);
+                                                startCountdown(endTime, productId);
+                                            } else {
+                                                console.error("Invalid product data:", product);
+                                            }
+
+                                            function startCountdown(endTime, productId) {
+                                                const countDownDate = new Date(endTime).getTime();
+                                                if (isNaN(countDownDate)) {
+                                                    console.error('Invalid end time:', endTime);
+                                                    return;
+                                                }
+
+                                                const intervalId = setInterval(function () {
+                                                    const now = new Date().getTime();
+                                                    const distance = countDownDate - now;
+
+                                                    if (distance < 0) {
+                                                        clearInterval(intervalId);
+                                                        updateCountdownDisplay(productId, 0, 0, 0, 0);
+                                                        return;
+                                                    }
+
+                                                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                                                    console.log(`Countdown for product ID ${productId}: ${days}d ${hours}h ${minutes}m ${seconds}s`);
+                                                    updateCountdownDisplay(productId, days, hours, minutes, seconds);
+                                                }, 1000);
+                                            }
+
+                                            function updateCountdownDisplay(productId, days, hours, minutes, seconds) {
+                                                document.getElementById(`days-${productId}`).textContent = days;
+                                                document.getElementById(`hours-${productId}`).textContent = hours;
+                                                document.getElementById(`minutes-${productId}`).textContent = minutes;
+                                                document.getElementById(`seconds-${productId}`).textContent = seconds;
+                                            }
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                            <a th:href="@{/auction/product/{id}(id=${product.id})}" class="bid-btn">입찰하기</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Pagination -->
+            <ul class="pagination pagination-style-one justify-content-center pt-50">
+                <li th:if="${products.hasPrevious()}" class="page-item page-arrow">
+                    <a class="page-link" th:href="@{/auction/auction(page=${products.number - 1})}"><i class="bi bi-arrow-left"></i></a>
+                </li>
+
+                <li th:each="pageNum : ${#numbers.sequence(1, products.totalPages)}"
+                    th:classappend="${pageNum == products.number + 1} ? 'active'">
+                    <a class="page-link" th:href="@{/auction/auction(page=${pageNum - 1})}">[[${pageNum}]]</a>
+                </li>
+
+                <li th:if="${products.hasNext()}" class="page-item page-arrow">
+                    <a class="page-link" th:href="@{/auction/auction(page=${products.number + 1})}"><i class="bi bi-arrow-right"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
 
 </body>

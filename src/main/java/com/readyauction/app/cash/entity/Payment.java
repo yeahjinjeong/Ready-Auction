@@ -1,6 +1,5 @@
 package com.readyauction.app.cash.entity;
 
-import com.readyauction.app.auction.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,8 +30,12 @@ public class Payment {
 
     private Long productId;
 
+    @Column(length = 50)
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
+    @Column(length = 50)
+    @Enumerated(EnumType.STRING)
+    private PaymentCategory category;
     // Getters and Setters
 }

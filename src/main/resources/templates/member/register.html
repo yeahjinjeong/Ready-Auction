@@ -25,76 +25,68 @@
             <div class="row d-flex justify-content-center text-center">
                 <div class="col-12">
                     <div class="register-btn-group">
-                        <a th:href="@{/member/register}" class="register-btn style2">회원가입</a>
-                        <a th:href="@{/auth/login}" class="login-btn style2">로그인</a>
+                        <a th:href="@{/member/register}" class="register-btn">회원가입</a>
+                        <a th:href="@{/auth/login}" class="login-btn">로그인</a>
                     </div>
                 </div>
             </div>
-            <div class="row gy-4">
-                <div class="col-lg-6">
-                    <div class="register-left-area">
-                        <h3>Hello Again</h3>
-                        <p>Wellcome Back You’ve Been Missed</p>
-                        <a href="../index.html" class="transparent-btn">Back Home</a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="right-form-area">
-                        <h3>Register Your Account</h3>
+
+            <div class="right-form-area">
+                <h3>Register Your Account</h3>
 <!--                        action="[[@{/member/save}]]"-->
-                        <form class="w-100" th:action="@{/member/register}" method="post" name="memberRegisterFrm">
-                            <!-- 이름 -->
-                            <div class="form-inner">
-                                <label>이름</label>
-                                <input type="text" name="name" placeholder="Full Name" required>
-                            </div>
-                            <!-- 이메일 -->
-                            <div class="form-inner">
-                                <label>이메일</label>
-                                <input type="text" name="email" placeholder="Your email" required>
-                            </div>
-                            <!-- 비밀번호 -->
-                            <div class="form-inner">
-                                <label>비밀번호</label>
-                                <input type="password" name="password" id="password" placeholder="Password" required/>
-                                <i class="bi bi-eye-slash" id="togglePassword"></i>
-                            </div>
-                            <!-- 비밀번호 확인 -->
-                            <div class="form-inner">
-                                <label>비밀번호 확인</label>
-                                <input type="password" name="password2" id="password2" placeholder="Confirm Password" required/>
-                                <i class="bi bi-eye-slash" id="togglePassword2"></i>
-                            </div>
-                            <!-- 휴대폰 번호 -->
-                            <div class="form-inner">
-                                <label>Phone</label>
-                                <input type="text" name="phone" placeholder="Phone" required>
-                            </div>
-                            <!-- 주소 -->
-                            <div class="form-inner">
-                                <label>주소</label>
-                                <input type="text" name="address" placeholder="Address" required>
-                            </div>
-                            <!-- 닉네임 -->
-                            <div class="form-inner">
-                                <label>닉네임</label>
-                                <input type="text" name="nickname" placeholder="Nickname" required>
-                            </div>
-                            <!-- 성별 -->
-                            <div class="form-inner">
-                                <label>성별</label>
-                                <label>
-                                    <input type="radio" name="gender" value="M">남성 <br>
-                                </label>
-                                <label>
-                                    <input type="radio" name="gender" value="F">여성 <br>
-                                </label>
-                            </div>
-                            <!-- 생년월일 -->
-                            <div class="form-inner">
-                                <label for="birth">생년월일</label>
-                                <input type="date" id="birth" name="birth">
-                            </div>
+                <form class="w-100" th:action="@{/member/register}" method="post" name="memberRegisterFrm">
+                    <!-- 이름 -->
+                    <div class="form-inner">
+                        <label>이름</label>
+                        <input type="text" name="name" placeholder="Full Name" required>
+                    </div>
+                    <!-- 이메일 -->
+                    <div class="form-inner">
+                        <label>이메일</label>
+                        <input type="email" name="email" placeholder="Your email" required>
+                    </div>
+                    <!-- 비밀번호 -->
+                    <div class="form-inner">
+                        <label>비밀번호</label>
+                        <input type="password" name="password" id="password" placeholder="Password" required/>
+                        <i class="bi bi-eye-slash" id="togglePassword"></i>
+                    </div>
+                    <!-- 비밀번호 확인 -->
+                    <div class="form-inner">
+                        <label>비밀번호 확인</label>
+                        <input type="password" name="password2" id="password2" placeholder="Confirm Password" required/>
+                        <i class="bi bi-eye-slash" id="togglePassword2"></i>
+                    </div>
+                    <!-- 휴대폰 번호 -->
+                    <div class="form-inner">
+                        <label>Phone</label>
+                        <input type="number" name="phone" placeholder="Phone" required>
+                    </div>
+                    <!-- 주소 -->
+                    <div class="form-inner">
+                        <label>주소</label>
+                        <input type="text" name="address" placeholder="Address" required>
+                    </div>
+                    <!-- 닉네임 -->
+                    <div class="form-inner">
+                        <label>닉네임</label>
+                        <input type="text" name="nickname" placeholder="Nickname" required>
+                    </div>
+                    <!-- 성별 -->
+                    <div class="form-inner">
+                        <label>성별</label>
+                        <label>
+                            <input type="radio" name="gender" value="M">남성 <br>
+                        </label>
+                        <label>
+                            <input type="radio" name="gender" value="F">여성 <br>
+                        </label>
+                    </div>
+                    <!-- 생년월일 -->
+                    <div class="form-inner">
+                        <label for="birth">생년월일</label>
+                        <input type="date" id="birth" name="birth">
+                    </div>
 <!--                            &lt;!&ndash; 좋아하는 스포츠 종목 &ndash;&gt;-->
 <!--                            &lt;!&ndash; 배구는 인기가 없는 종목이라서 따로 분류해서 다루지는 않기로 했었나? &ndash;&gt;-->
 <!--                            <div class="form-inner">-->
@@ -108,8 +100,8 @@
 <!--                                <option value="etc">기타</option>-->
 <!--                            </select>-->
 <!--                            </div>-->
-                            <!-- 좋아하는 스포츠 팀 -->
-                            <!-- 무슨 팀이 있는지 전혀 모르겠어서 일단은 내비둠-->
+                    <!-- 좋아하는 스포츠 팀 -->
+                    <!-- 무슨 팀이 있는지 전혀 모르겠어서 일단은 내비둠-->
 <!--                            <div class="form-inner">-->
 <!--                            <label>좋아하는 스포츠 팀</label>-->
 <!--                            <select name="team" id="team">-->
@@ -120,26 +112,26 @@
 <!--                                <option value="etc">기타</option>-->
 <!--                            </select>-->
 <!--                            </div>-->
-                            <div class="form-inner d-flex justify-content-between flex-wrap">
-                                <div class="form-group">
-                                    <input type="checkbox" id="html">
-                                    <label for="html">Remember Me</label>
-                                </div>
-                                <a href="#" class="forgot-pass">Forgotten Password</a>
-                            </div>
-                            <input type="submit" value = "회원가입" class="account-btn">
-                        </form>
-                        <div class="alternate-signup-box">
-                            <h6>or Sign up WITH</h6>
-                            <div class="btn-group gap-4">
-                                <a href="" class="google-btn d-flex align-items-center"><i
-                                        class='bx bxl-google'></i><span>Sign up with google</span></a>
-                                <a href="" class="facebook-btn d-flex align-items-center"><i
-                                        class='bx bxl-facebook'></i>Sign up with facebook</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+<!--                            <div class="form-inner d-flex justify-content-between flex-wrap">-->
+<!--                                <div class="form-group">-->
+<!--                                    <input type="checkbox" id="html">-->
+<!--                                    <label for="html">I agree to the Terms & Policy</label>-->
+<!--                                </div>-->
+<!--                                <a href="#" class="forgot-pass">Forgotten Password</a>-->
+<!--                            </div>-->
+                    <input type="submit" value = "회원가입" class="account-btn">
+                </form>
+
+<!--                        <div class="alternate-signup-box">-->
+<!--                            <h6>or Sign up WITH</h6>-->
+<!--                            <div class="btn-group gap-4">-->
+<!--                                <a href="" class="google-btn d-flex align-items-center"><i-->
+<!--                                        class='bx bxl-google'></i><span>Sign up with google</span></a>-->
+<!--                                <a href="" class="facebook-btn d-flex align-items-center"><i-->
+<!--                                        class='bx bxl-facebook'></i>Sign up with facebook</a>-->
+<!--                            </div>-->
+<!--                        </div>-->
             </div>
         </div>
     </section>
