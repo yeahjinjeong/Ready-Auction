@@ -46,4 +46,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT new com.readyauction.app.dashboard.dto.TransactionStatisticsDto(p.startTime, p.endTime, p.auctionStatus) " +
             "FROM Product p WHERE p.auctionStatus = :status")
     List<TransactionStatisticsDto> findCompletedTransactions(@Param("status") AuctionStatus status);
+
+    /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
+    List<Product> findByMemberIdAndAuctionStatusIn(Long memberId, List<AuctionStatus> start);
+    List<Product> findByIdIn(List<Long> productIds);
+    List<Product> findByMemberIdAndAuctionStatusAndIdNotIn(Long memberId, AuctionStatus auctionStatus, List<Long> productIdsWithBids);
 }
