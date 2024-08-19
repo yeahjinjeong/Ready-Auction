@@ -343,8 +343,8 @@
                       <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                       </button>
                       <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">프로필보기</a></li>
-                        <li><a class="dropdown-item" href="#">매너평가</a></li>
+                        <li><a class="dropdown-item" href="[[@{/member/profile/${infos.profile.sellerId}}]]">프로필보기</a></li>
+                        <li><a class="dropdown-item" href="[[@{/report/manner/${infos.profile.sellerId}}]]">매너평가</a></li>
                         <li><a class="dropdown-item" href="#">신고하기</a></li>
                       </ul>
                 </div>
@@ -361,7 +361,7 @@
              </div>
              <div class="card-footer text-body-secondary">
                 <a href="#" class="btn btn-primary">경매 상품 보러가기</a>
-                <a href="#" class="btn btn-primary">구매확정</a>
+                <a href="[[@{/cash/success/${infos.product.productId}}]]" class="btn btn-primary">구매확정</a>
              </div>`;
         var winnerProfileHTML =
             `<div class="card-header" style="display: grid; grid-template-columns: 90% 10%;">
@@ -370,8 +370,8 @@
                       <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                       </button>
                       <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">프로필보기</a></li>
-                        <li><a class="dropdown-item" href="#">매너평가</a></li>
+                        <li><a class="dropdown-item" href="[[@{/member/profile/${infos.profile.winnerId}}]]">프로필보기</a></li>
+                        <li><a class="dropdown-item" href="[[@{/report/manner/${infos.profile.winnerId}}]]">매너평가</a></li>
                         <li><a class="dropdown-item" href="#">신고하기</a></li>
                       </ul>
                 </div>
@@ -519,7 +519,8 @@
 <!--        <p class="text-center top_spac"> Design by <a target="_blank" href="https://www.linkedin.com/in/sunil-rajput-nattho-singh/">Sunil Rajput</a></p>-->
     </div>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js" integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     const $message = document.querySelector("#message");
     document.querySelector("#send").addEventListener('click', (e) => {
