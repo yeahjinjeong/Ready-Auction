@@ -42,8 +42,8 @@
                     <ul class="widget-list">
                         <li><label>닉네임 :</label><input type="text" id="nickname" name="nickname" th:value="${profileDto.nickname}"></li>
                         <li><label>이미지 :</label><input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)"></li>
-                        <li><button type="button" onclick="removeImage()">Remove Image</button></li>
-<!--                            <input type="hidden" id="removeImage" name="removeImage" value="false"/></li>-->
+                        <li><button type="button" class="btn btn-outline-danger" onclick="removeImage()">Remove Image</button>
+                            <input type="hidden" id="isRemovedImage" name="isRemovedImage" value="false"/></li>
                     </ul>
                     <div>
                         <a th:href="@{/mypage}" class="alpha-btn-md-dark">Back</a>
@@ -64,6 +64,8 @@
             };
             if (event.target.files[0]) {
                 reader.readAsDataURL(event.target.files[0]);
+                // removeImage 필드를 다시 false로 설정 -> remove 버튼을 눌러도 다시 업로드 할 수 있도록
+                document.getElementById('isRemovedImage').value = 'false';
             }
         }
 
@@ -72,11 +74,11 @@
             const profilePicture = document.getElementById('profilePicture');
             profilePicture.src = '../assets/images/profile/basic-profile.png';
 
-            // removeImage 필드를 true로 설정
-            document.getElementById('removeImage').value = 'true';
+            // isRemovedImage 필드 true로 설정
+            document.getElementById('isRemovedImage').value = 'true';
 
-            // 파일 입력 필드를 초기화
-            document.getElementById('image').value = '';
+            // 파일 입력 필드 초기화
+            document.getElementById('profilePicture').value = '';
         }
     </script>
 </div>

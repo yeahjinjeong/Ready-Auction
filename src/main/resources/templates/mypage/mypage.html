@@ -13,6 +13,12 @@
    border-radius:50%;
    margin-bottom: 5%;
   }
+   .blue {
+    color: blue;
+   }
+  .red {
+   color: red;
+  }
  </style>
 </head>
 
@@ -76,14 +82,109 @@
       <!-- 캐시 -->
       <div class="tab-pane fade" id="v-pills-pp2" role="tabpanel" aria-labelledby="v-btn-pp2">
        <div class="container">
+
+        <!-- 캐시 충전/출금 -->
         <div class="single-widget">
          <h5 class="wdget-title">My Cash</h5>
          <ul class="widget-list">
-          <li><span>잔액 :</span><span th:text="${accountDto.cash} + '원'"></span></li>
+          <li><label>잔액 :</label><span id="cash"></span></li>
          </ul>
          <div style="text-align: right">
-          <a th:href="@{/cash/cash-charge}" class="alpha-btn-md-dark">Charge</a>
-          <a th:href="@{/cash/cash-refund}" class="alpha-btn-md-dark">Refund</a>
+          <a th:href="@{/cash/cash-charge}" class="alpha-btn-md-dark">충전</a>
+          <a th:href="@{/cash/cash-withdrawal}" class="alpha-btn-md-dark">출금</a>
+         </div>
+        </div>
+
+        <!-- 캐시 내역 조회 -->
+        <div class="item-describe-area">
+         <ul class="nav nav-pills d-flex justify-content-center gap-sm-4 gap-1" id="pills-tab" role="tablist">
+          <li class="nav-item" role="presentation">
+           <button class="nav-link active describe-btn" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">전체 내역</button>
+          </li>
+          <li class="nav-item" role="presentation">
+           <button class="nav-link describe-btn" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">입금 내역</button>
+          </li>
+          <li class="nav-item" role="presentation">
+           <button class="nav-link describe-btn" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">출금 내역</button>
+          </li>
+         </ul>
+
+         <!-- 전체 내역 -->
+         <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+           <div class="describe-content">
+            <table class="table table-striped">
+             <thead class="table-dark">
+             <tr>
+              <th scope="col">Type</th>
+              <th scope="col">Status</th>
+              <th scope="col">Product Name</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Date</th>
+             </tr>
+             </thead>
+             <tbody>
+             <tr th:each="transaction : ${transactionHistory}">
+              <td th:text="${transaction.type}"></td>
+              <td th:text="${transaction.status}"></td>
+              <td th:text="${transaction.productName}"></td>
+              <td th:text="${transaction.amount}"
+                  th:classappend="${transaction.status == 'CHARGE' || transaction.status == 'ROLLBACK_COMPLETED' ? 'blue'
+                   : (transaction.status == 'WITHDRAW' || transaction.status == 'COMPLETED' ? 'red' : '')}"></td>
+              <td th:text="${#dates.format(transaction.date, 'yyyy년 M월 d일 H시 m분 s초')}"></td>
+             </tr>
+             </tbody>
+            </table>
+           </div>
+          </div>
+
+          <!-- 입금 내역 -->
+          <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+           <div class="describe-content">
+            <table class="table table-striped">
+             <thead class="table-dark">
+             <tr>
+              <th scope="col">#</th>
+              <th scope="col">First</th>
+              <th scope="col">Last</th>
+              <th scope="col">Handle</th>
+             </tr>
+             </thead>
+             <tbody>
+             <tr>
+              <th scope="row">1</th>
+              <td>Mark</td>
+              <td>Otto</td>
+              <td>@mdo</td>
+             </tr>
+             </tbody>
+            </table>
+           </div>
+          </div>
+
+          <!--  출금 내역  -->
+          <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+           <div class="describe-content">
+            <table class="table table-striped">
+             <thead class="table-dark">
+             <tr>
+              <th scope="col">#</th>
+              <th scope="col">First</th>
+              <th scope="col">Last</th>
+              <th scope="col">Handle</th>
+             </tr>
+             </thead>
+             <tbody>
+             <tr>
+              <th scope="row">1</th>
+              <td>Mark</td>
+              <td>Otto</td>
+              <td>@mdo</td>
+             </tr>
+             </tbody>
+            </table>
+           </div>
+          </div>
          </div>
         </div>
        </div>
@@ -168,6 +269,17 @@
    </div>
   </div>
  </div>
+
+ <script>
+  function formatNumber(number) {
+   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+   var cash = [[${accountDto.cash}]]; // Thymeleaf에서 값을 삽입
+   document.getElementById('cash').textContent = formatNumber(cash) + '원';
+  });
+ </script>
 </div>
 
 </body>

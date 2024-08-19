@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,11 +22,11 @@ public class ProductReqDto {
     private Timestamp startTime;
     private Integer currentPrice;
     private Integer immediatePrice;
-    private String imgUrl;
+    private List<String> imgUrls;
     private Long memberId;  // 판매자 ID 추가
 
     @Override
     public String toString() {
-        return "ProductReqDto [name=" + name + ", category=" + category + ", description=" + description + ", bidUnit=" + bidUnit + ", endTime=" + endTime + ", startTime=" + startTime + ", imgUrl=" + imgUrl + "]";
+        return "ProductReqDto [name=" + name + ", category=" + category + ", description=" + description + ", bidUnit=" + bidUnit + ", endTime=" + endTime + ", startTime=" + startTime + "]";
     }
 }

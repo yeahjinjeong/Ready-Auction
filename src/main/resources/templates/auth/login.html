@@ -30,48 +30,39 @@
                     </div>
                 </div>
             </div>
-            <div class="row gy-4">
-                <div class="col-lg-6">
-                    <div class="register-left-area style2">
-                        <h3>Hello Again</h3>
-                        <p>Wellcome Back You’ve Been Missed</p>
-                        <a href="../index.html" class="transparent-btn">Back Home</a>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="right-form-area">
-                        <h3>Login Your Account</h3>
-                        <form class="w-100" th:action="@{/auth/login}" method="post">
-                            <div class="form-inner">
-                                <label>이메일</label>
-                                <input type="text" name="email" placeholder="Your email">
-                            </div>
-                            <div class="form-inner">
-                                <label>비밀번호</label>
-                                <input type="password" name="password" id="password" placeholder="Password"/>
-                                <i class="bi bi-eye-slash" id="togglePassword"></i>
-                            </div>
-                            <div class="form-inner d-flex justify-content-between flex-wrap">
-                                <div class="form-group">
-                                    <input type="checkbox" id="html">
-                                    <label for="html">I agree to the Terms & Policy</label>
-                                </div>
 
-                                <a href="#" class="forgot-pass">Forgotten Password</a>
-                            </div>
-                            <input type="submit" value="로그인" class="account-btn">
-                        </form>
-                        <div class="alternate-signup-box">
-                            <h6>or Sign up WITH</h6>
-                            <div class="btn-group gap-4">
-                                <a href="" class="google-btn d-flex align-items-center"><i
-                                        class='bx bxl-google'></i><span>Sign up with google</span></a>
-                                <a href="" class="facebook-btn d-flex align-items-center"><i
-                                        class='bx bxl-facebook'></i>Sign up with facebook</a>
-                            </div>
-                        </div>
+            <div class="right-form-area">
+                <h3>Login Your Account</h3>
+                <form class="w-100" th:action="@{/auth/login}" method="post">
+                    <div class="form-inner">
+                        <label>이메일</label>
+                        <input type="text" name="email" placeholder="Your email">
                     </div>
-                </div>
+                    <div class="form-inner">
+                        <label>비밀번호</label>
+                        <input type="password" name="password" id="password" placeholder="Password"/>
+                        <i class="bi bi-eye-slash" id="togglePassword"></i>
+                    </div>
+<!--                    <div class="form-inner d-flex justify-content-between flex-wrap">-->
+<!--                        <div class="form-group">-->
+<!--                            <input type="checkbox" id="html">-->
+<!--                            <label for="html">Remember Me</label>-->
+<!--                        </div>-->
+
+<!--                        <a href="#" class="forgot-pass">Forgotten Password</a>-->
+<!--                    </div>-->
+                    <input type="submit" value="로그인" class="account-btn">
+                </form>
+
+<!--                <div class="alternate-signup-box">-->
+<!--                    <h6>or Sign up WITH</h6>-->
+<!--                    <div class="btn-group gap-4">-->
+<!--                        <a href="" class="google-btn d-flex align-items-center"><i-->
+<!--                                class='bx bxl-google'></i><span>Sign up with google</span></a>-->
+<!--                        <a href="" class="facebook-btn d-flex align-items-center"><i-->
+<!--                                class='bx bxl-facebook'></i>Sign up with facebook</a>-->
+<!--                    </div>-->
+<!--                </div>-->
             </div>
         </div>
     </section>

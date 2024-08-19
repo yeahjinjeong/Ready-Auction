@@ -109,7 +109,7 @@
                             </li>
                             <!-- 로그인하지 않은 경우 anonymous -->
                             <li sec:authorize="isAnonymous()" class="has-child-menu">
-                                <a href="javascript:void(0)">로그인/회원가입</a>
+                                <a href="javascript:void(0)">로그인</a>
                                 <i class="fl flaticon-plus">+</i>
                                 <ul class="sub-menu">
                                     <li><a th:href="@{/auth/login}">로그인</a></li>

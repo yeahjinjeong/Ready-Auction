@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,9 +21,10 @@ public class ProductRepDto {
     private Integer bidUnit;
     private Timestamp endTime;
     private Timestamp startTime;
+    private Integer startPrice;
     private Integer currentPrice;
     private Integer immediatePrice;
-    private String imgUrl;
+    private List<String> imgUrl;
     private Long memberId;  // 판매자 ID 추가
 
     @Override

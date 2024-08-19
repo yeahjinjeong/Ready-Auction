@@ -1,5 +1,6 @@
 package com.readyauction.app.auction.dto;
 
+import com.readyauction.app.auction.entity.BidStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

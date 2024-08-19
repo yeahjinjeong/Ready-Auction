@@ -34,7 +34,7 @@
         .headind_srch{ padding:10px 29px 10px 20px; overflow:hidden; border-bottom:1px solid #c4c4c4;}
 
         .recent_heading h4 {
-            color: #05728f;
+            color: #1e2125; <!--#05728f -->
             font-size: 21px;
             margin: auto;
         }
@@ -334,26 +334,60 @@
 
     function displayChatProfiles(infos, currentMemberId) {
         const profileBox = document.getElementById('profile-target');
-        profileBox.innerHTML = '';
+        profileBox.innerHTML = ``;
         console.log(infos);
         var sellerProfileHTML =
-            `<img src="${infos.product.image}" alt="user"></div>
-             <div className="card-header">판매자 : ${infos.profile.sellerNickName}</div>
-             <div className="card-body">
-                <h5 className="card-title">상품명 : ${infos.product.productName}</h5>
-                <p className="card-text">낙찰가 : ${infos.product.price}</p>
-                <p className="card-text">매너점수 : ${infos.profile.sellerMannerScore}</p>
-                <a href="#" className="btn btn-primary">경매 상품 보러가기</a>
-                <a href="#" className="btn btn-primary">구매확정</a>
+            `<div class="card-header" style="display: grid; grid-template-columns: 90% 10%;">
+                <h5 style="text-align: center; padding-left: 50px;">판매자 : ${infos.profile.sellerNickName}</h5>
+                 <div class="dropdown">
+                      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">프로필보기</a></li>
+                        <li><a class="dropdown-item" href="#">매너평가</a></li>
+                        <li><a class="dropdown-item" href="#">신고하기</a></li>
+                      </ul>
+                </div>
+            </div>
+             <div class="card-body" style="display: grid; grid-template-columns: 30% 70%; align-items: center;">
+                <div class="image-container" style="text-align: center;">
+                    <img src="${infos.product.image}" alt="user" class="img-fluid" style="max-width: 100%; height: auto; padding-left: 20px">
+                </div>
+                <div class="text-container" style="text-align: center;">
+                    <h5 class="card-title">상품명 : ${infos.product.productName}</h5>
+                    <p class="card-text">낙찰가 : ${infos.product.price}</p>
+                    <p class="card-text">매너점수 : ${infos.profile.sellerMannerScore}</p>
+                </div>
+             </div>
+             <div class="card-footer text-body-secondary">
+                <a href="#" class="btn btn-primary">경매 상품 보러가기</a>
+                <a href="#" class="btn btn-primary">구매확정</a>
              </div>`;
         var winnerProfileHTML =
-            `<img src="${infos.product.image}" alt="user"></div>
-             <div className="card-header">구매자 : ${infos.profile.winnerNickName}</div>
-             <div className="card-body">
-                <h5 className="card-title">상품명 : ${infos.product.productName}</h5>
-                <p className="card-text">낙찰가 : ${infos.product.price}</p>
-                <p className="card-text">매너점수 : ${infos.profile.winnerMannerScore}</p>
-                <a href="#" className="btn btn-primary">경매 상품 보러가기</a>
+            `<div class="card-header" style="display: grid; grid-template-columns: 90% 10%;">
+                <h5 style="text-align: center; padding-left: 50px;">구매자 : ${infos.profile.winnerNickName}</h5>
+                 <div class="dropdown">
+                      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">프로필보기</a></li>
+                        <li><a class="dropdown-item" href="#">매너평가</a></li>
+                        <li><a class="dropdown-item" href="#">신고하기</a></li>
+                      </ul>
+                </div>
+            </div>
+             <div class="card-body" style="display: grid; grid-template-columns: 30% 70%; align-items: center;">
+                <div class="image-container" style="text-align: center;">
+                    <img src="${infos.product.image}" alt="user" class="img-fluid" style="max-width: 100%; height: auto; padding-left: 20px">
+                </div>
+                <div class="text-container" style="text-align: center;">
+                    <h5 class="card-title">상품명 : ${infos.product.productName}</h5>
+                    <p class="card-text">낙찰가 : ${infos.product.price}</p>
+                    <p class="card-text">매너점수 : ${infos.profile.winnerMannerScore}</p>
+                </div>
+             </div>
+             <div class="card-footer text-body-secondary">
+                <a href="#" class="btn btn-primary">경매 상품 보러가기</a>
              </div>`;
         console.log(`${infos.profile.sellerId}`);
         if (currentMemberId == Number(infos.profile.sellerId)) {
@@ -392,6 +426,7 @@
         });
     }
 </script>
+<button type="button" class="btn-close" aria-label="Close"></button>
 <div class="container">
     <h3 class=" text-center">Messaging</h3>
     <div class="messaging">
@@ -481,7 +516,7 @@
                 </div>
             </div>
         </div>
-        <p class="text-center top_spac"> Design by <a target="_blank" href="https://www.linkedin.com/in/sunil-rajput-nattho-singh/">Sunil Rajput</a></p>
+<!--        <p class="text-center top_spac"> Design by <a target="_blank" href="https://www.linkedin.com/in/sunil-rajput-nattho-singh/">Sunil Rajput</a></p>-->
     </div>
 </div>
 
