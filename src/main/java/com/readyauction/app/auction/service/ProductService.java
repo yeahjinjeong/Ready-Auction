@@ -2,8 +2,11 @@ package com.readyauction.app.auction.service;
 
 import com.readyauction.app.auction.dto.*;
 import com.readyauction.app.auction.entity.*;
+import com.readyauction.app.auction.repository.BidRepository;
 import com.readyauction.app.auction.repository.ProductRepository;
 
+import com.readyauction.app.cash.entity.PaymentStatus;
+import com.readyauction.app.cash.repository.PaymentRepository;
 import com.readyauction.app.ncp.dto.FileDto;
 import com.readyauction.app.ncp.service.NcpObjectStorageService;
 import com.readyauction.app.user.service.MemberService;
@@ -33,6 +36,8 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final PaymentRepository paymentRepository;
+    private final BidRepository bidRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
 
@@ -360,5 +365,23 @@ public class ProductService {
         return productRepository.findById(productId)
                 .map(Product::getName)
                 .orElse("N/A");
+    }
+
+    /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
+    // 판매 중 (auctionStatus가 START 또는 PROGRESS)
+    public List<Product> getActiveProducts(Long memberId) {
+        return productRepository.findByMemberIdAndAuctionStatusIn(memberId, List.of(AuctionStatus.START, AuctionStatus.PROGRESS));
+    }
+
+    // 거래 완료 (payment의 status가 COMPLETED인 경우)
+    public List<Product> getCompletedProducts(Long memberId) {
+        List<Long> productIds = paymentRepository.findCompletedProductIdsByMemberId(memberId, PaymentStatus.COMPLETED);
+        return productRepository.findByIdIn(productIds);
+    }
+
+    // 유찰 (auctionStatus가 END이고, 해당 상품에 대해 입찰 내역이 없는 경우)
+    public List<Product> getFailedProducts(Long memberId) {
+        List<Long> productIdsWithBids = bidRepository.findProductIdsWithBidsByMemberId(memberId);
+        return productRepository.findByMemberIdAndAuctionStatusAndIdNotIn(memberId, AuctionStatus.END, productIdsWithBids);
     }
 }
