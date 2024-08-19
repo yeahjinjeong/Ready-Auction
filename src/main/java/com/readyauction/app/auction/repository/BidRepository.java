@@ -23,6 +23,9 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
             "FROM Bid b WHERE b.product IN :products GROUP BY b.memberId, b.product")
     Optional<List<TopBidDto>> findTopBidsByProducts(@Param("products") List<Product> products);
 
-    /** 지영 - 마이페이지 경매 내역 조회 시 필요 **/
+    /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
     List<Bid> findByMemberIdAndBidStatus(Long memberId, BidStatus bidStatus);
+
+    @Query("SELECT DISTINCT b.product.id FROM Bid b WHERE b.memberId = :memberId")
+    List<Long> findProductIdsWithBidsByMemberId(Long memberId);
 }
