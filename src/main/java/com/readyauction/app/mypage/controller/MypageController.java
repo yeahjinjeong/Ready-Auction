@@ -1,8 +1,11 @@
 package com.readyauction.app.mypage.controller;
 
+import com.readyauction.app.auction.entity.AuctionStatus;
 import com.readyauction.app.auction.entity.Bid;
 import com.readyauction.app.auction.entity.BidStatus;
+import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.service.BidService;
+import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.cash.dto.AccountDto;
 import com.readyauction.app.cash.dto.TransactionDto;
 import com.readyauction.app.cash.service.AccountService;
@@ -33,6 +36,7 @@ public class MypageController {
     private final AccountService accountService;
     private final TransactionService transactionService;
     private final BidService bidService;
+    private final ProductService productService;
 
     // 마이페이지
     @GetMapping("")
@@ -65,19 +69,23 @@ public class MypageController {
             log.debug("transactionHistory: {}", transactionHistory);
             model.addAttribute("transactionHistory", transactionHistory);
 
-            // 경매 내역 조회
-            // 각 bidStatus별로 데이터 가져오기
-            List<Bid> confirmedBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.CONFIRMED);
-            List<Bid> acceptedBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.ACCEPTED);
-            List<Bid> rollbackBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.ROLLBACK);
-
-            log.debug("confirmedBids: {}", confirmedBids);
-            log.debug("acceptedBids: {}", acceptedBids);
-            log.debug("rollbackBids: {}", rollbackBids);
+            // 경매 참여 내역 조회 - 각 bidStatus별로 데이터 가져오기
+            List<Bid> confirmedBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.CONFIRMED); // 입찰 중
+            List<Bid> acceptedBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.ACCEPTED); // 낙찰
+            List<Bid> rollbackBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.ROLLBACK); // 패찰
 
             model.addAttribute("confirmedBids", confirmedBids);
             model.addAttribute("acceptedBids", acceptedBids);
             model.addAttribute("rollbackBids", rollbackBids);
+
+            // 경매 등록 내역 조회 - 각 조건 별로 데이터 가져오기
+            List<Product> activeProducts = productService.getActiveProducts(memberDto.getId()); // 판매 중
+            List<Product> completedProducts = productService.getCompletedProducts(memberDto.getId()); // 거래 완료
+            List<Product> failedProducts = productService.getFailedProducts(memberDto.getId()); // 유찰
+
+            model.addAttribute("activeProducts", activeProducts);
+            model.addAttribute("completedProducts", completedProducts);
+            model.addAttribute("failedProducts", failedProducts);
 
         } catch (UserNotFoundException e) {
             log.error("Member not found: {}", e.getMessage());
