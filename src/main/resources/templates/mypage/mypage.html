@@ -128,10 +128,9 @@
               <td th:text="${transaction.type}"></td>
               <td th:text="${transaction.status}"></td>
               <td th:text="${transaction.productName}"></td>
-              <td th:text="${transaction.amount}"
-                  th:classappend="${transaction.status == 'CHARGE' || transaction.status == 'ROLLBACK_COMPLETED' ? 'blue'
-                   : (transaction.status == 'WITHDRAW' || transaction.status == 'COMPLETED' ? 'red' : '')}"></td>
-              <td th:text="${#dates.format(transaction.date, 'yyyy년 M월 d일 H시 m분 s초')}"></td>
+              <td th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
+                  th:classappend="${transaction.amount < 0 ? 'red' : 'blue'}"></td>
+              <td th:text="${#dates.format(transaction.date, 'yyyy. MM. dd. HH: mm : ss')}"></td>
              </tr>
              </tbody>
             </table>
@@ -144,18 +143,22 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-              <th scope="col">#</th>
-              <th scope="col">First</th>
-              <th scope="col">Last</th>
-              <th scope="col">Handle</th>
+              <th scope="col">Type</th>
+              <th scope="col">Status</th>
+              <th scope="col">Product Name</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Date</th>
              </tr>
              </thead>
              <tbody>
-             <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
+             <tr th:each="transaction : ${transactionHistory}"
+                 th:if="${transaction.amount >= 0}">
+              <td th:text="${transaction.type}"></td>
+              <td th:text="${transaction.status}"></td>
+              <td th:text="${transaction.productName}"></td>
+              <td th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
+                  th:classappend="${transaction.amount < 0 ? 'red' : 'blue'}"></td>
+              <td th:text="${#dates.format(transaction.date, 'yyyy. MM. dd. HH: mm : ss')}"></td>
              </tr>
              </tbody>
             </table>
@@ -168,18 +171,22 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-              <th scope="col">#</th>
-              <th scope="col">First</th>
-              <th scope="col">Last</th>
-              <th scope="col">Handle</th>
+              <th scope="col">Type</th>
+              <th scope="col">Status</th>
+              <th scope="col">Product Name</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Date</th>
              </tr>
              </thead>
              <tbody>
-             <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
+             <tr th:each="transaction : ${transactionHistory}"
+                 th:if="${transaction.amount < 0}">
+              <td th:text="${transaction.type}"></td>
+              <td th:text="${transaction.status}"></td>
+              <td th:text="${transaction.productName}"></td>
+              <td th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
+                  th:classappend="${transaction.amount < 0 ? 'red' : 'blue'}"></td>
+              <td th:text="${#dates.format(transaction.date, 'yyyy. MM. dd. HH: mm : ss')}"></td>
              </tr>
              </tbody>
             </table>
