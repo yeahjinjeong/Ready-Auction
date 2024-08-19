@@ -36,7 +36,7 @@ public class BidService {
     private final PaymentService paymentService;
 
 
-    public boolean createBid(Long userId, Product product, Integer price, Timestamp timestamp) {
+    public Product createBid(Long userId, Product product, Integer price, Timestamp timestamp) {
 
         System.out.println("상품 입찰 크릿 진행!");
         if (product == null) {
@@ -61,16 +61,16 @@ public class BidService {
                     .build();
             bidRepository.save(bid);
             product.setCurrentPrice(price);
-            productRepository.save(product);
+
             System.out.println("상품 입찰 저장 완료!");
-            return true;  // Successfully saved
-        } catch (Exception e) {
+            return productRepository.save(product);
+           } catch (Exception e) {
             log.error("Failed to create bid for userId {} on productId {}: {}", userId, product.getId(), e.getMessage());
             throw new RuntimeException("Failed to create bid", e);  // Triggers rollback
         }
     }
 
-    public boolean updateBid(Bid bid, Integer price, Timestamp timestamp) {
+    public Product updateBid(Bid bid, Integer price, Timestamp timestamp) {
 
         System.out.println("상품 입찰 업뎃 진행!");
         try {
@@ -78,8 +78,8 @@ public class BidService {
             bid.setBidTime(timestamp);
             bidRepository.save(bid);
             bid.getProduct().setCurrentPrice(price);
-            productRepository.save(bid.getProduct());
-            return true;
+            return productRepository.save(bid.getProduct());
+
         } catch (Exception e) {
             log.error("Failed to update bid with id {}: {}", bid.getId(), e.getMessage());
             throw new RuntimeException("Failed to update bid", e);  // Triggers rollback
@@ -172,11 +172,10 @@ public class BidService {
                 bidResDto = createBidResDto(product.getImmediatePrice(), BidStatus.ACCEPTED,Timestamp.from(Instant.now()));
 
             } else {
-
                 System.out.println("상품 입찰 진행!");
                 Integer currentPrice = updateBidPrice(product, bidDto.getBidPrice());
                 // 기존 입찰이 있는 경우 갱신, 없는 경우 새로 생성
-                bidRepository.findByMemberIdAndProduct(userId, product)
+                 bidRepository.findByMemberIdAndProduct(userId, product)
                         .ifPresentOrElse(
                                 bid -> updateBid(bid, bidDto.getBidPrice(), bidDto.getBidTime()),
                                 () -> createBid(userId, product, bidDto.getBidPrice(), bidDto.getBidTime())
