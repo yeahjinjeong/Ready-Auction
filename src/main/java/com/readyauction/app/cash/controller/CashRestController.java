@@ -43,7 +43,7 @@ public class CashRestController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
-        PaymentResDto createPayment = paymentService.completePayment(email, paymentReqDto);
+        PaymentResDto createPayment = paymentService. completePayment(email, paymentReqDto);
         if (createPayment == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }

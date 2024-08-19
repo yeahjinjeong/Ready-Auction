@@ -60,8 +60,7 @@ public class PaymentService {
             // 보낸이 계좌에서 출금
             accountService.withdrawal(senderId, paymentReqDto.getAmount());
 
-            // 낙찰로그에서 거래중으로 상태값 바꾸기
-            Product product = productService.progressWinnerProcess(paymentReqDto.getProductId());
+            Product product = productService.findById(paymentReqDto.getProductId()).orElseThrow();
             if (product == null) {
                 throw new EntityNotFoundException("Product not found for ID: " + paymentReqDto.getProductId());
             }

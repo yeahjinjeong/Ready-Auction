@@ -83,8 +83,8 @@ public class ProductService {
     public Integer updateBidPrice(Product product, Integer bidPrice) {
         try {
             product.setCurrentPrice(bidPrice + product.getBidUnit());
-            productRepository.save(product);
-            return bidPrice + product.getBidUnit();
+            return productRepository.save(product).getCurrentPrice();
+
         } catch (Exception e) {
             throw new RuntimeException("Update bid price failed", e);
         }
@@ -149,6 +149,7 @@ public class ProductService {
     public ProductDto startWinnerProcess(String email, WinnerReqDto winnerReqDto) {
         Long userId = getUserIdFromRequest(email);
         Product product = findProductById(winnerReqDto.getProductId());
+
         if(userId.equals(product.getMemberId())) {
             throw new IllegalStateException("Seller can't start bid for product with ID: " + winnerReqDto.getProductId());
         }
@@ -206,7 +207,7 @@ public class ProductService {
             }
 
             if (product.hasWinner()) {
-                product.getWinner().setStatus(PurchaseStatus.PENDING);
+                product.getWinner().setStatus(PurchaseStatus.ACCEPTED);
             }
 
             Product savedProduct = productRepository.save(product);
