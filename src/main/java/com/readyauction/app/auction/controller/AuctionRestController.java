@@ -4,11 +4,15 @@ import com.readyauction.app.auction.dto.*;
 import com.readyauction.app.auction.entity.PurchaseCategory;
 import com.readyauction.app.auction.service.BidService;
 import com.readyauction.app.auction.service.ProductService;
+import com.readyauction.app.chat.service.ChatService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +30,7 @@ import java.util.Map;
 public class AuctionRestController {
     final ProductService productService;
     final BidService bidService;
+    final SimpMessagingTemplate simpMessagingTemplate;
 
     @PostMapping("/create")
         public ResponseEntity<ProductRepDto> createAuction(HttpServletRequest request,@RequestBody ProductReqDto productReqDto) {
@@ -61,8 +66,10 @@ public class AuctionRestController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("images", results);  // "images" 키에 파일 URL 리스트 저장
-        return ResponseEntity.ok(response);  // JSON 형태로 결과 반환
+            return ResponseEntity.ok(response);  // JSON 형태로 결과 반환
     }
+
+
 
     @PostMapping("/bid")
     public ResponseEntity<BidResDto> bid(@RequestBody BidDto bidDto) {
@@ -73,6 +80,7 @@ public class AuctionRestController {
             System.out.println("입찰중 "+ email);
             bidResDto = bidService.startBid(email, bidDto);
             System.out.println(bidDto);
+            simpMessagingTemplate.convertAndSend("/sub/"+bidDto.getProductId(),bidResDto);
             return ResponseEntity.ok(bidResDto); // 성공적으로 처리되면, 200 OK와 함께 bidDto를 반환
         } catch (RuntimeException e) {
             // startBid에서 던져진 RuntimeException을 처리

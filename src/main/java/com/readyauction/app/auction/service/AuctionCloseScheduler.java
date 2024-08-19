@@ -16,7 +16,7 @@ public class AuctionCloseScheduler {
     @Scheduled(cron = "0 * * * * *")	// 1분마다
     public void closeAuction() throws Exception {
         System.out.println("옥션마감!");
-        bidService.endAuction();
+//        bidService.endAuction();
 
         alarmToWinner();
     }

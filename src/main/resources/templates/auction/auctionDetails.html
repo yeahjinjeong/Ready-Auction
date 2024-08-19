@@ -65,10 +65,41 @@
 
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- SockJS 라이브러리 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js" integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+
         document.addEventListener('DOMContentLoaded', function () {
             const bidForm = document.getElementById('bidForm');
             const buyForm = document.getElementById('buyForm');
+
+            let stompClient;
+
+            // WebSocket 연결 설정
+            function connect() {
+                const socket = new SockJS('[[@{/auction}]]');
+                stompClient = Stomp.over(socket);
+                stompClient.connect({}, function(frame) {
+                    console.log('Connected: ' + frame);
+                    const productId = document.getElementById('productId').value;
+
+                    // 클라이언트는 '/product/{productId}/sub' 경로를 구독합니다.
+                    stompClient.subscribe(`/sub/${productId}`, function(messageOutput) {
+                        console.log("수신 완료")
+                        showMessage(JSON.parse(messageOutput.body));
+                    });
+                });
+            }
+
+            // 서버로부터 받은 메시지를 화면에 표시
+            function showMessage(bidRes) {
+                document.getElementById('currentPrice').value = bidRes.bidCurrentPrice;
+            }
+            // 페이지 로드 시 WebSocket 연결
+
+            connect();
+
 
             bidForm.addEventListener('submit', function (event) {
                 event.preventDefault(); // 기본 폼 제출 방지
