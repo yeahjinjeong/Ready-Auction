@@ -50,4 +50,12 @@ public class Member extends User {
         super(nickname, address, profilePicture);  // User 필드 초기화
         this.mannerScore = mannerScore;
     }
+
+    public void increaseMannerScore() {
+        this.mannerScore += 5;
+    }
+
+    public void decreaseMannerScore() {
+        this.mannerScore -= 5;
+    }
 }
