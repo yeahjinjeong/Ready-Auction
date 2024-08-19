@@ -1,5 +1,6 @@
 package com.readyauction.app.auction.entity;
 
+import groovy.lang.Lazy;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +19,8 @@ public class Bid {
 
     private Long memberId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Lazy
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 

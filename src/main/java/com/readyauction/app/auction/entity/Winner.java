@@ -28,4 +28,7 @@ public class Winner {
     @Enumerated(EnumType.STRING)
     private PurchaseStatus status; // 구매 대기, 거래중, 구매확정
 
+    @Column(table = "winner")
+    @Enumerated(EnumType.STRING)
+    private PurchaseCategoty category;
 }

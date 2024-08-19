@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<head>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <meta charset="UTF-8">
+    <title>통계 관리</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+          rel="stylesheet"/>
+
+    <!-- Vendor CSS Files -->
+    <link rel="stylesheet" th:href="@{/assets/vendor/bootstrap/css/bootstrap.min.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/vendor/bootstrap-icons/bootstrap-icons.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/vendor/boxicons/css/boxicons.min.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/vendor/quill/quill.snow.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/vendor/quill/quill.bubble.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/vendor/remixicon/remixicon.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/vendor/simple-datatables/style.css}"/>
+
+    <!-- Template Main CSS File -->
+    <link rel="stylesheet" th:href="@{/assets/css/style.css}"/>
+</head>
+
+<body>
+<div layout:fragment="content1">
+    <div class="breadcrumb breadcrumb-style-one mb-0">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">통계 관리</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">메인화면으로</a></li>
+                    <li class="breadcrumb-item active">통계 관리</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left side columns -->
+        <div class="col-lg-8" style="padding-left: 24px">
+            <div class="row">
+
+                <!-- Sales Card -->
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card sales-card">
+
+                        <div class="filter">
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start">
+                                    <h6>Filter</h6>
+                                </li>
+
+                                <li><a class="dropdown-item" href="#" onclick="loadTransactions('today')">Today</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadTransactions('week')">This Week</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadTransactions('month')">This Month</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">Sales <span id="salesPeriod">| Today</span></h5>
+
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-cart"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6 id="salesCount">100</h6> <!-- 하드코딩된 데이터 -->
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- End Sales Card -->
+
+                <!-- Revenue Card -->
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card revenue-card">
+
+                        <div class="filter">
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start">
+                                    <h6>Filter</h6>
+                                </li>
+
+                                <li><a class="dropdown-item" href="#" onclick="loadRevenue('today')">Today</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadRevenue('month')">This Month</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadRevenue('year')">This Year</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">Revenue <span id="revenuePeriod">| This Month</span></h5>
+
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6 id="revenueAmount">$5000</h6> <!-- 하드코딩된 데이터 -->
+                                    <span id="revenueChange" class="text-success small pt-1 fw-bold">10%</span>
+                                    <span class="text-muted small pt-2 ps-1">increase</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- End Revenue Card -->
+
+                <!-- Members Card with Active/Deleted Filter -->
+                <div class="col-xxl-4 col-md-6">
+                    <div class="card info-card customers-card">
+                        <div class="filter">
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start">
+                                    <h6>Filter</h6>
+                                </li>
+                                <li><a class="dropdown-item" href="#" onclick="loadMembers('active')">활동중인 회원</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadMembers('deleted')">탈퇴한 회원</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">Members <span id="memberStatusLabel">| Active</span></h5>
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                                <div class="ps-3">
+                                    <h6 id="membersCount">0</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    function loadMembers(status) {
+                        const url = `/app/api/statistics/members?status=${status}`; // API 호출 시 상태를 파라미터로 전달
+
+                        fetch(url)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                document.getElementById('membersCount').textContent = data.length; // 필터링된 회원 수를 표시
+                                document.getElementById('memberStatusLabel').textContent = `| ${status === 'active' ? 'active' : 'deleted'}`; // 필터 상태 표시
+                            })
+                            .catch(error => console.error('Error fetching member data:', error));
+                    }
+
+                    // 페이지 로드 시 기본적으로 active 회원을 조회
+                    document.addEventListener("DOMContentLoaded", () => loadMembers('active'));
+                </script>
+
+
+
+                <!-- Reports -->
+                <div class="col-12">
+                    <div class="card">
+
+                        <div class="filter">
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start">
+                                    <h6>Filter</h6>
+                                </li>
+
+                                <li><a class="dropdown-item" href="#" onclick="loadReports('today')">Today</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadReports('month')">This Month</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadReports('year')">This Year</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">Reports <span id="reportsPeriod">| Today</span></h5>
+
+                            <!-- Line Chart -->
+                            <div id="reportsChart"></div>
+
+                            <script>
+                                function loadReports(period) {
+                                    const salesData = [100, 200, 300]; // 하드코딩된 데이터
+                                    const revenueData = [4000, 5000, 6000]; // 하드코딩된 데이터
+                                    const customersData = [50, 60, 70]; // 하드코딩된 데이터
+                                    const categories = ['2024-08-01', '2024-08-02', '2024-08-03']; // 하드코딩된 날짜 데이터
+
+                                    new ApexCharts(document.querySelector("#reportsChart"), {
+                                        series: [{
+                                            name: 'Sales',
+                                            data: salesData
+                                        }, {
+                                            name: 'Revenue',
+                                            data: revenueData
+                                        }, {
+                                            name: 'Customers',
+                                            data: customersData
+                                        }],
+                                        chart: {
+                                            height: 350,
+                                            type: 'area',
+                                            toolbar: {
+                                                show: false
+                                            },
+                                        },
+                                        markers: {
+                                            size: 4
+                                        },
+                                        colors: ['#4154f1', '#2eca6a', '#ff771d'],
+                                        fill: {
+                                            type: "gradient",
+                                            gradient: {
+                                                shadeIntensity: 1,
+                                                opacityFrom: 0.3,
+                                                opacityTo: 0.4,
+                                                stops: [0, 90, 100]
+                                            }
+                                        },
+                                        dataLabels: {
+                                            enabled: false
+                                        },
+                                        stroke: {
+                                            curve: 'smooth',
+                                            width: 2
+                                        },
+                                        xaxis: {
+                                            type: 'datetime',
+                                            categories: categories
+                                        },
+                                        tooltip: {
+                                            x: {
+                                                format: 'dd/MM/yy HH:mm'
+                                            },
+                                        }
+                                    }).render();
+                                }
+
+                                // 기본적으로 오늘의 리포트 로드
+                                document.addEventListener("DOMContentLoaded", () => loadReports('today'));
+                            </script>
+                            <!-- End Line Chart -->
+
+                        </div>
+
+                    </div>
+                </div>
+                <!-- End Reports -->
+
+                <!-- Recent Sales -->
+                <div class="col-12">
+                    <div class="card recent-sales overflow-auto">
+
+                        <div class="filter">
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start">
+                                    <h6>Filter</h6>
+                                </li>
+
+                                <li><a class="dropdown-item" href="#" onclick="loadRecentSales('today')">Today</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadRecentSales('month')">This Month</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadRecentSales('year')">This Year</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">Recent Sales <span id="recentSalesPeriod">| Today</span></h5>
+
+                            <table class="table table-borderless datatable">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Customer</th>
+                                    <th scope="col">Product</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                                </thead>
+                                <tbody id="recentSalesTableBody">
+                                <!-- 하드코딩된 데이터 -->
+                                <tr>
+                                    <th scope="row"><a href="#">#1234</a></th>
+                                    <td>John Doe</td>
+                                    <td><a href="#" class="text-primary">Product A</a></td>
+                                    <td>$100</td>
+                                    <td><span class="badge bg-success">Approved</span></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><a href="#">#1235</a></th>
+                                    <td>Jane Smith</td>
+                                    <td><a href="#" class="text-primary">Product B</a></td>
+                                    <td>$150</td>
+                                    <td><span class="badge bg-warning">Pending</span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- End Recent Sales -->
+
+                <!-- Top Selling -->
+                <div class="col-12">
+                    <div class="card top-selling overflow-auto">
+
+                        <div class="filter">
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start">
+                                    <h6>Filter</h6>
+                                </li>
+
+                                <li><a class="dropdown-item" href="#" onclick="loadTopSelling('today')">Today</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadTopSelling('month')">This Month</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadTopSelling('year')">This Year</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="card-body pb-0">
+                            <h5 class="card-title">Top Selling <span id="topSellingPeriod">| Today</span></h5>
+
+                            <table class="table table-borderless">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Preview</th>
+                                    <th scope="col">Product</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Sold</th>
+                                    <th scope="col">Revenue</th>
+                                </tr>
+                                </thead>
+                                <tbody id="topSellingTableBody">
+                                <!-- 하드코딩된 데이터 -->
+                                <tr>
+                                    <th scope="row"><a href="#"><img src="path/to/image.jpg" alt=""></a></th>
+                                    <td><a href="#" class="text-primary fw-bold">Product A</a></td>
+                                    <td>$100</td>
+                                    <td class="fw-bold">10</td>
+                                    <td>$1000</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><a href="#"><img src="path/to/image.jpg" alt=""></a></th>
+                                    <td><a href="#" class="text-primary fw-bold">Product B</a></td>
+                                    <td>$150</td>
+                                    <td class="fw-bold">15</td>
+                                    <td>$2250</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Top Selling -->
+
+            </div>
+        </div>
+        <!-- End Left side columns -->
+
+        <!-- Right side columns -->
+        <div class="col-lg-4">
+
+            <!-- Recent Activity -->
+            <div class="card">
+                <div class="filter">
+                    <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <li class="dropdown-header text-start">
+                            <h6>Filter</h6>
+                        </li>
+
+                        <li><a class="dropdown-item" href="#" onclick="loadRecentActivity('today')">Today</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="loadRecentActivity('month')">This Month</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="loadRecentActivity('year')">This Year</a></li>
+                    </ul>
+                </div>
+
+                <div class="card-body">
+                    <h5 class="card-title">Recent Activity <span id="recentActivityPeriod">| Today</span></h5>
+
+                    <div class="activity" id="recentActivityContainer">
+                        <!-- 하드코딩된 데이터 -->
+                        <div class="activity-item d-flex">
+                            <div class="activite-label">10 mins ago</div>
+                            <i class='bi bi-circle-fill activity-badge text-success align-self-start'></i>
+                            <div class="activity-content">
+                                User John Doe purchased <a href="#" class="fw-bold text-primary">Product A</a>
+                            </div>
+                        </div>
+                        <div class="activity-item d-flex">
+                            <div class="activite-label">1 hour ago</div>
+                            <i class='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
+                            <div class="activity-content">
+                                User Jane Smith added <a href="#" class="fw-bold text-primary">Product B</a> to cart
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Recent Activity -->
+
+            <!-- 성별 비율 Pie Chart -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">성별 비율</h5>
+                        <!-- Pie Chart -->
+                        <div id="genderPieChart"></div>
+                        <script>
+                            $(document).ready(function () {
+                                // 성별 데이터를 서버에서 받아옴
+                                fetch('/app/api/statistics/members?status=active')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        const genderCounts = {
+                                            '남성': data.filter(member => member.gender === 'M').length,
+                                            '여성': data.filter(member => member.gender === 'F').length
+                                        };
+
+                                        const genders = Object.keys(genderCounts);
+                                        const counts = Object.values(genderCounts);
+
+                                        new ApexCharts(document.querySelector("#genderPieChart"), {
+                                            series: counts,
+                                            chart: {
+                                                height: 366,
+                                                type: 'pie',
+                                            },
+                                            labels: genders,
+                                            responsive: [{
+                                                breakpoint: 350,
+                                                options: {
+                                                    chart: {
+                                                        width: 200
+                                                    },
+                                                    legend: {
+                                                        position: 'bottom'
+                                                    }
+                                                }
+                                            }]
+                                        }).render();
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                            });
+                        </script>
+                    </div>
+                </div>
+            <!-- END 성별 비율 Pie Chart -->
+
+            <!-- 성별 연령 피라미드 Bar Chart -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">성별 연령 피라미드</h5>
+                        <!-- Bar Chart -->
+                        <div id="ageGenderBarChart"></div>
+                        <script>
+                            $(document).ready(function () {
+                                fetch('/app/api/statistics/members?status=active')
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        const ageGroups = [
+                                            '0-4', '5-9', '10-14', '15-19', '20-24', '25-29', '30-34',
+                                            '35-39', '40-44', '45-49', '50-54', '55-59', '60-64', '65-69',
+                                            '70-74', '75-79', '80-84', '85+'
+                                        ];
+
+                                        // 성별 연령대 분포 계산
+                                        const maleCounts = Array(ageGroups.length).fill(0);
+                                        const femaleCounts = Array(ageGroups.length).fill(0);
+
+                                        data.forEach(member => {
+                                            const age = new Date().getFullYear() - new Date(member.birth).getFullYear();
+                                            let ageGroupIndex = Math.floor(age / 5);
+                                            if (ageGroupIndex > 17) ageGroupIndex = 17; // 85세 이상은 마지막 그룹
+
+                                            if (member.gender === 'M') {
+                                                maleCounts[ageGroupIndex]++;
+                                            } else if (member.gender === 'F') {
+                                                femaleCounts[ageGroupIndex]++;
+                                            }
+                                        });
+
+                                        new ApexCharts(document.querySelector("#ageGenderBarChart"), {
+                                            series: [
+                                                {
+                                                    name: '남성',
+                                                    data: maleCounts.map(count => -count) // left side
+                                                },
+                                                {
+                                                    name: '여성',
+                                                    data: femaleCounts
+                                                }
+                                            ],
+                                            chart: {
+                                                type: 'bar',
+                                                height: 366,
+                                                stacked: true
+                                            },
+                                            colors: ['#008FFB', '#FF4560'],
+                                            plotOptions: {
+                                                bar: {
+                                                    borderRadius: 5,
+                                                    horizontal: true,
+                                                    barHeight: '80%',
+                                                },
+                                            },
+                                            dataLabels: {
+                                                enabled: false
+                                            },
+                                            stroke: {
+                                                width: 1,
+                                                colors: ["#fff"]
+                                            },
+                                            grid: {
+                                                xaxis: {
+                                                    lines: {
+                                                        show: false
+                                                    }
+                                                }
+                                            },
+                                            yaxis: {
+                                                stepSize: 1
+                                            },
+                                            tooltip: {
+                                                shared: false,
+                                                x: {
+                                                    formatter: function (val) {
+                                                        return val
+                                                    }
+                                                },
+                                                y: {
+                                                    formatter: function (val) {
+                                                        return Math.abs(val) + "명"
+                                                    }
+                                                }
+                                            },
+                                            title: {
+                                                text: '성별 연령 피라미드'
+                                            },
+                                            xaxis: {
+                                                categories: ageGroups,
+                                                title: {
+                                                    text: '인구수'
+                                                },
+                                                labels: {
+                                                    formatter: function (val) {
+                                                        return Math.abs(Math.round(val)) + "명"
+                                                    }
+                                                }
+                                            },
+                                        }).render();
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                            });
+                        </script>
+                    </div>
+                </div>
+            <!-- END -->
+
+        </div>
+        <!-- End Right side columns -->
+
+    </div>
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+</div>
+
+<script>
+    function loadTransactions(period) {
+        let url;
+        if (period === 'today') {
+            url = '[[@{/api/statistics/transactions/today}]]';
+        } else if (period === 'week') {
+            url = '[[@{/api/statistics/transactions/week}]]';
+        } else if (period === 'month') {
+            url = '[[@{/api/statistics/transactions/month}]]';
+        }
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                // 여기에 데이터를 UI에 업데이트하는 로직을 추가합니다.
+                document.getElementById('salesCount').textContent = data.completedTransactions || 0;
+            })
+            .catch(error => {
+                console.error('Error fetching transaction data:', error);
+            });
+    }
+</script>
+
+
+<!-- Vendor JS Files -->
+<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+<script th:src="@{/assets/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/assets/vendor/chart.js/chart.umd.js}"></script>
+<script th:src="@{/assets/vendor/echarts/echarts.min.js}"></script>
+<script th:src="@{/assets/vendor/quill/quill.js}"></script>
+<script th:src="@{/assets/vendor/simple-datatables/simple-datatables.js}"></script>
+<script th:src="@{/assets/vendor/tinymce/tinymce.min.js}"></script>
+<script th:src="@{/assets/vendor/php-email-form/validate.js}"></script>
+
+<!-- Template Main JS File -->
+<script th:src="@{/assets/js/main.js}"></script>
+
+</body>
+</html>

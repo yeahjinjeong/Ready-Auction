@@ -25,14 +25,14 @@ public class DummyData {
     @Transactional
     public void init() {
         // 더미 데이터 저장 로직
-        ChatRoom chatRoom = ChatRoom.builder()
-                .id(1L)
-                .chatRoomMembers(List.of
-                        (new ChatRoomMember(0L, "Yejin", ChatRoomMemberStatus.Seller),
-                        new ChatRoomMember(3L, "Jiyoung", ChatRoomMemberStatus.Winner)
-                        ))
-                .productId(1L)
-                .build();
-        chatRoomRepository.save(chatRoom);
+//        ChatRoom chatRoom = ChatRoom.builder()
+//                .id(2L)
+//                .chatRoomMembers(List.of
+//                        (new ChatRoomMember(1L, "필이와동스", ChatRoomMemberStatus.Seller),
+//                        new ChatRoomMember(2L, "김새똥구리", ChatRoomMemberStatus.Winner)
+//                        ))
+//                .productId(2L)
+//                .build();
+//        chatRoomRepository.save(chatRoom);
     }
 }

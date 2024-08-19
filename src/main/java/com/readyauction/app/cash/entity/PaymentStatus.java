@@ -1,5 +1,5 @@
 package com.readyauction.app.cash.entity;
 
 public enum PaymentStatus {
-    ROLLBACK, ACCEPTED, CONFIRMED
+    ROLLBACK, COMPLETED, PROCESSING,ROLLBACK_COMPLETED
 }

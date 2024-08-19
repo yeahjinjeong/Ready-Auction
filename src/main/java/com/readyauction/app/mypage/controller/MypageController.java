@@ -1,12 +1,18 @@
 package com.readyauction.app.mypage.controller;
 
-import com.readyauction.app.cash.entity.Account;
+import com.readyauction.app.auction.entity.Bid;
+import com.readyauction.app.auction.entity.BidStatus;
+import com.readyauction.app.auction.service.BidService;
+import com.readyauction.app.cash.dto.AccountDto;
+import com.readyauction.app.cash.dto.TransactionDto;
 import com.readyauction.app.cash.service.AccountService;
-import com.readyauction.app.user.entity.Member;
+import com.readyauction.app.cash.service.TransactionService;
+import com.readyauction.app.common.handler.UserNotFoundException;
+import com.readyauction.app.user.dto.MemberDto;
+import com.readyauction.app.user.dto.ProfileDto;
 import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -15,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 @RequestMapping("/mypage")
@@ -22,39 +29,76 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class MypageController {
 
-    @Autowired
-    private MemberService memberService;
-
-    @Autowired
-    private AccountService accountService;
+    private final MemberService memberService;
+    private final AccountService accountService;
+    private final TransactionService transactionService;
+    private final BidService bidService;
 
     // 마이페이지
     @GetMapping("")
     public String getMyPage(Model model) {
         log.info("GET /mypage");
+
+        // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserName = authentication.getName();
+        String currentUserName = authentication.getName(); // 로그인한 이메일
         System.out.println("currentUserName : " + currentUserName);
 
-        Member member = memberService.findMemberByEmail(currentUserName);
-//        Account account = accountService.findMemberByEmail(currentUserName);
-        log.debug("member: {}", member);
-        model.addAttribute("member", member);
+        try {
+            // MemberDto 가져오기
+            MemberDto memberDto = memberService.findMemberDtoByEmail(currentUserName);
+            log.debug("memberDto: {}", memberDto);
+            model.addAttribute("memberDto", memberDto);
+
+            // ProfileDto 가져오기
+            ProfileDto profileDto = memberService.toProfileDto(currentUserName);
+            log.debug("profileDto: {}", profileDto);
+            model.addAttribute("profileDto", profileDto);
+
+            // AccountDto 가져오기
+            AccountDto accountDto = accountService.findAccountDtoByMemberId(memberDto.getId());
+            log.debug("accountDto: {}", accountDto);
+            model.addAttribute("accountDto", accountDto);
+
+            // 캐시와 결제 내역 조회
+            List<TransactionDto> transactionHistory = transactionService.getTransactionHistory(accountDto.getId());
+            log.debug("transactionHistory: {}", transactionHistory);
+            model.addAttribute("transactionHistory", transactionHistory);
+
+            // 경매 내역 조회
+            // 각 bidStatus별로 데이터 가져오기
+            List<Bid> confirmedBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.CONFIRMED);
+            List<Bid> acceptedBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.ACCEPTED);
+            List<Bid> rollbackBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.ROLLBACK);
+
+            log.debug("confirmedBids: {}", confirmedBids);
+            log.debug("acceptedBids: {}", acceptedBids);
+            log.debug("rollbackBids: {}", rollbackBids);
+
+            model.addAttribute("confirmedBids", confirmedBids);
+            model.addAttribute("acceptedBids", acceptedBids);
+            model.addAttribute("rollbackBids", rollbackBids);
+
+        } catch (UserNotFoundException e) {
+            log.error("Member not found: {}", e.getMessage());
+            return "error/404";
+        }
 
         return "mypage/mypage";
     }
     
     // 프로필 수정
     @GetMapping("/profile-update")
-    public String editProfile(Model model) {
+    public String updateProfile(Model model) {
         log.info("GET /profile-update");
+
+        // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
-        System.out.println("cuurentUserName : " + currentUserName);
 
-        Member member = memberService.findMemberByEmail(currentUserName);
-        log.debug("member: {}", member);
-        model.addAttribute("member", member);
+        ProfileDto profileDto = memberService.toProfileDto(currentUserName);
+        log.debug("profileDto: {}", profileDto);
+        model.addAttribute("profileDto", profileDto);
 
         return "mypage/profile-update";
     }
@@ -63,30 +107,17 @@ public class MypageController {
     @PostMapping("/profile-update")
     public String updateProfile(@RequestParam("nickname") String nickname,
                                 @RequestParam("image") MultipartFile image,
-                                @RequestParam(value="removeImage", required = false) String removeImage,
-                                Model model) throws IOException {
+                                @RequestParam(value="isRemovedImage") boolean isRemovedImage) {
         log.info("POST /profile-update");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
 
-        Member member = memberService.findMemberByEmail(currentUserName);
-        member.setNickname(nickname);
-
-        boolean removeImageFlag = "true".equalsIgnoreCase(removeImage);
-
-        if (removeImageFlag && member.getProfilePicture() != null) {
-            memberService.deleteImage(member.getProfilePicture());
-            member.setProfilePicture(null);
+        try {
+            memberService.updateProfile(currentUserName, nickname, image, isRemovedImage);
+        } catch (IOException e) {
+            log.error("Error updating profile", e);
+            return "error/404";
         }
-
-        if (!image.isEmpty()) {
-            String imageUrl = memberService.uploadImage(image, currentUserName);
-            member.setProfilePicture(imageUrl);
-        }
-
-        memberService.save(member);
-        log.debug("member: {}", member);
-        model.addAttribute("member", member);
 
         return "redirect:/mypage";
     }

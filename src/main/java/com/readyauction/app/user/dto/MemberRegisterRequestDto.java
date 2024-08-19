@@ -3,11 +3,8 @@ package com.readyauction.app.user.dto;
 import com.readyauction.app.user.entity.Gender;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.entity.UserStatus;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -45,17 +42,19 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberRegisterRequestDto {
+
+    @Email(message = "아이디는 이메일 형식이어야 합니다.")
     @NotNull(message = "아이디는 null일 수 없습니다.")
     private String email;
     @NotEmpty(message = "비밀번호는 null 또는 공백일 수 없습니다.")
     private String password;
-    @NotBlank(message = "이름은 공백 또는 공백문자열일 수 없습니다.")
+    @NotEmpty(message = "이름은 null 또는 공백일 수 없습니다.")
     private String name;
-    private Long id;
     private String phone;
     private String address;
     private Integer mannerScore;
     private Gender gender;
+    @Past(message = "생일은 미래일 수 없습니다.")
     private LocalDate birth;
     private String nickname;
     private String profilePicture;
@@ -66,7 +65,6 @@ public class MemberRegisterRequestDto {
 
     public Member toMember(){
         return Member.builder()
-                .id(this.id)
                 .email(this.email)
                 .password(this.password)
                 .name(this.name)
@@ -76,7 +74,7 @@ public class MemberRegisterRequestDto {
                 .gender(this.gender)
                 .birth(this.birth)
                 .nickname(this.nickname)
-                .profilePicture("https://kr.object.ncloudstorage.com/ready-auction-bucket/sample-folder/87133e3b-797b-4894-b0bd-59f0d5b3b712.jpeg")
+                .profilePicture(this.profilePicture)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .deletedAt(this.deletedAt)

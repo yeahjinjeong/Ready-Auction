@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* 추가 스타일을 원한다면 여기에 작성하세요 */
+        .swiper-container {
+            width: 80%;
+            max-width: 600px;
+            margin: 50px auto;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        /* 썸네일 이미지 박스 스타일 */
+        .nav-item div {
+            width: 80px; /* 썸네일 이미지와 동일한 너비 */
+            height: 10px; /* 썸네일 이미지와 동일한 높이 */
+            overflow: hidden; /* 이미지가 박스를 초과하지 않도록 설정 */
+            display: flex;
+            justify-content: center; /* 이미지 박스 내에서 이미지 중앙 정렬 */
+            align-items: center; /* 이미지 박스 내에서 이미지 수직 중앙 정렬 */
+        }
+
+        /* 썸네일 이미지 스타일 */
+        .small-image-list img {
+            width: 80px; /* 썸네일 이미지의 너비 */
+            height: auto; /* 종횡비 유지 */
+            max-height: 10px; /* 썸네일 이미지의 최대 높이 */
+        }
+
+        /* 상품 이미지 박스 스타일 */
+        .product-image-box {
+            display: flex;
+            justify-content: center; /* 박스 내에서 이미지를 중앙에 정렬 */
+            border: 1px solid #ddd; /* 선택 사항: 이미지 박스에 테두리를 추가 */
+            padding: 10px; /* 선택 사항: 이미지 주위에 여백을 추가 */
+            max-width: 100%; /* 이미지 박스가 컨테이너를 초과하지 않도록 설정 */
+        }
+
+        /* 상품 이미지 스타일 */
+        .product-image {
+            max-width: 100%; /* 이미지가 컨테이너 너비를 초과하지 않도록 설정 */
+            max-height: 300px; /* 이미지의 최대 높이를 설정 */
+            height: auto; /* 이미지의 종횡비 유지 */
+            width: auto; /* 이미지의 종횡비 유지 */
+        }
+
+        /* 작은 이미지 썸네일 스타일 */
+        .small-image-list img {
+            width: 80px; /* 썸네일의 너비 설정 */
+            height: auto; /* 종횡비 유지 */
+            max-height: 80px; /* 선택 사항: 최대 높이 제한 */
+
+            .description {
+                white-space: pre-wrap;
+            }
+        }
+
+        .description {
+            white-space: pre-wrap;
+        }
+
+    </style>
+
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="breadcrumb breadcrumb-style-one mb-0">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">내 입찰</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/static}">Home</a></li>
+                    <li class="breadcrumb-item active">Payment</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <section class="auction-details-section pt-110">
+        <div class="container">
+            <div class="row gy-5">
+                <div class="col-lg-6">
+                    <div class="item-bid-timer">
+                        <div class="auction-bid">
+                            <p>낙찰 가</p>
+                            <h5 th:text="'₩' + ${#numbers.formatDecimal(productDetail.immediatePrice, 0, 'COMMA', 0, 'POINT')}"></h5>
+                        </div>
+                    </div>
+
+                <!-- 상품 이미지를 하얀 박스 위에 표시 -->
+                <div class="swiper-container">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            <img alt="상품 이미지" class="product-image" th:src="${productDetail.imgUrl}">
+                            <div class="swiper-pagination"></div>
+                        </div>
+                    </div>
+
+
+                    <!-- 내비게이션 버튼 -->
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-button-prev"></div>
+                </div>
+                <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+                <!-- Initialize Swiper -->
+                <script>
+                    const swiper = new Swiper('.swiper-container', {
+                        loop: true,
+                        pagination: {
+                            el: '.swiper-pagination',
+                            clickable: true,
+                        },
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        }
+                    });
+                </script>
+                <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">
+                    <li class="nav-item">
+
+                    </li>
+                </ul>
+            </div>
+                <div class="col-lg-6">
+                    <div class="widget-right-area">
+                        <div class="single-widget">
+                            <h5 class="widget-title">Product Overview</h5>
+                            <ul class="widget-list">
+                                <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
+                                <li><span>판매자 ID :</span><span th:text="${productDetail.memberId}">판매자</span></li>
+                                <li><span>카테고리 :</span><span th:text="${productDetail.category}">카테고리</span></li>
+                                <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
+                                <li><span>즉시 구매가 :</span><span th:text="'₩' + ${productDetail.immediatePrice}">즉시 구매가</span></li>
+                                <li><span>상품 설명 :</span><span th:text="${productDetail.description}">상품 설명</span></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        </section>
+
+</div>
+</body>
+</html>

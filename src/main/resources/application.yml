@@ -1,6 +1,6 @@
 spring:
   profiles:
-    default: test
+    default: prod
   application:
     name: ready-auction
   servlet:
@@ -33,9 +33,6 @@ logging:
 server:
   servlet:
     context-path: /app
-
-file:
-  upload-dir: /path/to/upload/directory
 
   spring:
     redis:

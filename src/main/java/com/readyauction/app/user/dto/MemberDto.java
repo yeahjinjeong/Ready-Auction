@@ -30,22 +30,21 @@ public class MemberDto {
     private Timestamp deletedAt;
     private UserStatus userStatus;
 
-
-    public static MemberDto toMemberDto(Member memberEntity) {
-        MemberDto memberDTO = new MemberDto();
-        memberDTO.setId(memberEntity.getId());
-        memberDTO.setEmail(memberEntity.getEmail());
-        memberDTO.setPassword(memberEntity.getPassword());
-        memberDTO.setName(memberEntity.getName());
-        memberDTO.setPhone(memberEntity.getPhone());
-        memberDTO.setAddress(memberEntity.getAddress());
-        memberDTO.setBirth(memberDTO.getBirth());
-        memberDTO.setNickname(memberEntity.getNickname());
-        memberDTO.setProfilePicture(memberEntity.getProfilePicture());
-        memberDTO.setMannerScore(memberEntity.getMannerScore());
-        memberDTO.setCreatedAt(memberEntity.getCreatedAt());
-//        memberDTO.setUpdatedAt(memberEntity.getUpdatedAt());
-        memberDTO.setUserStatus(memberEntity.getUserStatus());
-        return memberDTO;
+    public MemberDto(Member member) {
+        this.id = member.getId();
+        this.email = member.getEmail();
+        this.password = member.getPassword();
+        this.name = member.getName();
+        this.phone = member.getPhone();
+        this.address = member.getAddress();
+        this.mannerScore = member.getMannerScore();
+        this.gender = member.getGender();
+        this.birth = member.getBirth();
+        this.nickname = member.getNickname();
+        this.profilePicture = member.getProfilePicture();
+        this.createdAt = member.getCreatedAt();
+        this.updatedAt = member.getUpdatedAt();
+        this.deletedAt = member.getDeletedAt();
+        this.userStatus = member.getUserStatus();
     }
 }
