@@ -280,7 +280,7 @@ public class ProductService {
                         .status(PurchaseStatus.CONFIRMED)
                         .price(winnerDto.getWinnerReqDto().getBuyPrice())
                         .winnerTime(winnerDto.getWinnerReqDto().getBuyTime())
-                        .category(PurchaseCategoty.BID)
+                        .category(PurchaseCategory.BID)
                         .build();
                 winnerDto.getProduct().setWinner(winner);
                 winnerDto.getProduct().setAuctionStatus(AuctionStatus.END);

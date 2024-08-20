@@ -1,6 +1,6 @@
 package com.readyauction.app.auction.dto;
 
-import com.readyauction.app.auction.entity.PurchaseCategoty;
+import com.readyauction.app.auction.entity.PurchaseCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +17,7 @@ public class WinnerReqDto {
    private Long productId;
    private Integer buyPrice;
    private Timestamp buyTime;
-   private PurchaseCategoty category;
+   private PurchaseCategory category;
 
     @Override
     public String toString() {

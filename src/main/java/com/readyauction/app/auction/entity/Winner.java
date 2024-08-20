@@ -1,6 +1,5 @@
 package com.readyauction.app.auction.entity;
 
-import com.readyauction.app.auction.entity.PurchaseStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,5 +29,5 @@ public class Winner {
 
     @Column(table = "winner")
     @Enumerated(EnumType.STRING)
-    private PurchaseCategoty category;
+    private PurchaseCategory category;
 }
