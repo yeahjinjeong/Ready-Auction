@@ -5,7 +5,7 @@
 <link href="https://unpkg.com/swiper/swiper-bundle.min.css" rel="stylesheet">
 <head>
     <style>
-            /* 추가 스타일을 원한다면 여기에 작성하세요 */
+        /* 추가 스타일을 원한다면 여기에 작성하세요 */
         .swiper-container {
             width: 80%;
             max-width: 600px;
@@ -105,11 +105,45 @@
 
 
     </style>
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- SockJS 라이브러리 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js" integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+
         document.addEventListener('DOMContentLoaded', function () {
             const bidForm = document.getElementById('bidForm');
             const buyForm = document.getElementById('buyForm');
+
+            let stompClient;
+
+            // WebSocket 연결 설정
+            function connect() {
+                const socket = new SockJS('[[@{/auction}]]');
+                stompClient = Stomp.over(socket);
+                stompClient.connect({}, function(frame) {
+                    console.log('Connected: ' + frame);
+                    const productId = document.getElementById('productId').value;
+
+                    // 클라이언트는 '/product/{productId}/sub' 경로를 구독합니다.
+                    stompClient.subscribe(`/sub/${productId}`, function(messageOutput) {
+                        console.log("수신 완료")
+                        showMessage(JSON.parse(messageOutput.body));
+                    });
+                });
+            }
+
+            // 서버로부터 받은 메시지를 화면에 표시
+            function showMessage(bidRes) {
+                document.getElementById('currentPrice').value = bidRes.bidCurrentPrice;
+            }
+            // 페이지 로드 시 WebSocket 연결
+
+            connect();
+
 
             bidForm.addEventListener('submit', function (event) {
                 event.preventDefault(); // 기본 폼 제출 방지
@@ -151,7 +185,6 @@
                         alert('Failed to place bid. Please try again.');
                         // Even in case of an error, update the current price on the page
                         const responseJson = JSON.parse(xhr.responseText);
-                        document.getElementById('currentPrice').value = responseJson.bidCurrentPrice;
                     }
                 });
             });
@@ -308,49 +341,21 @@
                     <!-- 상품 이미지를 하얀 박스 위에 표시 -->
                     <div class="swiper-container">
                         <div class="swiper-wrapper">
-                            <div class="swiper-slide">
-                                <img alt="상품 이미지" class="product-image" th:src="${productDetail.imgUrl}">
-                                <div class="swiper-pagination"></div>
+                            <!-- 이미지 리스트를 반복하여 표시 -->
+                            <div class="swiper-slide" th:each="imgUrl : ${productDetail.imgUrl}">
+                                <img alt="상품 이미지" class="product-image" th:src="${imgUrl}" onclick="openFullscreen(this)">
                             </div>
                         </div>
-
-
                         <!-- 내비게이션 버튼 -->
                         <div class="swiper-button-next"></div>
                         <div class="swiper-button-prev"></div>
                     </div>
-                    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 
-                    <!-- Initialize Swiper -->
-                    <script>
-                        const swiper = new Swiper('.swiper-container', {
-                            loop: true,
-                            pagination: {
-                                el: '.swiper-pagination',
-                                clickable: true,
-                            },
-                            navigation: {
-                                nextEl: '.swiper-button-next',
-                                prevEl: '.swiper-button-prev',
-                            }
-                        });
-                    </script>
-                    <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">
-                        <li class="nav-item">
-
-                        </li>
-                    </ul>
-
-                    <!-- 상품 이미지를 하얀 박스 위에 표시 -->
-                    <div class="swiper-container product-image-box">
-                    <img th:src="${productDetail.imgUrl}" alt="상품 이미지" class="product-image">
-                        <div class="swiper-pagination"></div> <!-- 페이지네이션 위치 -->
-                        <!-- 이전, 다음 버튼 추가 -->
-                        <div class="swiper-button-prev"></div>
-                        <div class="swiper-button-next"></div>
-                    <!-- 내비게이션 버튼 -->
+                    <!-- 외부 좌우 내비게이션 버튼 추가 -->
+                    <div class="external-navigation">
+                        <button class="swiper-button-prev-outer">Prev</button>
+                        <button class="swiper-button-next-outer">Next</button>
                     </div>
-                    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 
                     <!-- Initialize Swiper -->
                     <script>
@@ -364,10 +369,48 @@
                                 clickable: true,
                             },
                         });
+
+                        // 외부 내비게이션 버튼 연결
+                        document.querySelector('.swiper-button-next-outer').addEventListener('click', () => {
+                            swiper.slideNext();
+                        });
+                        document.querySelector('.swiper-button-prev-outer').addEventListener('click', () => {
+                            swiper.slidePrev();
+                        });
+
+                        // 이미지 클릭 시 전체 화면 보기 기능
+                        function openFullscreen(img) {
+                            const fullScreenDiv = document.createElement('div');
+                            fullScreenDiv.style.position = 'fixed';
+                            fullScreenDiv.style.top = '0';
+                            fullScreenDiv.style.left = '0';
+                            fullScreenDiv.style.width = '100%';
+                            fullScreenDiv.style.height = '100%';
+                            fullScreenDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+                            fullScreenDiv.style.display = 'flex';
+                            fullScreenDiv.style.alignItems = 'center';
+                            fullScreenDiv.style.justifyContent = 'center';
+                            fullScreenDiv.style.zIndex = '1000';
+
+                            const fullScreenImg = document.createElement('img');
+                            fullScreenImg.src = img.src;
+                            fullScreenImg.style.maxWidth = '90%';
+                            fullScreenImg.style.maxHeight = '90%';
+
+                            // 클릭 시 전체 화면 닫기
+                            fullScreenDiv.addEventListener('click', () => {
+                                document.body.removeChild(fullScreenDiv);
+                            });
+
+                            fullScreenDiv.appendChild(fullScreenImg);
+                            document.body.appendChild(fullScreenDiv);
+                        }
                     </script>
+
+                    <!-- 이미지 리스트 아래 작은 이미지 표시 부분 -->
                     <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">
                         <li class="nav-item">
-
+                            <!-- 작은 이미지 리스트를 추가할 수 있습니다. -->
                         </li>
                     </ul>
                 </div>
@@ -402,7 +445,7 @@
                                            name="currentPrice">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
                                     <input id="productId" name="productId" th:value="${productDetail.id}" type="hidden">
-                                    <button class="widget-btn" type="submit">Place Bid</button>
+                                    <button class="widget-btn" type="submit">입찰 하기</button>
                                 </div>
                             </form>
                         </div>
@@ -417,31 +460,10 @@
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
                                     <input type="hidden" th:value="${productDetail.id}" name="productId2"
                                            id="productId2">
-                                    <button type="submit" class="widget-btn2">Place Buy</button>
+                                    <button type="submit" class="widget-btn">즉시 구매</button>
                                 </div>
-                                <div class="bidding-content">
-                                    <h6><a href="../winner.html">Robart FOX</a></h6>
-                                    <p>Bid 23 minutes ago for 24.5$</p>
-                                </div>
-                                <div class="bidding-item gap-sm-4 gap-2">
-                                    <div class="bidding-img">
-                                        <img alt="" src="assets/images/buyer/bid-histo2.png">
-                                    </div>
-                                    <div class="bidding-content">
-                                        <h6><a href="../winner.html">Leslie Alexander</a></h6>
-                                        <p>Bid 23 minutes ago for 24.5$</p>
-                                    </div>
-                                </div>
-                                <div class="bidding-item gap-sm-4 gap-2">
-                                    <div class="bidding-img">
-                                        <img alt="" src="assets/images/buyer/bid-hidto3.png">
-                                    </div>
-                                    <div class="bidding-content">
-                                        <h6><a href="../winner.html">Jane Cooper</a></h6>
-                                        <p>Bid 23 minutes ago for 24.5$</p>
-                                    </div>
-                                </div>
-                                </form>
+
+                            </form>
                         </div>
                     </div>
 

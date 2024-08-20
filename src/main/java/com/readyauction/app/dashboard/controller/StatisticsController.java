@@ -1,8 +1,8 @@
 package com.readyauction.app.dashboard.controller;
 
 import com.readyauction.app.dashboard.dto.MemberStatisticsDto;
-import com.readyauction.app.dashboard.dto.TransactionStatisticsDto;
 import com.readyauction.app.dashboard.service.StatisticsService;
+import com.readyauction.app.user.entity.UserStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,11 +27,8 @@ public class StatisticsController {
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         // 대시보드에 필요한 데이터 추가
-        List<MemberStatisticsDto> memberStatistics = statisticsService.getMemberStatistics();
-        List<TransactionStatisticsDto> transactionStatistics = statisticsService.getCompletedTransactions();
-
+        List<MemberStatisticsDto> memberStatistics = statisticsService.getMembersByStatus(UserStatus.active);
         model.addAttribute("memberStatistics", memberStatistics);
-        model.addAttribute("transactionStatistics", transactionStatistics);
 
         return "dashboard/dashboard";
     }

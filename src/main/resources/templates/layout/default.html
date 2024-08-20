@@ -55,7 +55,7 @@
             <div class="row">
                 <div class="col-xl-2 align-items-center d-xl-flex d-lg-block">
                     <div class="nav-logo d-flex justify-content-between align-items-center">
-                        <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" alt="logo" width="50"
+                        <a th:href="@{/auction/auction}"><img th:src="@{/assets/images/logo.png}" alt="logo" width="50"
                                                height="50"></a>
                         <div class="d-flex align-items-center gap-4">
                             <span style="font-size: 16px; font-weight: bold; color: white; margin-left: 10px;">READY? AUCTION!</span>
@@ -77,12 +77,9 @@
                 <div class="col-xl-7 d-flex justify-content-center ">
                     <nav class="main-nav">
                         <div class="inner-logo d-xl-none text-center mt-4">
-                            <a href="#"><img th:src="@{/assets/images/logo.png}" width="50" height="50" alt=""></a>
+                            <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" width="50" height="50" alt=""></a>
                         </div>
                         <ul>
-                            <li class="has-child-menu">
-                                <a th:href="@{/}">Home</a>
-                            </li>
                             <li class="has-child-menu">
                                 <a href="javascript:void(0)">경매</a>
                                 <i class="fl flaticon-plus">+</i>
@@ -95,7 +92,7 @@
                                 <a th:href="@{/about}" method="post">공지사항</a>
                             </li>
                             <li class="has-child-menu">
-                                <a th:href="@{/faq}" method="post">FAQ</a>
+                                <a th:href="@{/inquiry/faq}" method="post">FAQ</a>
                             </li>
                             <li class="has-child-menu">
                                 <a href="javascript:void(0)">관리자</a>
@@ -134,15 +131,6 @@
                             <!-- search-btn은 auction 페이지에서만 보입니다 -->
                             <li class="search-btn" th:if="${currentPage == 'auction'}"><i class="bi bi-search"></i></li>
                         </ul>
-                        <div class="contact-no d-flex align-items-center">
-                            <div class="contact-icon">
-                                <img th:src="@{/assets/images/icon/phone-w.svg}" alt="">
-                            </div>
-                            <div class="contact-info">
-                                <p>Hot Line Number</p>
-                                <h6><a href="tel:+8801761111456">+880 176 1111 456</a></h6>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -155,6 +143,9 @@
     <div layout:fragment="content1"></div>
     <!-- 검색 결과가 표시될 곳 -->
     <div id="search-results"></div>
+    <div class="chat-button" onclick="location.href='/app/chat/list'">
+        💬
+    </div>
 </main>
 
 <footer class="footer-area footer-style-one mt-110">
@@ -168,11 +159,6 @@
             <div class="col-lg-6 col-md-6 order-1 order-md-0 text-center text-md-start mt-3 mt-md-0">
                 <p>Copyright 2024 <a href="#">Ready Auction</a> | Design By <a href="https://www.egenslab.com">Egens
                     Theme</a></p>
-            </div>
-            <div class="col-lg-6 col-md-6 order-0 order-md-1">
-                <div class="acceptable-cards float-lg-end text-center text-md-start">
-                    <img th:src="@{/assets/images/icon/payment-cards.png}" alt="" class="img-fluid">
-                </div>
             </div>
         </div>
     </div>

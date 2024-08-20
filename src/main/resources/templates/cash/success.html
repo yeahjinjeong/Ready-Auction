@@ -90,41 +90,75 @@
                         </div>
                     </div>
 
-                <!-- 상품 이미지를 하얀 박스 위에 표시 -->
-                <div class="swiper-container">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <img alt="상품 이미지" class="product-image" th:src="${productDetail.imgUrl}">
-                            <div class="swiper-pagination"></div>
+                    <!-- 상품 이미지를 하얀 박스 위에 표시 -->
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            <!-- 이미지 리스트를 반복하여 표시 -->
+                            <div class="swiper-slide" th:each="imgUrl : ${productDetail.imgUrl}">
+                                <img alt="상품 이미지" class="product-image" th:src="${imgUrl}" onclick="openFullscreen(this)">
+                            </div>
                         </div>
+                        <!-- 내비게이션 버튼 -->
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
                     </div>
 
+                    <!-- 외부 좌우 내비게이션 버튼 추가 -->
+                    <div class="external-navigation">
+                        <button class="swiper-button-prev-outer">Prev</button>
+                        <button class="swiper-button-next-outer">Next</button>
+                    </div>
 
-                    <!-- 내비게이션 버튼 -->
-                    <div class="swiper-button-next"></div>
-                    <div class="swiper-button-prev"></div>
-                </div>
-                <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+                    <!-- Initialize Swiper -->
+                    <script>
+                        const swiper = new Swiper('.swiper-container', {
+                            loop: true,
+                            pagination: {
+                                el: '.swiper-pagination',
+                                clickable: true,
+                            },
+                            navigation: {
+                                nextEl: '.swiper-button-next',
+                                prevEl: '.swiper-button-prev',
+                            }
+                        });
 
-                <!-- Initialize Swiper -->
-                <script>
-                    const swiper = new Swiper('.swiper-container', {
-                        loop: true,
-                        pagination: {
-                            el: '.swiper-pagination',
-                            clickable: true,
-                        },
-                        navigation: {
-                            nextEl: '.swiper-button-next',
-                            prevEl: '.swiper-button-prev',
+                        // 외부 내비게이션 버튼 연결
+                        document.querySelector('.swiper-button-next-outer').addEventListener('click', () => {
+                            swiper.slideNext();
+                        });
+                        document.querySelector('.swiper-button-prev-outer').addEventListener('click', () => {
+                            swiper.slidePrev();
+                        });
+
+                        // 이미지 클릭 시 전체 화면 보기 기능
+                        function openFullscreen(img) {
+                            const fullScreenDiv = document.createElement('div');
+                            fullScreenDiv.style.position = 'fixed';
+                            fullScreenDiv.style.top = '0';
+                            fullScreenDiv.style.left = '0';
+                            fullScreenDiv.style.width = '100%';
+                            fullScreenDiv.style.height = '100%';
+                            fullScreenDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+                            fullScreenDiv.style.display = 'flex';
+                            fullScreenDiv.style.alignItems = 'center';
+                            fullScreenDiv.style.justifyContent = 'center';
+                            fullScreenDiv.style.zIndex = '1000';
+
+                            const fullScreenImg = document.createElement('img');
+                            fullScreenImg.src = img.src;
+                            fullScreenImg.style.maxWidth = '90%';
+                            fullScreenImg.style.maxHeight = '90%';
+
+                            // 클릭 시 전체 화면 닫기
+                            fullScreenDiv.addEventListener('click', () => {
+                                document.body.removeChild(fullScreenDiv);
+                            });
+
+                            fullScreenDiv.appendChild(fullScreenImg);
+                            document.body.appendChild(fullScreenDiv);
                         }
-                    });
-                </script>
-                <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">
-                    <li class="nav-item">
-
-                    </li>
-                </ul>
+                    </script>
             </div>
                 <div class="col-lg-6">
                     <div class="widget-right-area">
@@ -168,24 +202,6 @@
                                                 console.log('Payment created successfully:', response);
                                                 alert('결제가 성공적으로 처리되었습니다!');
                                                 // 필요에 따라 페이지 리다이렉션, 메시지 표시 등을 수행할 수 있습니다.
-                                                // 예진 작업 시작
-                                                // console.log([[${productDetail.id}]]);
-                                                // console.log(productId);
-                                                fetch(`[[@{/chat/create}]]`, {
-                                                    method : 'post',
-                                                    headers: {
-                                                        'Content-Type': 'application/json' // 요청 헤더 설정
-                                                    },
-                                                    body: JSON.stringify([[${productDetail.id}]])
-                                                }).then(response => {
-                                                    // 응답이 성공적인지 확인
-                                                    if (!response.ok) {
-                                                        throw new Error('Network response was not ok');
-                                                    }
-                                                    // JSON 형식으로 응답 본문을 파싱
-                                                    window.location.href= `[[@{/chat/list}]]`;
-                                                })
-                                                // 예진 작업 끝
                                             },
                                             error: function(xhr, status, error) {
                                                 // 요청이 실패한 경우 실행됩니다.

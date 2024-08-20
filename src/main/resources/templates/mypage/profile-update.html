@@ -24,7 +24,7 @@
             <div class="col-lg-12 text-center">
                 <h1 class="breadcrumb-title">Edit Profile</h1>
                 <ul class="d-flex justify-content-center breadcrumb-items">
-                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/auction/auction}">Home</a></li>
                     <li class="breadcrumb-item active">Edit Profile</li>
                 </ul>
             </div>
@@ -40,8 +40,8 @@
                 <div class="qsn-form">
                     <h5 class="wdget-title">My Profile</h5>
                     <ul class="widget-list">
-                        <li><label>닉네임 :</label><input type="text" id="nickname" name="nickname" th:value="${profileDto.nickname}"></li>
-                        <li><label>이미지 :</label><input type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)"></li>
+                        <li><label for="nickname">닉네임 :</label><input type="text" id="nickname" name="nickname" th:value="${profileDto.nickname}"></li>
+                        <li><label for="image">이미지 :</label><input class="form-control" type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)"></li>
                         <li><button type="button" class="btn btn-outline-danger" onclick="removeImage()">Remove Image</button>
                             <input type="hidden" id="isRemovedImage" name="isRemovedImage" value="false"/></li>
                     </ul>

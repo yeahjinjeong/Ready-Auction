@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+<script>
+    function toggleCheckboxes() {
+        const likeRadio = document.getElementById("like");
+        const dislikeRadio = document.getElementById("dislike");
+        const likeCheckboxes = document.querySelectorAll(".like-options input[type='checkbox']");
+        const dislikeCheckboxes = document.querySelectorAll(".dislike-options input[type='checkbox']");
+
+        if (likeRadio.checked) {
+            likeCheckboxes.forEach(checkbox => checkbox.disabled = false);
+            dislikeCheckboxes.forEach(checkbox => {
+                checkbox.disabled = true;
+                checkbox.checked = false;
+            });
+        } else if (dislikeRadio.checked) {
+            dislikeCheckboxes.forEach(checkbox => checkbox.disabled = false);
+            likeCheckboxes.forEach(checkbox => {
+                checkbox.disabled = true;
+                checkbox.checked = false;
+            });
+        }
+    }
+</script>
+</head>
+<body>
+<div layout:fragment="content1">
+    <div class="breadcrumb breadcrumb-style-one mb-0 ">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">Report Manner</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">Report Manner</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <section class="faq-section pt-110"> <!--pt-110-->
+        <div class="container">
+            <div class="qsn-area"> <!--  class="qsn-area" -->
+                <h5>How was her/his Manner?</h5>
+                <form class="qsn-form" th:action="@{/report/manner/register}" method="post" name="mannerFrm"> <!-- class="qsn-form" -->
+
+                    <div class="form-inner">
+                        <input type="text" name="memberId" th:value="${memberId}" hidden>
+                    </div>
+
+                    <h5>좋아요 | 싫어요</h5>
+
+                    <!-- 좋아요/싫어요 라디오 버튼 -->
+                    <label>
+                        <input type="radio" name="isLiked" id="like" value="true" onclick="toggleCheckboxes()">
+                        좋아요
+                    </label>
+                    <label>
+                        <input type="radio" name="isLiked" id="dislike" value="false" onclick="toggleCheckboxes()">
+                        싫어요
+                    </label>
+                    <h5>이유:</h5>
+                    <!-- 좋아요 선택 시 나타나는 체크박스 -->
+                    <div class="like-options">
+                        <label th:each="Like : ${T(com.readyauction.app.report.entity.Like).values()}">
+                            <input
+                               type="checkbox"
+                               th:name="|likes[]|"
+                               th:value="${Like.name()}"
+                               disabled>
+                            [[${Like.name()}]]
+                        </label>
+                    </div>
+                    <!-- 싫어요 선택 시 나타나는 체크박스 -->
+                    <div class="dislike-options">
+                        <label th:each="Dislike : ${T(com.readyauction.app.report.entity.Dislike).values()}">
+                            <input
+                                    type="checkbox"
+                                    th:name="|dislikes[]|"
+                                    th:value="${Dislike.name()}"
+                                    disabled>
+                            [[${Dislike.name()}]]
+                        </label>
+                    </div>
+                    &nbsp;&nbsp;
+                    <button type="submit" class="qsn-send-btn">Submit Now</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+</html>

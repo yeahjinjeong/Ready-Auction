@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Slf4j
 public class AppController {
 
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/auction/auction";
+    }
+
 //    @GetMapping("/about")
 //    public String about() {
 //        return "/about";
@@ -31,11 +36,6 @@ public class AppController {
 //    @GetMapping("/blog-standard")
 //    public String blogStandard() {
 //        return "/blog-standard";
-//    }
-//
-//    @GetMapping("/faq")
-//    public String faq() {
-//        return "/faq";
 //    }
 //
 //    @GetMapping("/privacy")
