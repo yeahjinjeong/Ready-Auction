@@ -3,6 +3,7 @@ package com.readyauction.app.auction.service;
 import com.readyauction.app.auction.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,7 @@ public class AuctionCloseScheduler {
     @Scheduled(cron = "0 * * * * *")	// 1분마다
     public void closeAuction() throws Exception {
         System.out.println("옥션마감!");
-//        bidService.endAuction();
+        bidService.endAuction();
 
         alarmToWinner();
     }

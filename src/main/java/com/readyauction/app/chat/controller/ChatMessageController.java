@@ -82,4 +82,12 @@ public class ChatMessageController {
         log.info("countList = {}", countList);
         return ResponseEntity.ok(countList);
     }
+
+    @GetMapping("/chat/list/image")
+    public ResponseEntity<?> findChatRoomImages(
+            @AuthenticationPrincipal AuthPrincipal principal) {
+        List<ChatImageDto> imageList = chatService.findImagesByChatRoomList(principal.getMember().getId());
+        log.info("imageList = {}", imageList);
+        return ResponseEntity.ok(imageList);
+    }
 }

@@ -58,12 +58,19 @@ public class MemberService {
         return memberOptional.orElseThrow(() -> new UserNotFoundException(email));
     }
 
+    public Member findMemberById(Long id) {
+        Optional<Member> memberOptional = memberRepository.findById(id);
+        return memberOptional.orElse(null);
+    }
+
     @Transactional(readOnly = true)
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
 
-
+    public Member findById(Long id){
+        return memberRepository.findById(id).get();
+    }
     /** 프로필 **/
 
     public MemberDto findMemberDtoByEmail(String email) {
@@ -143,6 +150,10 @@ public class MemberService {
 //        return memberRepository.save(existingMember);
 //    }
 
+    public String findEmailById(Long id){
+        Member member = memberRepository.findById(id).get();
+        return member.getEmail();
+    }
     public String emailCheck(String memberEmail) {
         Member byMemberEmail = memberRepository.findByEmail(memberEmail);
         if (byMemberEmail != null) {

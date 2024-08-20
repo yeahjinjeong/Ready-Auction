@@ -26,6 +26,7 @@ public class ProductRepDto {
     private Integer immediatePrice;
     private List<String> imgUrl;
     private Long memberId;  // 판매자 ID 추가
+    private String nickName;
 
     @Override
     public String toString() {

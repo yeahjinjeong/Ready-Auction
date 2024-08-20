@@ -35,4 +35,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByMemberIdAndAuctionStatusIn(Long memberId, List<AuctionStatus> start);
     List<Product> findByIdIn(List<Long> productIds);
     List<Product> findByMemberIdAndAuctionStatusAndIdNotIn(Long memberId, AuctionStatus auctionStatus, List<Long> productIdsWithBids);
+
+    // 예진 작업 시작
+    @Query("""
+    select p.images
+    from Product p
+    where p.id = :productId
+    """)
+    Optional<List<String>> findImagesById(Long productId);
+    // 예진 작업 끝
 }
+
