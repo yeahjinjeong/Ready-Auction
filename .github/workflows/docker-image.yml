@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [ "master" ]
 
+
 jobs:
   # 1. CI - 통합(build) 
   build:
@@ -63,6 +64,9 @@ jobs:
             -e "PROD_DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}" \
             -e "SPRING_S3_ACCESSKEY=${{ secrets.SPRING_S3_ACCESSKEY }}" \
             -e "SPRING_S3_SECRETKEY=${{ secrets.SPRING_S3_SECRETKEY }}" \
+            -e "REDIS_HOST=${{ secrets.REDIS_HOST }}" \
+            -e "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" \
+            -e "REDIS_PORT=${{ secrets.REDIS_PORT }}" \
             --name ${{ vars.APP_NAME }} \
             ${{ secrets.DOCKER_USERNAME }}/${{ vars.APP_NAME }}
             sudo docker image prune -f
