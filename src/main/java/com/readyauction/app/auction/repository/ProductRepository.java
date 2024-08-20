@@ -45,3 +45,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<List<String>> findImagesById(Long productId);
     // 예진 작업 끝
 }
+
