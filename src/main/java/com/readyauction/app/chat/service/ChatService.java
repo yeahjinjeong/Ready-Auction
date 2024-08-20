@@ -68,11 +68,6 @@ public class ChatService {
         return chatRoomList.get().stream().map(ChatRoomDto::toChatRoomDto).toList();
     }
 
-    public ChatRoomDto findChatRoomByProductId(Long productId) {
-        Optional<ChatRoom> chatRoom = chatRoomRepository.findChatRoomByProductId(productId);
-        return ChatRoomDto.toChatRoomDto(chatRoom.get());
-    }
-
     // 채팅 메시지 내역 조회하기
     public List<MessageDto> findChatMessagesByChatRoomId(Long id) {
         Optional<List<ChatMessage>> chatMessageList = chatMessageRepository.findChatMessagesByChatRoomId(id);
@@ -95,6 +90,11 @@ public class ChatService {
     public Long findChatRoomIdByProductId(Long productId) {
         Optional<Long> chatRoomId = chatRoomRepository.findChatRoomIdByProductId(productId);
         return chatRoomId.get();
+    }
+
+    public ChatRoomDto findChatRoomByProductId(Long productId) {
+        Optional<ChatRoom> chatRoom = chatRoomRepository.findChatRoomByProductId(productId);
+        return ChatRoomDto.toChatRoomDto(chatRoom.get());
     }
 
     // 모든 메시지 읽음 처리하기
@@ -126,8 +126,20 @@ public class ChatService {
         return chatUnreadCountDtos;
     }
 
+    // convertAndSendToUser 유니캐스트를 위해 식별값 조회
     public String findReceiverEmailByMemberId(Long receiverId) {
         Optional<Member> member = memberRepository.findById(receiverId);
         return member.get().getEmail();
+    }
+
+    // 채팅방 상품 사진 조회
+    public List<ChatImageDto> findImagesByChatRoomList(Long memberId) {
+        Optional<List<Long>> productList = chatRoomRepository.findProductIdsByMemberId(memberId);
+        List<ChatImageDto> chatImageDtos = new ArrayList<>();
+        productList.get().forEach((e) -> {
+            Optional<List<String>> images = productRepository.findImagesById(e);
+            chatImageDtos.add(new ChatImageDto(e, images.get().get(0)));
+        });
+        return chatImageDtos;
     }
 }

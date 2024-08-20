@@ -1,5 +1,5 @@
 package com.readyauction.app.auction.entity;
 
-public enum PurchaseCategoty {
+public enum PurchaseCategory {
     IMMEDIATE,BID
 }

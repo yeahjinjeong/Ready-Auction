@@ -23,22 +23,21 @@ public class MannerReport {
     @Column(name = "is_liked")
     private boolean isLiked;
 
-//    @ElementCollection(fetch = FetchType.EAGER)
-//    @CollectionTable(
-//            name = "tbl_manner_like",
-//            joinColumns = @JoinColumn(name = "manner_report_id")
-//    )
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "tbl_manner_like",
+            joinColumns = @JoinColumn(name = "manner_report_id")
+    )
+    @Column(name="likes")
     @Enumerated(EnumType.STRING)
-    private Like like;
-//    private List<Like> like;
-    @Column(name = "is_disliked")
-    private boolean isDisliked;
-//    @ElementCollection(fetch = FetchType.EAGER)
-//    @CollectionTable(
-//            name = "tbl_manner_dislike",
-//            joinColumns = @JoinColumn(name = "manner_report_id")
-//    )
+    private List<Like> likes;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "tbl_manner_dislike",
+            joinColumns = @JoinColumn(name = "manner_report_id")
+    )
+    @Column(name = "dislikes")
     @Enumerated(EnumType.STRING)
-    private Dislike dislike;
-//    private List<Dislike> dislike;
+    private List<Dislike> dislikes;
 }

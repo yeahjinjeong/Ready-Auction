@@ -1,16 +1,13 @@
 package com.readyauction.app.dashboard.service;
 
-import com.readyauction.app.auction.entity.AuctionStatus;
+import com.readyauction.app.cash.entity.PaymentStatus;
+import com.readyauction.app.cash.repository.PaymentRepository;
 import com.readyauction.app.dashboard.dto.MemberStatisticsDto;
-import com.readyauction.app.dashboard.dto.TransactionStatisticsDto;
-import com.readyauction.app.user.entity.Gender;
 import com.readyauction.app.user.entity.UserStatus;
 import com.readyauction.app.user.repository.MemberRepository;
-import com.readyauction.app.auction.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,8 +18,9 @@ import java.util.stream.Collectors;
 public class StatisticsService {
 
     private final MemberRepository memberRepository;
-    private final ProductRepository productRepository;
-    private UserStatus userStatus;
+    private final PaymentRepository paymentRepository;
+    private UserStatus status;
+
 
     // 회원 통계 (성별, 나이대, 회원 상태)
     public List<MemberStatisticsDto> getMembersByStatus(UserStatus status) {
@@ -35,62 +33,71 @@ public class StatisticsService {
                 .collect(Collectors.toList());
     }
 
+    //   기간 별 거래 체결 금액 구현 시작
+    public long getTransactionAmountForToday() {
+        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        return paymentRepository.findConfirmedPaymentsInTimeRange(startOfDay, endOfDay, PaymentStatus.COMPLETED)
+                .stream()
+                .mapToLong(payment -> payment.getPayAmount())
+                .sum();
+    }
+
+    public long getTransactionAmountForWeek() {
+        LocalDateTime startOfWeek = LocalDateTime.now().minusWeeks(1); // 1주일 이내
+        LocalDateTime endOfWeek = LocalDateTime.now();
+        return paymentRepository.findConfirmedPaymentsInTimeRange(startOfWeek, endOfWeek, PaymentStatus.COMPLETED)
+                .stream()
+                .mapToLong(payment -> payment.getPayAmount())
+                .sum();
+    }
+
+    public long getTransactionAmountForMonth() {
+        LocalDateTime startOfMonth = LocalDateTime.now().minusMonths(1); // 1달 이내
+        LocalDateTime endOfMonth = LocalDateTime.now();
+        return paymentRepository.findConfirmedPaymentsInTimeRange(startOfMonth, endOfMonth, PaymentStatus.COMPLETED)
+                .stream()
+                .mapToLong(payment -> payment.getPayAmount())
+                .sum();
+    }
+
+    public long getTransactionAmountForYear() {
+        LocalDateTime startOfYear = LocalDateTime.now().minusYears(1); // 1년 이내
+        LocalDateTime endOfYear = LocalDateTime.now();
+        return paymentRepository.findConfirmedPaymentsInTimeRange(startOfYear, endOfYear, PaymentStatus.COMPLETED)
+                .stream()
+                .mapToLong(payment -> payment.getPayAmount())
+                .sum();
+    }
+    // 기간 별 거래 체결 금액 구현 시작
+
+    // 기간별 거래량 시작
+    public long getTransactionCountForToday() {
+        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1);
+        return paymentRepository.findConfirmedPaymentsInTimeRange(startOfDay, endOfDay, PaymentStatus.COMPLETED).size();
+    }
+
+    public long getTransactionCountForWeek() {
+        LocalDateTime startOfWeek = LocalDateTime.now().minusWeeks(1); // 1주일 이내
+        LocalDateTime endOfWeek = LocalDateTime.now();
+        return paymentRepository.findConfirmedPaymentsInTimeRange(startOfWeek, endOfWeek, PaymentStatus.COMPLETED).size();
+    }
+
+    public long getTransactionCountForMonth() {
+        LocalDateTime startOfMonth = LocalDateTime.now().minusMonths(1); // 1달 이내
+        LocalDateTime endOfMonth = LocalDateTime.now();
+        return paymentRepository.findConfirmedPaymentsInTimeRange(startOfMonth, endOfMonth, PaymentStatus.COMPLETED).size();
+    }
+
+    public long getTransactionCountForYear() {
+        LocalDateTime startOfYear = LocalDateTime.now().minusYears(1); // 1년 이내
+        LocalDateTime endOfYear = LocalDateTime.now();
+        return paymentRepository.findConfirmedPaymentsInTimeRange(startOfYear, endOfYear, PaymentStatus.COMPLETED).size();
+    }
+    //   기간 별 거래량 구현 끝
 
 }
 
-//    public int getCustomersCountForPeriod(LocalDateTime startDate, LocalDateTime endDate) {
-//        return memberRepository.countByCreatedAtBetween(
-//                Timestamp.valueOf(startDate),
-//                Timestamp.valueOf(endDate)
-//        );
-//    }
-//
-//    // 고객 수 통계 계산 메서드
-//    public int getCustomersCountForToday() {
-//        LocalDateTime todayStart = LocalDateTime.now().toLocalDate().atStartOfDay();
-//        LocalDateTime todayEnd = todayStart.plusDays(1);
-//        return getCustomersCountForPeriod(todayStart, todayEnd);
-//    }
-//
-//    public int getCustomersCountForMonth() {
-//        LocalDateTime monthStart = LocalDateTime.now().minusDays(30).toLocalDate().atStartOfDay();
-//        LocalDateTime monthEnd = LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1);
-//        return getCustomersCountForPeriod(monthStart, monthEnd);
-//    }
-//
-//    public int getCustomersCountForYear() {
-//        LocalDateTime yearStart = LocalDateTime.now().minusDays(365).toLocalDate().atStartOfDay();
-//        LocalDateTime yearEnd = LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1);
-//        return getCustomersCountForPeriod(yearStart, yearEnd);
-//    }
-//
-//
-//    // 오늘의 거래 완료 수 조회
-//    public List<TransactionStatisticsDto> getTransactionsForToday() {
-//        LocalDateTime todayStart = LocalDateTime.now().toLocalDate().atStartOfDay();
-//        LocalDateTime todayEnd = todayStart.plusDays(1);
-//
-//        return productRepository.findCompletedTransactionsInTimeRange(todayStart, todayEnd, AuctionStatus.END);
-//    }
-//
-//    // 주간 거래 완료 수 조회
-//    public List<TransactionStatisticsDto> getTransactionsForWeek() {
-//        LocalDateTime weekStart = LocalDateTime.now().minusDays(7).toLocalDate().atStartOfDay();
-//        LocalDateTime weekEnd = LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1);
-//
-//        return productRepository.findCompletedTransactionsInTimeRange(weekStart, weekEnd, AuctionStatus.END);
-//    }
-//
-//    // 월간 거래 완료 수 조회
-//    public List<TransactionStatisticsDto> getTransactionsForMonth() {
-//        LocalDateTime monthStart = LocalDateTime.now().minusDays(30).toLocalDate().atStartOfDay();
-//        LocalDateTime monthEnd = LocalDateTime.now().toLocalDate().atStartOfDay().plusDays(1);
-//
-//        return productRepository.findCompletedTransactionsInTimeRange(monthStart, monthEnd, AuctionStatus.END);
-//    }
-//
-//    // 거래 완료 통계
-//    public List<TransactionStatisticsDto> getCompletedTransactions() {
-//        return productRepository.findCompletedTransactions(AuctionStatus.END);
-//    }
+
 
