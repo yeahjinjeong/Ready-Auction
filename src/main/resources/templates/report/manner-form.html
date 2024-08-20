@@ -45,6 +45,10 @@
                 <h5>How was her/his Manner?</h5>
                 <form class="qsn-form" th:action="@{/report/manner/register}" method="post" name="mannerFrm"> <!-- class="qsn-form" -->
 
+                    <div class="form-inner">
+                        <input type="text" name="memberId" th:value="${memberId}" hidden>
+                    </div>
+
                     <h5>좋아요 | 싫어요</h5>
 
                     <!-- 좋아요/싫어요 라디오 버튼 -->
@@ -53,7 +57,7 @@
                         좋아요
                     </label>
                     <label>
-                        <input type="radio" name="isDisliked" id="dislike" value="true" onclick="toggleCheckboxes()">
+                        <input type="radio" name="isLiked" id="dislike" value="false" onclick="toggleCheckboxes()">
                         싫어요
                     </label>
                     <h5>이유:</h5>
@@ -62,7 +66,7 @@
                         <label th:each="Like : ${T(com.readyauction.app.report.entity.Like).values()}">
                             <input
                                type="checkbox"
-                               th:name="likes"
+                               th:name="|likes[]|"
                                th:value="${Like.name()}"
                                disabled>
                             [[${Like.name()}]]
@@ -73,7 +77,7 @@
                         <label th:each="Dislike : ${T(com.readyauction.app.report.entity.Dislike).values()}">
                             <input
                                     type="checkbox"
-                                    th:name="dislikes"
+                                    th:name="|dislikes[]|"
                                     th:value="${Dislike.name()}"
                                     disabled>
                             [[${Dislike.name()}]]
@@ -85,21 +89,6 @@
             </div>
         </div>
     </section>
-    <script>
-        document.mannerFrm.onsubmit = (e) => {
-            console.log("제출 제출 제출");
-            const formData = new FormData(document.mannerFrm);
-
-            // 폼 이외의 추가 데이터 추가
-            formData.append('memberId', `[[${memberId}]]`);
-            console.log(formData);
-
-            // fetch('@{/report/manner/register}', {
-            //     method: 'post',
-            //     body : formData
-            // })
-        }
-    </script>
 </div>
 </body>
 </html>

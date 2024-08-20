@@ -144,7 +144,6 @@
                         alert('Failed to place bid. Please try again.');
                         // Even in case of an error, update the current price on the page
                         const responseJson = JSON.parse(xhr.responseText);
-                        document.getElementById('currentPrice').value = responseJson.bidCurrentPrice;
                     }
                 });
             });
