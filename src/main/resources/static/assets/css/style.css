@@ -16,3 +16,31 @@
         .suggestion-item:hover {
             background-color: #d7a6a6; /* 마우스 오버 시 배경색 변경 */
         }
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100vh;
+}
+
+.chat-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 100px;
+    height: 100px;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.chat-button:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
