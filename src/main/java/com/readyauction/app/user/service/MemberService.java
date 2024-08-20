@@ -58,6 +58,11 @@ public class MemberService {
         return memberOptional.orElseThrow(() -> new UserNotFoundException(email));
     }
 
+    public Member findMemberById(Long id) {
+        Optional<Member> memberOptional = memberRepository.findById(id);
+        return memberOptional.orElse(null);
+    }
+
     @Transactional(readOnly = true)
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email);
