@@ -369,7 +369,6 @@ public class ProductService {
                 .orElse("N/A");
     }
 
-}
     /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
     // 판매 중 (auctionStatus가 START 또는 PROGRESS)
     public List<Product> getActiveProducts(Long memberId) {
