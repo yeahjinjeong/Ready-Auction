@@ -304,44 +304,42 @@
                 }
             });
 
-            $('#contact_form').on('submit', function (e) {
-                e.preventDefault();
-
-
-
-                var productData = {
-                    name: $('#first-Name').val(),
-                    imgUrls: imgUrls, // Already uploaded image URL
-                    category: $('#categoryInput').val(),
-                    bidUnit: $('#bidUnit').val(),
-                    immediatePrice: $('#immediatePrice').val(),
-                    endTime: $('#endTime').val(),
-                    description: $('#discription').val(),
-                    currentPrice: $('#currentPrice').val()
-                };
-
-                console.log(productData);
-                // Send JSON data with AJAX request
-                $.ajax({
-                    url: '[[@{/auction-api/create}]]', // Server URL
-                    type: 'POST',
-                    contentType: 'application/json', // Send as JSON
-                    data: JSON.stringify(productData), // Serialize JSON
-                    beforeSend: function (xhr) {
-                        // Add email to the request header
-                        xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
-                    },
-                    success: function (data) {
-                        alert('상품이 성공적으로 등록되었습니다.');
-                        console.log('Success:', data);
-                    },
-                    error: function (xhr, status, error) {
-                        alert('상품 등록에 실패했습니다.');
-                        console.error('Error:', error);
-                    }
-                });
-            });
         }
+
+        $('#contact_form').on('submit', function (e) {
+            e.preventDefault();
+            var productData = {
+                name: $('#first-Name').val(),
+                imgUrls: imgUrls, // Already uploaded image URL
+                category: $('#categoryInput').val(),
+                bidUnit: $('#bidUnit').val(),
+                immediatePrice: $('#immediatePrice').val(),
+                endTime: $('#endTime').val(),
+                description: $('#discription').val(),
+                currentPrice: $('#currentPrice').val()
+            };
+
+            console.log(productData);
+            // Send JSON data with AJAX request
+            $.ajax({
+                url: '[[@{/auction-api/create}]]', // Server URL
+                type: 'POST',
+                contentType: 'application/json', // Send as JSON
+                data: JSON.stringify(productData), // Serialize JSON
+                beforeSend: function (xhr) {
+                    // Add email to the request header
+                    xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
+                },
+                success: function (data) {
+                    alert('상품이 성공적으로 등록되었습니다.');
+                    console.log('Success:', data);
+                },
+                error: function (xhr, status, error) {
+                    alert('상품 등록에 실패했습니다.');
+                    console.error('Error:', error);
+                }
+            });
+        });
 
     </script>
 </div>
