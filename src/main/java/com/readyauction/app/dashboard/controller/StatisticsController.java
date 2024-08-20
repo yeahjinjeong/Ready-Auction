@@ -1,7 +1,6 @@
 package com.readyauction.app.dashboard.controller;
 
 import com.readyauction.app.dashboard.dto.MemberStatisticsDto;
-import com.readyauction.app.dashboard.dto.TransactionStatisticsDto;
 import com.readyauction.app.dashboard.service.StatisticsService;
 import com.readyauction.app.user.entity.UserStatus;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +28,7 @@ public class StatisticsController {
     public String dashboard(Model model) {
         // 대시보드에 필요한 데이터 추가
         List<MemberStatisticsDto> memberStatistics = statisticsService.getMembersByStatus(UserStatus.active);
-//        List<TransactionStatisticsDto> transactionStatistics = statisticsService.getCompletedTransactions();
-
         model.addAttribute("memberStatistics", memberStatistics);
-//        model.addAttribute("transactionStatistics", transactionStatistics);
 
         return "dashboard/dashboard";
     }
