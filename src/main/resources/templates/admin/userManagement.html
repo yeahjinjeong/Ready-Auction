@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 관리</title>
+    <style>
+        .admin-body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .admin-container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .status-active {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-deleted {
+            color: red;
+            font-weight: bold;
+        }
+
+        .filter-buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-buttons button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .filter-buttons button:hover {
+            background-color: #45a049;
+        }
+
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .pagination button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body class="admin-body">
+<div layout:fragment="content1">
+    <div class="breadcrumb breadcrumb-style-one mb-0">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">회원 관리</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">회원 관리</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-container">
+        <h1>회원 관리</h1>
+
+        <div class="filter-buttons">
+            <button onclick="loadUsers('active')">활동중인 회원</button>
+            <button onclick="loadUsers('deleted')" style="background-color: gray">탈퇴한 회원</button>
+        </div>
+
+        <table id="userTable">
+            <thead>
+            <tr>
+                <th>회원번호</th>
+                <th>이름</th>
+                <th>닉네임</th>
+                <th>이메일</th>
+                <th>성별</th>
+                <th>주소</th>
+                <th>연락처</th>
+                <th>생년월일</th>
+                <th>상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- 사용자 데이터가 이곳에 동적으로 추가됩니다 -->
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            <button id="prevPage" onclick="changePage('prev')">이전</button>
+            <span id="currentPage">1</span>
+            <button id="nextPage" onclick="changePage('next')">다음 </button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        const pageSize = 15;
+        let currentStatus = 'active';
+
+        function loadUsers(status) {
+            currentStatus = status;
+            currentPage = 0; // Reset to the first page when switching categories
+            fetchUsers();
+        }
+
+        function fetchUsers() {
+            const url = `/app/api/admin/users/management?status=${currentStatus}&page=${currentPage}&size=${pageSize}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const userTableBody = document.querySelector('#userTable tbody');
+                    userTableBody.innerHTML = ''; // Clear previous data
+
+                    data.content.forEach(user => {
+                        const row = document.createElement('tr');
+
+                        row.innerHTML = `
+                            <td>${user.id}</td>
+                            <td>${user.name}</td>
+                            <td>${user.nickname}</td>
+                            <td>${user.email}</td>
+                            <td>${user.gender === 'M' ? '남성' : '여성'}</td>
+                            <td>${user.address}</td>
+                            <td>${user.phone}</td>
+                            <td>${user.birth}</td>
+                            <td class="${currentStatus === 'active' ? 'status-active' : 'status-deleted'}">${currentStatus === 'active' ? '활동중' : '탈퇴'}</td>
+                        `;
+
+                        userTableBody.appendChild(row);
+                    });
+
+                    // Update pagination controls
+                    document.getElementById('currentPage').innerText = currentPage + 1;
+                    document.getElementById('prevPage').disabled = data.first;
+                    document.getElementById('nextPage').disabled = data.last;
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                });
+        }
+
+        function changePage(direction) {
+            if (direction === 'prev' && currentPage > 0) {
+                currentPage--;
+            } else if (direction === 'next') {
+                currentPage++;
+            }
+            fetchUsers();
+        }
+
+        // Load active users by default on page load
+        document.addEventListener("DOMContentLoaded", () => loadUsers(currentStatus));
+    </script>
+
+    <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+</div>
+</body>
+</html>
