@@ -14,6 +14,8 @@ import com.readyauction.app.user.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,6 +39,7 @@ public class BidService {
     private final PaymentService paymentService;
     private final EmailService emailService;
 
+    final RedissonClient redissonClient;
     public void createBid(Long userId, Product product, Integer price, Timestamp timestamp) {
 
         System.out.println("상품 입찰 크릿 진행!");
@@ -130,8 +134,16 @@ public class BidService {
 
         return true;
     }
+
+
     public BidResDto startBid(String email, BidDto bidDto) {
+        final RLock lock = redissonClient.getLock(String.format("orderProduct:productId:%d", bidDto.getProductId()));
         try {
+            boolean available = lock.tryLock(10, 1, TimeUnit.SECONDS);
+            if (!available) {
+                System.out.println("redisson lock timeout");
+                throw new Exception();
+            }
 
             // 사용자 조회
             Long userId = memberService.findMemberByEmail(email).getId();
@@ -190,7 +202,6 @@ public class BidService {
                 bidResDto = createBidResDto(currentPrice,BidStatus.CONFIRMED,Timestamp.from(Instant.now()));
             }
 
-
         return bidResDto;
 
         } catch (EntityNotFoundException e) {
@@ -208,6 +219,9 @@ public class BidService {
         } catch (Exception e) {
             // 기타 예외 처리
             throw new RuntimeException("Unexpected error occurred during bidding: " + e.getMessage(), e);
+        }
+        finally {
+            lock.unlock();
         }
     }
     public List<TopBidDto> findTopBidsByProducts(List<Product> products){
