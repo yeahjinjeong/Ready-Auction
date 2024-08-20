@@ -76,7 +76,11 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
+
+    //레디스
+    implementation 'org.redisson:redisson-spring-boot-starter:3.17.4'
 }
+
 
 tasks.named('test') {
     useJUnitPlatform()

@@ -4,6 +4,8 @@ spring:
     port: 587 # 2
     username: fkausthd12@gmail.com # 3
     password: tnva emrs xogi auxs # 4
+
+
     properties:
       mail:
         smtp:
@@ -52,5 +54,6 @@ server:
       port: 6379
 
   redis:
-    bid:
-      prefix: bids
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
