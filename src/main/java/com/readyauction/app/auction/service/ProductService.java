@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,8 +41,8 @@ public class ProductService {
     private final BidRepository bidRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
-
-
+    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final EmailService emailService;
     public List<Product> findAll(){
         return productRepository.findAll();
     }
@@ -88,8 +89,8 @@ public class ProductService {
     public Integer updateBidPrice(Product product, Integer bidPrice) {
         try {
             product.setCurrentPrice(bidPrice + product.getBidUnit());
-            productRepository.save(product);
-            return bidPrice + product.getBidUnit();
+            return productRepository.save(product).getCurrentPrice();
+
         } catch (Exception e) {
             throw new RuntimeException("Update bid price failed", e);
         }
@@ -154,6 +155,7 @@ public class ProductService {
     public ProductDto startWinnerProcess(String email, WinnerReqDto winnerReqDto) {
         Long userId = getUserIdFromRequest(email);
         Product product = findProductById(winnerReqDto.getProductId());
+
         if(userId.equals(product.getMemberId())) {
             throw new IllegalStateException("Seller can't start bid for product with ID: " + winnerReqDto.getProductId());
         }
@@ -211,7 +213,7 @@ public class ProductService {
             }
 
             if (product.hasWinner()) {
-                product.getWinner().setStatus(PurchaseStatus.PENDING);
+                product.getWinner().setStatus(PurchaseStatus.ACCEPTED);
             }
 
             Product savedProduct = productRepository.save(product);
@@ -257,6 +259,12 @@ public class ProductService {
                 throw new RuntimeException("Failed to save the product with the winner");
             }
 
+            EmailMessage emailMessage = EmailMessage.builder()
+                    .to(memberService.findEmailById(winnerDto.getUserId()))
+                    .subject("중고 스포츠 유니폼 판매 플랫폼 레디옥션입니다.")
+                    .message("<html><head></head><body><div style=\"background-color: gray;\">"+winnerDto.getProduct().getName()  +" 경매에서 낙찰자로 선정되신 것을 축하드립니다. 결제를 위해 레디옥션 사이트를 방문 해주세요"+"<div></body></html>")
+                    .build();
+            emailService.sendMail(emailMessage);
             return savedProduct;
         } catch (DataAccessException e) {
             // 데이터베이스 관련 예외 처리
@@ -279,14 +287,27 @@ public class ProductService {
                         .status(PurchaseStatus.CONFIRMED)
                         .price(winnerDto.getWinnerReqDto().getBuyPrice())
                         .winnerTime(winnerDto.getWinnerReqDto().getBuyTime())
-                        .category(PurchaseCategoty.BID)
+                        .category(PurchaseCategory.BID)
                         .build();
                 winnerDto.getProduct().setWinner(winner);
                 winnerDto.getProduct().setAuctionStatus(AuctionStatus.END);
 
-            log.info("Winner created successfully for product ID: {}", winnerDto.getProduct().getId());
-            // 제품을 저장
+                log.info("Winner created successfully for product ID: {}", winnerDto.getProduct().getId());
+                // 제품을 저장
                 products.add(winnerDto.getProduct());
+                AlarmDto alarmDto = AlarmDto.builder()
+                        .productId(winnerDto.getProduct().getId())
+                        .productName(winnerDto.getProduct().getName())
+                        .payPrice(winnerDto.getProduct().getCurrentPrice())
+                        .payTime(winnerDto.getWinnerReqDto().getBuyTime())
+                        .build();
+                simpMessagingTemplate.convertAndSendToUser(memberService.findById(winnerDto.getUserId()).getEmail(),"/alarm/sub", alarmDto);
+                EmailMessage emailMessage = EmailMessage.builder()
+                        .to(memberService.findEmailById(winnerDto.getUserId()))
+                        .subject(winnerDto.getProduct().getName()+ "경매에서 낙찰자로 선정 됐습니다. 웹사이트에 접속해서 결제를 진행해주세요!")
+                        .build();
+                emailService.sendMail(emailMessage);
+                System.out.println("이메일 보내기 성공");
             }
             return productRepository.saveAll(products);
         } catch (DataAccessException e) {
@@ -331,6 +352,7 @@ public class ProductService {
                 .currentPrice(product.getCurrentPrice())
                 .immediatePrice(product.getImmediatePrice())
                 .imgUrl(product.getImages())
+                .nickName(memberService.findMemberById(product.getMemberId()).getNickname())
                 .build();
     }
 

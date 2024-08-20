@@ -4,7 +4,7 @@ import com.readyauction.app.auction.dto.*;
 import com.readyauction.app.auction.entity.AuctionStatus;
 import com.readyauction.app.auction.entity.Bid;
 import com.readyauction.app.auction.entity.Product;
-import com.readyauction.app.auction.entity.PurchaseCategoty;
+import com.readyauction.app.auction.entity.PurchaseCategory;
 import com.readyauction.app.auction.repository.BidRepository;
 import com.readyauction.app.auction.repository.ProductRepository;
 import com.readyauction.app.cash.entity.PaymentCategory;
@@ -34,9 +34,9 @@ public class BidService {
     private final ProductService productService;
     private final ProductRepository productRepository;
     private final PaymentService paymentService;
+    private final EmailService emailService;
 
-
-    public boolean createBid(Long userId, Product product, Integer price, Timestamp timestamp) {
+    public void createBid(Long userId, Product product, Integer price, Timestamp timestamp) {
 
         System.out.println("상품 입찰 크릿 진행!");
         if (product == null) {
@@ -60,26 +60,24 @@ public class BidService {
                     .bidStatus(BidStatus.CONFIRMED)
                     .build();
             bidRepository.save(bid);
-            product.setCurrentPrice(price);
-            productRepository.save(product);
+
+
             System.out.println("상품 입찰 저장 완료!");
-            return true;  // Successfully saved
-        } catch (Exception e) {
+
+           } catch (Exception e) {
             log.error("Failed to create bid for userId {} on productId {}: {}", userId, product.getId(), e.getMessage());
             throw new RuntimeException("Failed to create bid", e);  // Triggers rollback
         }
     }
 
-    public boolean updateBid(Bid bid, Integer price, Timestamp timestamp) {
+    public void updateBid(Bid bid, Integer price, Timestamp timestamp) {
 
         System.out.println("상품 입찰 업뎃 진행!");
         try {
             bid.setMyPrice(price);
             bid.setBidTime(timestamp);
             bidRepository.save(bid);
-            bid.getProduct().setCurrentPrice(price);
-            productRepository.save(bid.getProduct());
-            return true;
+
         } catch (Exception e) {
             log.error("Failed to update bid with id {}: {}", bid.getId(), e.getMessage());
             throw new RuntimeException("Failed to update bid", e);  // Triggers rollback
@@ -117,6 +115,13 @@ public class BidService {
             //위너 디티오 만들기 리스트로 만들기.
 
             System.out.println("입찰자 낙찰자로 변환" + topBid.getMemberId());
+            EmailMessage emailMessage = EmailMessage.builder()
+                    .to(memberService.findEmailById(topBid.getMemberId()))
+                    .subject("중고 스포츠 유니폼 판매 플랫폼 레디옥션입니다.")
+                    .message("<html><head></head><body><div style=\"background-color: gray;\">"+winnerDto.getProduct().getName()  +" 경매에서 낙찰자로 선정되신 것을 축하드립니다. 결제를 위해 레디옥션 사이트를 방문 해주세요"+"<div></body></html>")
+                    .build();
+            emailService.sendMail(emailMessage);
+            System.out.println("성공 이메일 보내기");
         }
         productService.createWinners(winnerDtos);
 
@@ -127,6 +132,7 @@ public class BidService {
     }
     public BidResDto startBid(String email, BidDto bidDto) {
         try {
+
             // 사용자 조회
             Long userId = memberService.findMemberByEmail(email).getId();
 
@@ -143,6 +149,7 @@ public class BidService {
             }
 
             System.out.println("낙찰 여부 체크 성공");
+            System.out.println(email);
             // 입찰 가격 유효성 검사
             if (bidDto.getBidPrice() < product.getCurrentPrice()) {
                 throw new IllegalArgumentException("Bid price must be higher than the current product price");
@@ -160,7 +167,7 @@ public class BidService {
                         .buyPrice(bidDto.getBidPrice())
                         .buyTime(bidDto.getBidTime())
                         .productId(product.getId())
-                        .category(PurchaseCategoty.BID)
+                        .category(PurchaseCategory.BID)
                         .build();
                 WinnerDto winnerDto = WinnerDto.builder().
                         userId(userId)
@@ -172,11 +179,10 @@ public class BidService {
                 bidResDto = createBidResDto(product.getImmediatePrice(), BidStatus.ACCEPTED,Timestamp.from(Instant.now()));
 
             } else {
-
                 System.out.println("상품 입찰 진행!");
                 Integer currentPrice = updateBidPrice(product, bidDto.getBidPrice());
                 // 기존 입찰이 있는 경우 갱신, 없는 경우 새로 생성
-                bidRepository.findByMemberIdAndProduct(userId, product)
+                 bidRepository.findByMemberIdAndProduct(userId, product)
                         .ifPresentOrElse(
                                 bid -> updateBid(bid, bidDto.getBidPrice(), bidDto.getBidTime()),
                                 () -> createBid(userId, product, bidDto.getBidPrice(), bidDto.getBidTime())
@@ -184,8 +190,7 @@ public class BidService {
                 bidResDto = createBidResDto(currentPrice,BidStatus.CONFIRMED,Timestamp.from(Instant.now()));
             }
 
-            // 제품 정보 저장
-            productRepository.save(product);
+
         return bidResDto;
 
         } catch (EntityNotFoundException e) {

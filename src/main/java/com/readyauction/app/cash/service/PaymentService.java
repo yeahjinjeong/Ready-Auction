@@ -1,7 +1,9 @@
 package com.readyauction.app.cash.service;
 
+import com.readyauction.app.auction.dto.EmailMessage;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.service.BidService;
+import com.readyauction.app.auction.service.EmailService;
 import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.cash.dto.PaymentReqDto;
 import com.readyauction.app.cash.dto.PaymentResDto;
@@ -29,6 +31,7 @@ public class PaymentService {
     final private AccountService accountService;
     final private MemberService memberService;
     final private ProductService productService;
+    final private EmailService emailService;
     //입찰시 만들어지는 페이먼트
 
     @Transactional
@@ -60,8 +63,7 @@ public class PaymentService {
             // 보낸이 계좌에서 출금
             accountService.withdrawal(senderId, paymentReqDto.getAmount());
 
-            // 낙찰로그에서 거래중으로 상태값 바꾸기
-            Product product = productService.progressWinnerProcess(paymentReqDto.getProductId());
+            Product product = productService.findById(paymentReqDto.getProductId()).orElseThrow();
             if (product == null) {
                 throw new EntityNotFoundException("Product not found for ID: " + paymentReqDto.getProductId());
             }
@@ -121,6 +123,13 @@ public class PaymentService {
                     accountService.deposit(payment.getSenderAccount().getId(), payment.getPayAmount());
                     payment.setStatus(PaymentStatus.ROLLBACK_COMPLETED);
                     paymentRepository.save(payment);
+
+                    EmailMessage emailMessage = EmailMessage.builder()
+                            .to(memberService.findEmailById(payment.getMemberId()))
+                            .subject("중고 스포츠 유니폼 판매 플랫폼 레디옥션입니다.")
+                            .message("<html><head></head><body><div style=\"background-color: gray;\">"+productService.findById(payment.getProductId()).orElseThrow().getName() + " 경매에서 낙찰에 실패 했습니다. 입찰금은 환불처리돼 계좌에 입금 됐습니다! "+"<div></body></html>")
+                            .build();
+                    emailService.sendMail(emailMessage);
                 } catch (Exception e) {
                     // 개별 입금 실패 예외 처리
                     System.err.println("Failed to deposit money for Payment ID: " + payment.getId() + ", Member ID: " + payment.getMemberId());

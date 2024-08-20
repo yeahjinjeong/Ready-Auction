@@ -4,6 +4,7 @@ import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.ncp.dto.FileDto;
 import com.readyauction.app.ncp.service.NcpObjectStorageService;
+import com.readyauction.app.report.entity.MannerReport;
 import com.readyauction.app.user.dto.MemberDto;
 import com.readyauction.app.user.dto.MemberRegisterRequestDto;
 import com.readyauction.app.user.dto.MemberUpdateRequestDto;
@@ -39,10 +40,11 @@ public class MemberService {
         Member member = dto.toMember();
         // 기본권한 설정
         member.setDefaultAuthorities();
-        // 계좌 자동 생성
         member = memberRepository.save(member);
+        // 계좌 자동 생성
         accountService.create(member.getId());
-        // repository의 save메서드 호출 (조건. entity객체를 넘겨줘야 함)
+        // 매너지수 기본 50 세팅
+        member.updateMannerScore(50);
         return member;// 저장 후 Member 반환
     }
 
@@ -56,12 +58,19 @@ public class MemberService {
         return memberOptional.orElseThrow(() -> new UserNotFoundException(email));
     }
 
+    public Member findMemberById(Long id) {
+        Optional<Member> memberOptional = memberRepository.findById(id);
+        return memberOptional.orElse(null);
+    }
+
     @Transactional(readOnly = true)
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
 
-
+    public Member findById(Long id){
+        return memberRepository.findById(id).get();
+    }
     /** 프로필 **/
 
     public MemberDto findMemberDtoByEmail(String email) {
@@ -141,6 +150,10 @@ public class MemberService {
 //        return memberRepository.save(existingMember);
 //    }
 
+    public String findEmailById(Long id){
+        Member member = memberRepository.findById(id).get();
+        return member.getEmail();
+    }
     public String emailCheck(String memberEmail) {
         Member byMemberEmail = memberRepository.findByEmail(memberEmail);
         if (byMemberEmail != null) {
