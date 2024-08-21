@@ -285,20 +285,26 @@
            <div class="describe-content">
             <table class="table table-striped">
              <thead class="table-dark">
-             <tr>
-              <th scope="col">Bid Status</th>
-              <th scope="col">Product Name</th>
-              <th scope="col">My Bid Price</th>
-              <th scope="col">Bid Time</th>
-             </tr>
+              <tr>
+               <th scope="col">Auction Status</th>
+               <th scope="col">Product Name</th>
+               <th scope="col">Start Price</th>
+               <th scope="col">Current Price</th>
+               <th scope="col">Immediate Price</th>
+               <th scope="col">Start Time</th>
+               <th scope="col">End Time</th>
+              </tr>
              </thead>
              <tbody>
-             <tr th:each="bid : ${confirmedBids}">
-              <td th:text="${bid.bidStatus}"></td>
-              <td th:text="${bid.product.name}"></td>
-              <td class="price" th:text="${bid.myPrice}"></td>
-              <td th:text="${#dates.format(bid.bidTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
-             </tr>
+              <tr th:each="product : ${activeBids}">
+               <td th:text="${product.auctionStatus}"></td>
+               <td th:text="${product.name}"></td>
+               <td class="price" th:text="${product.startPrice}"></td>
+               <td class="price" th:text="${product.currentPrice}"></td>
+               <td class="price" th:text="${product.immediatePrice}"></td>
+               <td th:text="${#dates.format(product.startTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+               <td th:text="${#dates.format(product.endTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              </tr>
              </tbody>
             </table>
            </div>
@@ -310,19 +316,25 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-              <th scope="col">Bid Status</th>
+              <th scope="col">Auction Status</th>
               <th scope="col">Product Name</th>
-              <th scope="col">My Bid Price</th>
-              <th scope="col">Bid Time</th>
+              <th scope="col">Start Price</th>
+              <th scope="col">Current Price</th>
+              <th scope="col">Immediate Price</th>
+              <th scope="col">Start Time</th>
+              <th scope="col">End Time</th>
              </tr>
              </thead>
              <tbody>
-              <tr th:each="bid : ${acceptedBids}">
-               <td th:text="${bid.bidStatus}"></td>
-               <td th:text="${bid.product.name}"></td>
-               <td class="price" th:text="${bid.myPrice}"></td>
-               <td th:text="${#dates.format(bid.bidTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
-              </tr>
+             <tr th:each="product : ${winningBids}">
+              <td th:text="${product.auctionStatus}"></td>
+              <td th:text="${product.name}"></td>
+              <td class="price" th:text="${product.startPrice}"></td>
+              <td class="price" th:text="${product.currentPrice}"></td>
+              <td class="price" th:text="${product.immediatePrice}"></td>
+              <td th:text="${#dates.format(product.startTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              <td th:text="${#dates.format(product.endTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+             </tr>
              </tbody>
             </table>
            </div>
@@ -334,18 +346,24 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-              <th scope="col">Bid Status</th>
+              <th scope="col">Auction Status</th>
               <th scope="col">Product Name</th>
-              <th scope="col">My Bid Price</th>
-              <th scope="col">Bid Time</th>
+              <th scope="col">Start Price</th>
+              <th scope="col">Current Price</th>
+              <th scope="col">Immediate Price</th>
+              <th scope="col">Start Time</th>
+              <th scope="col">End Time</th>
              </tr>
              </thead>
              <tbody>
-             <tr th:each="bid : ${rollbackBids}">
-              <td th:text="${bid.bidStatus}"></td>
-              <td th:text="${bid.product.name}"></td>
-              <td class="price" th:text="${bid.myPrice}"></td>
-              <td th:text="${#dates.format(bid.bidTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+             <tr th:each="product : ${failedBids}">
+              <td th:text="${product.auctionStatus}"></td>
+              <td th:text="${product.name}"></td>
+              <td class="price" th:text="${product.startPrice}"></td>
+              <td class="price" th:text="${product.currentPrice}"></td>
+              <td class="price" th:text="${product.immediatePrice}"></td>
+              <td th:text="${#dates.format(product.startTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              <td th:text="${#dates.format(product.endTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
              </tr>
              </tbody>
             </table>

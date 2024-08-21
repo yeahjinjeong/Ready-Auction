@@ -4,6 +4,7 @@ import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.cash.dto.TransactionDto;
 import com.readyauction.app.cash.entity.Cash;
 import com.readyauction.app.cash.entity.Payment;
+import com.readyauction.app.cash.entity.PaymentCategory;
 import com.readyauction.app.cash.entity.PaymentStatus;
 import com.readyauction.app.cash.repository.CashRepository;
 import com.readyauction.app.cash.repository.PaymentRepository;
@@ -43,15 +44,15 @@ public class TransactionService {
             productName = productService.findProductNameById(payment.getProductId());
             productId = payment.getProductId();
 
-            // 선입금 환불 (입금) 및 출금 내역 보존
+            // 선입금 환불 (입금) 및 지불 (출금) 내역 보존 - status가 변경되면 출금 내역 사라지기 때문
             if (payment.getStatus() == PaymentStatus.ROLLBACK_COMPLETED) {
                 transactions.add(new TransactionDto(payment.getDate(), "선입금", payment.getPayAmount(), "환불", productName, productId));
                 transactions.add(new TransactionDto(payment.getDate(), "선입금", -payment.getPayAmount(), "지불", productName, productId));
-            } else if (payment.getStatus() == PaymentStatus.PROCESSING) {
-                // 선입금 (출금)
+            } else if (payment.getCategory() == PaymentCategory.BID && payment.getStatus() == PaymentStatus.PROCESSING) {
+                // 선입금 지불 (출금)
                 transactions.add(new TransactionDto(payment.getDate(), "선입금", -payment.getPayAmount(), "지불", productName, productId));
-            } else if (payment.getStatus() == PaymentStatus.COMPLETED) {
-                // 구매 (출금)
+            } else if (payment.getCategory() == PaymentCategory.BID_COMPLETE) {
+                // 구매 완료 (출금)
                 transactions.add(new TransactionDto(payment.getDate(), "구매", -payment.getPayAmount(), "완료", productName, productId));
             }
         }
