@@ -24,7 +24,6 @@ public class UserManagementService {
     }
 
     private UserManagementDto convertToDto(Member member) {
-        Timestamp statusTimestamp = member.getUserStatus() == UserStatus.active ? member.getCreatedAt() : member.getDeletedAt();
         return new UserManagementDto(
                 member.getId(),
                 member.getName(),
@@ -34,7 +33,21 @@ public class UserManagementService {
                 member.getAddress(),
                 member.getPhone(),
                 member.getBirth(),
-                statusTimestamp
+                member.getUserStatus() == UserStatus.active ? member.getCreatedAt() : member.getDeletedAt(),
+                member.getUserStatus().toString(),
+                member.getCreatedAt(), // 가입일
+                member.getDeletedAt() // 탈퇴일
         );
     }
+
+    public Member getUserById(Long id) {
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public UserManagementDto getUserDtoById(Long id) {
+        Member member = getUserById(id);
+        return convertToDto(member); // 서비스 내에서 DTO로 변환
+    }
 }
+
