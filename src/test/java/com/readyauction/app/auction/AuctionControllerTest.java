@@ -46,7 +46,7 @@ public class AuctionControllerTest {
                 .startTime(new Timestamp(System.currentTimeMillis()))
                 .currentPrice(100)
                 .immediatePrice(200)
-                .image("test_image.jpg")
+//                .image("test_image.jpg")
                 .build();
         productRepository.save(product);
     }

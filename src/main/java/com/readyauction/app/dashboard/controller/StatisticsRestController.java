@@ -90,9 +90,11 @@ public class StatisticsRestController {
         response.put("transactionCount", count);
         return response;
     }
-    //   기간 별 거래량 구현 끝
+
+    //   기간 별 구매확정 거래량/금액 구현
+    @GetMapping("/transactions/statistics")
+    public Map<String, Object> getTransactionStatistics(@RequestParam("period") String period) {
+        return statisticsService.getTransactionStatistics(period);
+    }
 
 }
-
-
-
