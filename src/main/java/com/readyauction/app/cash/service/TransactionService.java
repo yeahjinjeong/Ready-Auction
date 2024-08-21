@@ -2,17 +2,14 @@ package com.readyauction.app.cash.service;
 
 import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.cash.dto.TransactionDto;
-import com.readyauction.app.cash.entity.Cash;
-import com.readyauction.app.cash.entity.Payment;
-import com.readyauction.app.cash.entity.PaymentStatus;
+import com.readyauction.app.cash.entity.*;
 import com.readyauction.app.cash.repository.CashRepository;
 import com.readyauction.app.cash.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,68 +21,49 @@ public class TransactionService {
     private final PaymentRepository paymentRepository;
     private final ProductService productService;
 
-    public List<TransactionDto> getTransactionHistory(Long accountId) {
-        // Cash 내역 조회
-        List<Cash> cashList = cashRepository.findAllByAccountIdOrderByDateDesc(accountId);
-
-        // Payment 내역 조회 및 필터링 - 결제 완료 Completed와 환불 완료 Rollback_Completed만 보여주기
-        List<Payment> paymentList = paymentRepository.findAllByAccountIdOrderByDateDesc(accountId);
-        List<Payment> filteredPayments = paymentList.stream()
-                .filter(payment -> payment.getStatus() == PaymentStatus.COMPLETED || payment.getStatus() == PaymentStatus.ROLLBACK_COMPLETED)
-                .collect(Collectors.toList());
-
+    public List<TransactionDto> getTransactionHistory(Long memberId, Long accountId) {
         List<TransactionDto> transactions = new ArrayList<>();
 
         // Cash 내역 추가
+        List<Cash> cashList = cashRepository.findAllByAccountId(accountId);
         for (Cash cash : cashList) {
-            // 캐시 상태
             String cashStatus = cash.getStatus() != null ? cash.getStatus().name() : "UNKNOWN";
-
-            transactions.add(new TransactionDto(cash.getDate(), "CASH", cash.getAmount(), cashStatus, null));
+            transactions.add(new TransactionDto(cash.getDate(), "캐시", cash.getAmount(), "CHARGE".equals(cashStatus) ? "충전" : "출금", null));
         }
 
-        // Payment 내역 추가
-        for (Payment payment : filteredPayments) {
-            // senderAccountId와 회원 accountId가 같으면 구매자, receiverAccountId와 회원 accountId가 같으면 판매자
-            String paymentType = payment.getSenderAccount().getId().equals(accountId) ? "PAYMENT_SENT" : "PAYMENT_RECEIVED";
+        // Payment 관련 내역 - 판매자 판매 완료 (입금) 제외
+        List<Payment> paymentsByMemberId = paymentRepository.findAllByMemberId(memberId);
+        String productName;
 
-            // 결제 상태 (Completed 결제완료, Rollback_Completed 환불완료)
-            String paymentStatus = payment.getStatus() != null ? payment.getStatus().name() : "UNKNOWN";
-            
-            Integer payAmount;
-            
-            // 회원 본인이 구매자일 경우
-            if (paymentType.equals("PAYMENT_SENT")) {
-                // 결제 완료인 경우
-                if (paymentStatus.equals("COMPLETED")) {
-                    payAmount = -payment.getPayAmount(); // 음수로 설정 (빨간색)
-                // 환불 완료인 경우
-                } else if (paymentStatus.equals("ROLLBACK_COMPLETED")) {
-                    payAmount = payment.getPayAmount(); // 양수로 설정 (파란색)
-                } else {
-                    continue; // 다른 상태는 무시
-                }
-            // 회원 본인이 판매자일 경우
-            } else { // PAYMENT_RECEIVED
-                // 결제 완료인 경우
-                if (paymentStatus.equals("COMPLETED")) {
-                    payAmount = payment.getPayAmount(); // 양수로 설정 (파란색)
-                } else if (paymentStatus.equals("ROLLBACK_COMPLETED")) {
-                    payAmount = -payment.getPayAmount(); // 음수로 설정 (빨간색)
-                } else {
-                    continue; // 다른 상태는 무시
-                }
+        for (Payment payment : paymentsByMemberId) {
+            productName = productService.findProductNameById(payment.getProductId());
+
+            // 선입금 환불 (입금) 및 출금 내역 보존
+            if (payment.getStatus() == PaymentStatus.ROLLBACK_COMPLETED) {
+                transactions.add(new TransactionDto(payment.getDate(), "선입금", payment.getPayAmount(), "환불", productName));
+                transactions.add(new TransactionDto(payment.getDate(), "선입금", -payment.getPayAmount(), "지불", productName));
+            } else if (payment.getStatus() == PaymentStatus.PROCESSING) {
+                // 선입금 (출금)
+                transactions.add(new TransactionDto(payment.getDate(), "선입금", -payment.getPayAmount(), "지불", productName));
+            } else if (payment.getCategory() == PaymentCategory.BID_COMPLETE) {
+                // 구매 (출금)
+                transactions.add(new TransactionDto(payment.getDate(), "구매", -payment.getPayAmount(), "완료", productName));
             }
+        }
 
-            // Product 이름 조회
-            String productName = payment.getProductId() != null ? productService.findProductNameById(payment.getProductId()) : "N/A";
+        // Payment - 판매자 판매 완료 (입금)
+        List<Payment> paymentsByAccountId = paymentRepository.findAllByAccountId(accountId);
+        for (Payment payment : paymentsByAccountId) {
+            productName = productService.findProductNameById(payment.getProductId());
 
-            transactions.add(new TransactionDto(payment.getDate(), paymentType, payAmount, paymentStatus, productName));
+            if (payment.getReceiverAccount().getMemberId().equals(memberId) && payment.getStatus() == PaymentStatus.COMPLETED) {
+                transactions.add(new TransactionDto(payment.getDate(), "판매", payment.getPayAmount(), "완료", productName));
+            }
         }
 
         // 날짜 기준으로 내림차순 정렬
-        transactions.sort((t1, t2) -> t2.getDate().compareTo(t1.getDate()));
-
-        return transactions;
+        return transactions.stream()
+                .sorted(Comparator.comparing(TransactionDto::getDate).reversed())
+                .collect(Collectors.toList());
     }
 }

@@ -1,6 +1,5 @@
 package com.readyauction.app.mypage.controller;
 
-import com.readyauction.app.auction.entity.AuctionStatus;
 import com.readyauction.app.auction.entity.Bid;
 import com.readyauction.app.auction.entity.BidStatus;
 import com.readyauction.app.auction.entity.Product;
@@ -65,7 +64,7 @@ public class MypageController {
             model.addAttribute("accountDto", accountDto);
 
             // 캐시와 결제 내역 조회
-            List<TransactionDto> transactionHistory = transactionService.getTransactionHistory(accountDto.getId());
+            List<TransactionDto> transactionHistory = transactionService.getTransactionHistory(memberDto.getId(), accountDto.getId());
             log.debug("transactionHistory: {}", transactionHistory);
             model.addAttribute("transactionHistory", transactionHistory);
 
