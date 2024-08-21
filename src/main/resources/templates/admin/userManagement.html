@@ -245,6 +245,8 @@
                 <p><strong>생년월일 : </strong> <span id="modalUserBirth"></span></p>
                 <p><strong>상태 : </strong> <span id="modalUserStatus"></span></p>
                 <p><strong id="statusLabel">상태별 일자 : </strong> <span id="modalStatusTimestamp"></span></p>
+                <p><strong>매너지수 : </strong> <span id="modalMannerScore"></span></p>
+
             </div>
         </div>
 
@@ -332,6 +334,8 @@
                     // 상태에 따른 "상태별 일자" 텍스트 변경
                     const statusLabel = user.status === 'active' ? '가입일 : ' : '탈퇴일 : ';
                     document.querySelector('p strong#statusLabel').innerText = statusLabel; // 변경된 부분
+
+                    document.getElementById('modalMannerScore').innerText = user.mannerScore;
 
                     const modal = document.getElementById('userDetailsModal');
                     modal.style.display = "block";

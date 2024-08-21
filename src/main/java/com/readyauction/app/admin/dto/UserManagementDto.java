@@ -22,4 +22,5 @@ public class UserManagementDto {
     private String status; // active 또는 deleted
     private Timestamp createdAt; // 가입일
     private Timestamp deletedAt; // 탈퇴일
+    private Integer mannerScore;
 }
