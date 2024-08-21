@@ -36,7 +36,8 @@ public class UserManagementService {
                 member.getUserStatus() == UserStatus.active ? member.getCreatedAt() : member.getDeletedAt(),
                 member.getUserStatus().toString(),
                 member.getCreatedAt(), // 가입일
-                member.getDeletedAt() // 탈퇴일
+                member.getDeletedAt(), // 탈퇴일
+                member.getMannerScore()
         );
     }
 
