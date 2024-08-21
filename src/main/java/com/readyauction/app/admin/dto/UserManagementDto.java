@@ -18,5 +18,8 @@ public class UserManagementDto {
     private String address;
     private String phone;
     private LocalDate birth;
-    private Timestamp statusTimestamp; // createdAt or deletedAt
+    private Timestamp statusTimestamp; // createdAt 또는 deletedAt
+    private String status; // active 또는 deleted
+    private Timestamp createdAt; // 가입일
+    private Timestamp deletedAt; // 탈퇴일
 }

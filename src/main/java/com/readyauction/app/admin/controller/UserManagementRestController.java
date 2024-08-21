@@ -2,15 +2,13 @@ package com.readyauction.app.admin.controller;
 
 import com.readyauction.app.admin.dto.UserManagementDto;
 import com.readyauction.app.admin.service.UserManagementService;
+import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.entity.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/users")
@@ -28,5 +26,10 @@ public class UserManagementRestController {
         UserStatus userStatus = UserStatus.valueOf(status);
         Pageable pageable = PageRequest.of(page, size);
         return userManagementService.getUsersByStatus(userStatus, pageable);
+    }
+
+    @GetMapping("/{id}")
+    public UserManagementDto getUserById(@PathVariable Long id) {
+        return userManagementService.getUserDtoById(id); // 서비스의 공개 메서드를 호출
     }
 }
