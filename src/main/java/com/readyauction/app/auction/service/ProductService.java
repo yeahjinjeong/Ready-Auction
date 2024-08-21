@@ -203,7 +203,7 @@ public class ProductService {
     }
 
 
-    public Product progressWinnerPending(Long productId) {
+    public Product progressWinnerAccepted(Long productId) {
         try {
 
             Product product = findProductById(productId);
@@ -304,7 +304,8 @@ public class ProductService {
                 simpMessagingTemplate.convertAndSendToUser(memberService.findById(winnerDto.getUserId()).getEmail(),"/alarm/sub", alarmDto);
                 EmailMessage emailMessage = EmailMessage.builder()
                         .to(memberService.findEmailById(winnerDto.getUserId()))
-                        .subject(winnerDto.getProduct().getName()+ "경매에서 낙찰자로 선정 됐습니다. 웹사이트에 접속해서 결제를 진행해주세요!")
+                        .subject(winnerDto.getProduct().getName() + " 경매에서 낙찰자로 선정되었습니다. 웹사이트에 접속해서 결제를 진행해주세요!")
+                        .message("안녕하세요,\n\n" + winnerDto.getProduct().getName() + " 경매에서 낙찰자로 선정되었습니다.\n\n 웹사이트에 접속해서 결제를 진행해주세요!\n\n감사합니다.") // 이메일 본문 추가
                         .build();
                 emailService.sendMail(emailMessage);
                 System.out.println("이메일 보내기 성공");

@@ -35,7 +35,7 @@ public class PaymentService {
     //입찰시 만들어지는 페이먼트
 
     @Transactional
-    public Payment createBidPayment(Long userId, PaymentReqDto paymentReqDto) {
+    public Payment createBidPayment(Long userId, PaymentReqDto paymentReqDto) throws Exception {
         System.out.println("상품 입찰 선불금 지불 중!");
         try {
             Optional<List<Payment>> payments = paymentRepository.findByProductIdAndMemberIdAndCategoryAndStatusOrStatus(
@@ -102,14 +102,14 @@ public class PaymentService {
 
         } catch (EntityNotFoundException e) {
             // 특정 엔티티를 찾지 못했을 때의 예외 처리
-            throw new RuntimeException("Error during payment creation: " + e.getMessage(), e);
+            throw new Exception("Error during payment creation: " + e.getMessage(), e);
         }  catch (DataAccessException e) {
             // 데이터베이스 관련 예외 처리
-            throw new RuntimeException("Database error during saving payment: " + e.getMessage(), e);
+            throw new Exception("Database error during saving payment: " + e.getMessage(), e);
         } catch (Exception e) {
             // 기타 예외 처리
             // 출금할 때 잔액 부족 예외 처리
-            throw new RuntimeException("Unexpected error occurred during payment creation: " + e.getMessage(), e);
+            throw new Exception("Unexpected error occurred during payment creation: " + e.getMessage(), e);
         }
     }
 
@@ -247,7 +247,7 @@ public class PaymentService {
             accountService.deposit(payment.getReceiverAccount().getId(), paymentReqDto.getAmount());
 
             // 낙찰로그에서 거래완료로 상태값 바꾸기
-            Product product = productService.progressWinnerPending(paymentReqDto.getProductId());
+            Product product = productService.progressWinnerAccepted(paymentReqDto.getProductId());
             if (product == null) {
                 throw new EntityNotFoundException("Product not found for ID: " + paymentReqDto.getProductId());
             }

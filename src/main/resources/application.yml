@@ -48,11 +48,6 @@ server:
   servlet:
     context-path: /app
 
-  spring:
-    redis:
-      host: localhost
-      port: 6379
-
   redis:
     host: ${REDIS_HOST}
     port: ${REDIS_PORT}
