@@ -129,7 +129,9 @@
               <tr th:each="transaction : ${transactionHistory}">
                <td th:text="${transaction.type}"></td>
                <td th:text="${transaction.status}"></td>
-               <td th:text="${transaction.productName}"></td>
+               <td>
+                <a th:href="@{/auction/product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
+               </td>
                <td>
                 <span th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
                       th:classappend="${transaction.amount < 0 ? 'red' : 'blue'}"
@@ -161,7 +163,9 @@
                   th:if="${transaction.amount >= 0}">
                <td th:text="${transaction.type}"></td>
                <td th:text="${transaction.status}"></td>
-               <td th:text="${transaction.productName}"></td>
+               <td>
+                <a th:href="@{/auction/product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
+               </td>
                <td>
                 <span th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
                       th:classappend="${transaction.amount < 0 ? 'red' : 'blue'}"
@@ -193,7 +197,9 @@
                   th:if="${transaction.amount < 0}">
                <td th:text="${transaction.type}"></td>
                <td th:text="${transaction.status}"></td>
-               <td th:text="${transaction.productName}"></td>
+               <td>
+                <a th:href="@{/auction/product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
+               </td>
                <td>
                 <span th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
                       th:classappend="${transaction.amount < 0 ? 'red' : 'blue'}"
