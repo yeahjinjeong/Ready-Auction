@@ -28,7 +28,10 @@ public class RedissonConfig {
         Config config = new Config();
         config.useSingleServer()
                 .setAddress(REDISSON_HOST_PREFIX + redisHost + ":" + redisPort)
-                .setPassword(redisPassword);  // 비밀번호 설정
+                .setPassword(redisPassword) // 비밀번호 설정
+                .setConnectionPoolSize(64)  // 최대 연결 수 설정
+                .setConnectionMinimumIdleSize(10);  // 최소 유휴 연결 수 설정
+
         return Redisson.create(config);
     }
 }
