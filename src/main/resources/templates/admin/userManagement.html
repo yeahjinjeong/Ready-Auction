@@ -103,6 +103,83 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6); /* 배경을 어둡게 */
+            backdrop-filter: blur(5px); /* 배경 블러 효과 */
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px; /* 최대 너비를 지정 */
+            border-radius: 12px; /* 둥근 모서리 */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+            animation: slide-down 0.3s ease-out; /* 애니메이션 추가 */
+        }
+
+        @keyframes slide-down {
+            from {
+                transform: translateY(-30%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 24px;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-content h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .modal-content p {
+            font-size: 16px;
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .modal-content p strong {
+            color: #333;
+        }
+
+        .modal-content span {
+            font-weight: 500;
+            color: #444;
+        }
+
     </style>
 </head>
 
@@ -153,6 +230,26 @@
             <span id="currentPage">1</span>
             <button id="nextPage" onclick="changePage('next')">다음 </button>
         </div>
+
+        <div id="userDetailsModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>회원 상세 정보</h2>
+                <p><strong>회원번호 : </strong> <span id="modalUserId"></span></p>
+                <p><strong>이름 : </strong> <span id="modalUserName"></span></p>
+                <p><strong>닉네임 : </strong> <span id="modalUserNickname"></span></p>
+                <p><strong>이메일 : </strong> <span id="modalUserEmail"></span></p>
+                <p><strong>성별 : </strong> <span id="modalUserGender"></span></p>
+                <p><strong>주소 : </strong> <span id="modalUserAddress"></span></p>
+                <p><strong>연락처 : </strong> <span id="modalUserPhone"></span></p>
+                <p><strong>생년월일 : </strong> <span id="modalUserBirth"></span></p>
+                <p><strong>상태 : </strong> <span id="modalUserStatus"></span></p>
+                <p><strong id="statusLabel">상태별 일자 : </strong> <span id="modalStatusTimestamp"></span></p>
+                <p><strong>매너지수 : </strong> <span id="modalMannerScore"></span></p>
+
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -179,18 +276,26 @@
                         const row = document.createElement('tr');
 
                         row.innerHTML = `
-                            <td>${user.id}</td>
-                            <td>${user.name}</td>
-                            <td>${user.nickname}</td>
-                            <td>${user.email}</td>
-                            <td>${user.gender === 'M' ? '남성' : '여성'}</td>
-                            <td>${user.address}</td>
-                            <td>${user.phone}</td>
-                            <td>${user.birth}</td>
-                            <td class="${currentStatus === 'active' ? 'status-active' : 'status-deleted'}">${currentStatus === 'active' ? '활동중' : '탈퇴'}</td>
-                        `;
+                    <td><a href="#" class="user-link" data-id="${user.id}">${user.id}</a></td>
+                    <td>${user.name}</td>
+                    <td><a href="#" class="user-link" data-id="${user.id}">${user.nickname}</a></td>
+                    <td>${user.email}</td>
+                    <td>${user.gender === 'M' ? '남성' : '여성'}</td>
+                    <td>${user.address}</td>
+                    <td>${user.phone}</td>
+                    <td>${user.birth}</td>
+                    <td class="${currentStatus === 'active' ? 'status-active' : 'status-deleted'}">${currentStatus === 'active' ? '활동중' : '탈퇴'}</td>
+                `;
 
                         userTableBody.appendChild(row);
+                    });
+
+                    document.querySelectorAll('.user-link').forEach(link => {
+                        link.addEventListener('click', event => {
+                            event.preventDefault();
+                            const userId = event.target.getAttribute('data-id');
+                            openUserDetailsModal(userId);
+                        });
                     });
 
                     // Update pagination controls
@@ -201,6 +306,60 @@
                 .catch(error => {
                     console.error('Error fetching user data:', error);
                 });
+        }
+
+        function openUserDetailsModal(userId) {
+            const url = `/app/api/admin/users/${userId}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(user => {
+                    document.getElementById('modalUserId').innerText = user.id;
+                    document.getElementById('modalUserName').innerText = user.name;
+                    document.getElementById('modalUserNickname').innerText = user.nickname;
+                    document.getElementById('modalUserEmail').innerText = user.email;
+                    document.getElementById('modalUserGender').innerText = user.gender === 'M' ? '남성' : '여성';
+                    document.getElementById('modalUserAddress').innerText = user.address;
+                    document.getElementById('modalUserPhone').innerText = user.phone;
+                    document.getElementById('modalUserBirth').innerText = formatDate(user.birth);
+
+                    // 상태에 따른 텍스트 설정
+                    const statusText = user.status === 'active' ? '활동중' : '탈퇴';
+                    document.getElementById('modalUserStatus').innerText = statusText;
+
+                    // 상태에 따른 가입일/탈퇴일 설정
+                    const statusTimestamp = user.status === 'active' ? formatDate(user.createdAt) : formatDate(user.deletedAt);
+                    document.getElementById('modalStatusTimestamp').innerText = statusTimestamp;
+
+                    // 상태에 따른 "상태별 일자" 텍스트 변경
+                    const statusLabel = user.status === 'active' ? '가입일 : ' : '탈퇴일 : ';
+                    document.querySelector('p strong#statusLabel').innerText = statusLabel; // 변경된 부분
+
+                    document.getElementById('modalMannerScore').innerText = user.mannerScore;
+
+                    const modal = document.getElementById('userDetailsModal');
+                    modal.style.display = "block";
+
+                    document.querySelector('.close').onclick = function() {
+                        modal.style.display = "none";
+                    };
+
+                    window.onclick = function(event) {
+                        if (event.target === modal) {
+                            modal.style.display = "none";
+                        }
+                    };
+                })
+                .catch(error => {
+                    console.error('Error fetching user details:', error);
+                });
+        }
+
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ko-KR', options).replace(/\./g, '').replace(/ /g, ' . ');
         }
 
         function changePage(direction) {

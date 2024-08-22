@@ -7,6 +7,7 @@ import com.readyauction.app.auction.repository.ProductRepository;
 
 import com.readyauction.app.cash.entity.PaymentStatus;
 import com.readyauction.app.cash.repository.PaymentRepository;
+import com.readyauction.app.cash.service.PaymentService;
 import com.readyauction.app.ncp.dto.FileDto;
 import com.readyauction.app.ncp.service.NcpObjectStorageService;
 import com.readyauction.app.user.service.MemberService;
@@ -37,15 +38,16 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final PaymentRepository paymentRepository;
     private final BidRepository bidRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final EmailService emailService;
+
     public List<Product> findAll(){
         return productRepository.findAll();
     }
+
     public ProductRepDto createProduct(String email, ProductReqDto productReqDto) {
         Long userId = getUserIdFromRequest(email);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -80,7 +82,6 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalStateException("File upload failed"));
     }
 
-    @Transactional(readOnly = true)
     public ProductRepDto productDetail(Long productId) {
         Product product = findProductById(productId);
         return convertToProductRepDto(product);
@@ -96,14 +97,12 @@ public class ProductService {
         }
     }
 
-    @Transactional(readOnly = true)
     public Integer findCurrentPriceById(Long productId)
     {
         Product productResult = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
         return productResult.getCurrentPrice();
     }
 
-    @Transactional(readOnly = true)
     public Optional<Product> findById(Long productId) {
         return productRepository.findById(productId);
     }
@@ -114,7 +113,6 @@ public class ProductService {
         productRepository.save(product);
         return true;
     }
-    @Transactional(readOnly = true)
     public List<Product> getProductsWithEndTimeAtCurrentMinute() {
         try {
             // 현재 시간의 시분으로 설정, 초와 나노초를 0으로 만듦
@@ -203,7 +201,7 @@ public class ProductService {
     }
 
 
-    public Product progressWinnerPending(Long productId) {
+    public Product progressWinnerAccepted(Long productId) {
         try {
 
             Product product = findProductById(productId);
@@ -304,7 +302,8 @@ public class ProductService {
                 simpMessagingTemplate.convertAndSendToUser(memberService.findById(winnerDto.getUserId()).getEmail(),"/alarm/sub", alarmDto);
                 EmailMessage emailMessage = EmailMessage.builder()
                         .to(memberService.findEmailById(winnerDto.getUserId()))
-                        .subject(winnerDto.getProduct().getName()+ "경매에서 낙찰자로 선정 됐습니다. 웹사이트에 접속해서 결제를 진행해주세요!")
+                        .subject(winnerDto.getProduct().getName() + " 경매에서 낙찰자로 선정되었습니다. 웹사이트에 접속해서 결제를 진행해주세요!")
+                        .message("안녕하세요,\n\n" + winnerDto.getProduct().getName() + " 경매에서 낙찰자로 선정되었습니다.\n\n 웹사이트에 접속해서 결제를 진행해주세요!\n\n감사합니다.") // 이메일 본문 추가
                         .build();
                 emailService.sendMail(emailMessage);
                 System.out.println("이메일 보내기 성공");
@@ -370,13 +369,11 @@ public class ProductService {
     }
 
 
-    @Transactional(readOnly = true)
     public Page<ProductDto> searchProductsByName(String name, Pageable pageable) {
         return productRepository.searchByNameAndStatus(name, AuctionStatus.END, pageable)
                 .map(this::convertToProductDto);
     }
 
-    @Transactional(readOnly = true)
     public Page<ProductDto> getAllProducts(Pageable pageable) {
         return productRepository.findActiveProducts(AuctionStatus.END, pageable)
                 .map(this::convertToProductDto);
@@ -395,15 +392,20 @@ public class ProductService {
         return productRepository.findByMemberIdAndAuctionStatusIn(memberId, List.of(AuctionStatus.START, AuctionStatus.PROGRESS));
     }
 
-    // 거래 완료 (payment의 status가 COMPLETED인 경우)
-    public List<Product> getCompletedProducts(Long memberId) {
-        List<Long> productIds = paymentRepository.findCompletedProductIdsByMemberId(memberId, PaymentStatus.COMPLETED);
-        return productRepository.findByIdIn(productIds);
-    }
+
+
 
     // 유찰 (auctionStatus가 END이고, 해당 상품에 대해 입찰 내역이 없는 경우)
     public List<Product> getFailedProducts(Long memberId) {
         List<Long> productIdsWithBids = bidRepository.findProductIdsWithBidsByMemberId(memberId);
         return productRepository.findByMemberIdAndAuctionStatusAndIdNotIn(memberId, AuctionStatus.END, productIdsWithBids);
+    }
+
+    public List<Product> findByIdIn(List<Long> productIds) {
+        return productRepository.findByIdIn(productIds);
+    }
+
+    public void save(Product product) {
+        productRepository.save(product);
     }
 }
