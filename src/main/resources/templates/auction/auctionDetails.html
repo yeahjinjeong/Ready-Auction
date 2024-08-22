@@ -500,25 +500,32 @@
                             // 신고 옵션을 클릭했을 때 처리
                             document.querySelectorAll(".report-option").forEach(option => {
                                 option.addEventListener("click", function(event) {
+                                    const productId = document.getElementById('productId').value;
+
                                     event.preventDefault(); // 기본 동작(링크 클릭)을 막음
                                     const reportValue = this.getAttribute("data-value");
-
+                                    const ProductReportDto ={
+                                        productId : productId,
+                                        reportReason : reportValue,
+                                        userId : null
+                                    }
                                     // AJAX 요청으로 서버에 신고 정보 전송
                                     fetch('[[@{/report/save}]]', {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/json',
-                                         //   'X-CSRF-TOKEN': '수업자료 ' // 필요에 따라 CSRF 토큰 추가
+                                           'X-CSRF-TOKEN': '${_csrf.token}' // 필요에 따라 CSRF 토큰 추가
                                         },
-                                        body: JSON.stringify({
-                                            userId: 123,
-                                            productId: 456,
-                                            reportReason: reportValue
-                                        })
+                                        body: JSON.stringify(ProductReportDto)
                                     })
-                                        .then(response => response.json())
+                                        .then(response => {
+                                            if (!response.ok) {
+                                                throw new Error('Network response was not ok');
+                                            }
+                                            return response.text(); // JSON이 아닌 텍스트 응답 처리
+                                        })
                                         .then(data => {
-                                            alert("신고가 접수되었습니다."); // 성공 메시지
+                                            alert(data); // 성공 메시지
                                             // 추가로 필요한 처리가 있으면 여기에 작성
                                         })
                                         .catch(error => {
