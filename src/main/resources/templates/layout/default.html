@@ -89,15 +89,13 @@
                                 </ul>
                             </li>
                             <li class="has-child-menu">
-                                <a th:href="@{/about}" method="post">공지사항</a>
-                            </li>
-                            <li class="has-child-menu">
                                 <a th:href="@{/inquiry/faq}" method="post">FAQ</a>
                             </li>
                             <li class="has-child-menu">
                                 <a href="javascript:void(0)">관리자</a>
                                 <i class="fl flaticon-plus">+</i>
                                 <ul class="sub-menu">
+                                    <li><a th:href="@{/inquiry/admin-faq}">문의관리</a></li>
                                     <li><a th:href="@{/admin/userManagement}">회원관리</a></li>
                                     <li><a th:href="@{/dashboard/dashboard}">통계관리</a></li>
                                 </ul>

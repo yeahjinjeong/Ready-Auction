@@ -296,18 +296,18 @@ public class BidService {
     /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
 
     // 입찰 중 내역
-    public List<Product> getActiveBids(Long memberId) {
-        return bidRepository.findActiveBids(memberId);
+    public List<Bid> getBiddingBids(Long memberId) {
+        return bidRepository.findBiddingBids(memberId);
     }
 
     // 낙찰 내역
-    public List<Product> getWinningBids(Long memberId) {
-        return productRepository.findWinningBids(memberId);
+    public List<Bid> getWinningBids(Long memberId) {
+        return bidRepository.findWinningBids(memberId);
     }
 
     // 패찰 내역
-    public List<Product> getFailedBids(Long memberId) {
-        return productRepository.findFailedBids(memberId);
+    public List<Bid> getLosingBids(Long memberId) {
+        return bidRepository.findLosingBids(memberId);
     }
 
     public Bid findTopByProductIdOrderByMyPriceDesc(Long id) {

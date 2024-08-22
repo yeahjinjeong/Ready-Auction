@@ -1,32 +1,32 @@
 package com.readyauction.app.inquiry.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
-@Getter
-@Setter
+@Table(name = "tbl_inquiry")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Inquiry {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long authorId; // 문의자
+    @Enumerated(EnumType.STRING)
+    private InquiryCategory category; // 카테고리
+    private String title; // 문의 제목
+    private String content; // 문의 내용
+    private Timestamp createdAt; // 작성일시
+    @Enumerated(EnumType.STRING)
+    private InquiryStatus status; // 문의 처리 상태
 
-    private Long memberId;
-
-    private String title;
-    private String content;
-    private Timestamp createdAt;
-
-    private Long answerId;
+    @ElementCollection
+    @CollectionTable(name = "tbl_answer", joinColumns = @JoinColumn(name = "inquiry_id"))
+    @Column(name = "text")
+    @OrderColumn(name = "idx")
+    private List<Answer> answers; // 댓글
 }
