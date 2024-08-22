@@ -1,30 +1,20 @@
 package com.readyauction.app.inquiry.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.sql.Timestamp;
 
-@Entity
-@Getter
-@Setter
+@Embeddable
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Answer {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private Long inquiryId;
-    private Long adminId;
-
+    @Column(name = "answer_author_id")
+    private Long authorId;
     private String content;
     private Timestamp answeredAt;
 }
