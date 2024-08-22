@@ -31,24 +31,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.auctionStatus <> :status")
     Page<Product> findActiveProducts(@Param("status") AuctionStatus status, Pageable pageable);
 
-    /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
-    // 낙찰
-    @Query("SELECT p FROM Product p WHERE p.winner.memberId = :memberId")
-    List<Product> findWinningBids(@Param("memberId") Long memberId);
-
-    // 패찰
-    @Query("""
-    SELECT p FROM Product p
-    WHERE p.memberId = :memberId
-    AND p.auctionStatus = 'END'
-    AND NOT EXISTS (
-        SELECT 1 FROM Product p2
-        WHERE p2.id = p.id
-        AND p2.winner.memberId = :memberId
-    )
-    """)
-    List<Product> findFailedBids(@Param("memberId") Long memberId);
-
     /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
     List<Product> findByMemberIdAndAuctionStatusIn(Long memberId, List<AuctionStatus> start);
     List<Product> findByIdIn(List<Long> productIds);
