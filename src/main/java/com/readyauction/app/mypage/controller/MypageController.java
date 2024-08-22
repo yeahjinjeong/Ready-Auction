@@ -1,6 +1,5 @@
 package com.readyauction.app.mypage.controller;
 
-import com.readyauction.app.auction.entity.AuctionStatus;
 import com.readyauction.app.auction.entity.Bid;
 import com.readyauction.app.auction.entity.BidStatus;
 import com.readyauction.app.auction.entity.Product;
@@ -56,27 +55,29 @@ public class MypageController {
 
             // ProfileDto 가져오기
             ProfileDto profileDto = memberService.toProfileDto(currentUserName);
-            log.debug("profileDto: {}", profileDto);
             model.addAttribute("profileDto", profileDto);
 
             // AccountDto 가져오기
             AccountDto accountDto = accountService.findAccountDtoByMemberId(memberDto.getId());
-            log.debug("accountDto: {}", accountDto);
             model.addAttribute("accountDto", accountDto);
 
             // 캐시와 결제 내역 조회
-            List<TransactionDto> transactionHistory = transactionService.getTransactionHistory(accountDto.getId());
+            List<TransactionDto> transactionHistory = transactionService.getTransactionHistory(memberDto.getId(), accountDto.getId());
             log.debug("transactionHistory: {}", transactionHistory);
             model.addAttribute("transactionHistory", transactionHistory);
 
-            // 경매 참여 내역 조회 - 각 bidStatus별로 데이터 가져오기
-            List<Bid> confirmedBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.CONFIRMED); // 입찰 중
-            List<Bid> acceptedBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.ACCEPTED); // 낙찰
-            List<Bid> rollbackBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.ROLLBACK); // 패찰
+            // 경매 참여 내역 조회
+            // 입찰 중 내역
+            List<Product> activeBids = bidService.getActiveBids(memberDto.getId());
+            model.addAttribute("activeBids", activeBids);
 
-            model.addAttribute("confirmedBids", confirmedBids);
-            model.addAttribute("acceptedBids", acceptedBids);
-            model.addAttribute("rollbackBids", rollbackBids);
+            // 낙찰 내역
+            List<Product> winningBids = bidService.getWinningBids(memberDto.getId());
+            model.addAttribute("winningBids", winningBids);
+
+            // 패찰 내역
+            List<Product> failedBids = bidService.getFailedBids(memberDto.getId());
+            model.addAttribute("failedBids", failedBids);
 
             // 경매 등록 내역 조회 - 각 조건 별로 데이터 가져오기
             List<Product> activeProducts = productService.getActiveProducts(memberDto.getId()); // 판매 중
