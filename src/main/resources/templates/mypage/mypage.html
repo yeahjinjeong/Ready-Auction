@@ -49,8 +49,7 @@
        <button class="nav-link" id="v-btn-pp4" data-bs-toggle="pill" data-bs-target="#v-pills-pp4" type="button" role="tab" aria-controls="v-pills-pp4" aria-selected="false">경매 참여 내역</button>
        <button class="nav-link" id="v-btn-pp5" data-bs-toggle="pill" data-bs-target="#v-pills-pp5" type="button" role="tab" aria-controls="v-pills-pp5" aria-selected="false">경매 등록 내역</button>
        <button class="nav-link" id="v-btn-pp6" data-bs-toggle="pill" data-bs-target="#v-pills-pp6" type="button" role="tab" aria-controls="v-pills-pp6" aria-selected="false">찜한 상품</button>
-       <button class="nav-link" id="v-btn-pp7" data-bs-toggle="pill" data-bs-target="#v-pills-pp7" type="button" role="tab" aria-controls="v-pills-pp7" aria-selected="false">키워드 알림</button>
-       <button class="nav-link" id="v-btn-pp8" data-bs-toggle="pill" data-bs-target="#v-pills-pp8" type="button" role="tab" aria-controls="v-pills-pp8" aria-selected="false">1:1 문의 내역</button>
+       <button class="nav-link" id="v-btn-pp7" data-bs-toggle="pill" data-bs-target="#v-pills-pp7" type="button" role="tab" aria-controls="v-pills-pp7" aria-selected="false">1:1 문의 내역</button>
       </div>
      </div>
     </div>
@@ -286,24 +285,18 @@
             <table class="table table-striped">
              <thead class="table-dark">
               <tr>
-               <th scope="col">Auction Status</th>
                <th scope="col">Product Name</th>
-               <th scope="col">Start Price</th>
-               <th scope="col">Current Price</th>
-               <th scope="col">Immediate Price</th>
-               <th scope="col">Start Time</th>
-               <th scope="col">End Time</th>
+               <th scope="col">Bid Status</th>
+               <th scope="col">My price</th>
+               <th scope="col">Bid Time</th>
               </tr>
              </thead>
              <tbody>
-              <tr th:each="product : ${activeBids}">
-               <td th:text="${product.auctionStatus}"></td>
-               <td th:text="${product.name}"></td>
-               <td class="price" th:text="${product.startPrice}"></td>
-               <td class="price" th:text="${product.currentPrice}"></td>
-               <td class="price" th:text="${product.immediatePrice}"></td>
-               <td th:text="${#dates.format(product.startTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
-               <td th:text="${#dates.format(product.endTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              <tr th:each="bid : ${biddingBids}">
+               <td th:text="${bid.product.name}"></td>
+               <td th:text="${bid.bidStatus}"></td>
+               <td class="price" th:text="${bid.myPrice}"></td>
+               <td th:text="${#dates.format(bid.bidTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
               </tr>
              </tbody>
             </table>
@@ -316,24 +309,19 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-              <th scope="col">Auction Status</th>
+             <tr>
               <th scope="col">Product Name</th>
-              <th scope="col">Start Price</th>
-              <th scope="col">Current Price</th>
-              <th scope="col">Immediate Price</th>
-              <th scope="col">Start Time</th>
-              <th scope="col">End Time</th>
+              <th scope="col">Bid Status</th>
+              <th scope="col">My price</th>
+              <th scope="col">Bid Time</th>
              </tr>
              </thead>
              <tbody>
-             <tr th:each="product : ${winningBids}">
-              <td th:text="${product.auctionStatus}"></td>
-              <td th:text="${product.name}"></td>
-              <td class="price" th:text="${product.startPrice}"></td>
-              <td class="price" th:text="${product.currentPrice}"></td>
-              <td class="price" th:text="${product.immediatePrice}"></td>
-              <td th:text="${#dates.format(product.startTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
-              <td th:text="${#dates.format(product.endTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+             <tr th:each="bid : ${winningBids}">
+              <td th:text="${bid.product.name}"></td>
+              <td th:text="${bid.bidStatus}"></td>
+              <td class="price" th:text="${bid.myPrice}"></td>
+              <td th:text="${#dates.format(bid.bidTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
              </tr>
              </tbody>
             </table>
@@ -346,24 +334,18 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-              <th scope="col">Auction Status</th>
               <th scope="col">Product Name</th>
-              <th scope="col">Start Price</th>
-              <th scope="col">Current Price</th>
-              <th scope="col">Immediate Price</th>
-              <th scope="col">Start Time</th>
-              <th scope="col">End Time</th>
+              <th scope="col">Bid Status</th>
+              <th scope="col">My price</th>
+              <th scope="col">Bid Time</th>
              </tr>
              </thead>
              <tbody>
-             <tr th:each="product : ${failedBids}">
-              <td th:text="${product.auctionStatus}"></td>
-              <td th:text="${product.name}"></td>
-              <td class="price" th:text="${product.startPrice}"></td>
-              <td class="price" th:text="${product.currentPrice}"></td>
-              <td class="price" th:text="${product.immediatePrice}"></td>
-              <td th:text="${#dates.format(product.startTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
-              <td th:text="${#dates.format(product.endTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+             <tr th:each="bid : ${losingBids}">
+              <td th:text="${bid.product.name}"></td>
+              <td th:text="${bid.bidStatus}"></td>
+              <td class="price" th:text="${bid.myPrice}"></td>
+              <td th:text="${#dates.format(bid.bidTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
              </tr>
              </tbody>
             </table>
@@ -499,16 +481,8 @@
       </div>
 
 
-      <!-- 키워드 알림 -->
-      <div class="tab-pane fade" id="v-pills-pp7" role="tabpanel" aria-labelledby="v-btn-pp7">
-       <div class="tab-inner-contentbox mt-0">
-        <h5 class="pp-title pt-0">키워드 알림</h5>
-       </div>
-      </div>
-
-
       <!-- 1:1 문의 내역 -->
-      <div class="tab-pane fade" id="v-pills-pp8" role="tabpanel" aria-labelledby="v-btn-pp8">
+      <div class="tab-pane fade" id="v-pills-pp7" role="tabpanel" aria-labelledby="v-btn-pp7">
        <div class="tab-inner-contentbox mt-0">
         <h5 class="pp-title pt-0">1:1 문의 내역</h5>
        </div>

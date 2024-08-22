@@ -1,7 +1,6 @@
 package com.readyauction.app.mypage.controller;
 
 import com.readyauction.app.auction.entity.Bid;
-import com.readyauction.app.auction.entity.BidStatus;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.service.BidService;
 import com.readyauction.app.auction.service.ProductService;
@@ -70,16 +69,16 @@ public class MypageController {
 
             // 경매 참여 내역 조회
             // 입찰 중 내역
-            List<Product> activeBids = bidService.getActiveBids(memberDto.getId());
-            model.addAttribute("activeBids", activeBids);
+            List<Bid> biddingBids = bidService.getBiddingBids(memberDto.getId());
+            model.addAttribute("biddingBids", biddingBids);
 
             // 낙찰 내역
-            List<Product> winningBids = bidService.getWinningBids(memberDto.getId());
+            List<Bid> winningBids = bidService.getWinningBids(memberDto.getId());
             model.addAttribute("winningBids", winningBids);
 
             // 패찰 내역
-            List<Product> failedBids = bidService.getFailedBids(memberDto.getId());
-            model.addAttribute("failedBids", failedBids);
+            List<Bid> losingBids = bidService.getLosingBids(memberDto.getId());
+            model.addAttribute("losingBids", losingBids);
 
             // 경매 등록 내역 조회 - 각 조건 별로 데이터 가져오기
             List<Product> activeProducts = productService.getActiveProducts(memberDto.getId()); // 판매 중
