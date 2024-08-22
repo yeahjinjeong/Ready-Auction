@@ -34,11 +34,12 @@ public class BidService {
     private final BidRepository bidRepository;
     private final MemberService memberService;
     private final ProductService productService;
-    private final ProductRepository productRepository;
     private final PaymentService paymentService;
     private final EmailService emailService;
 
     final RedissonClient redissonClient;
+    private final ProductRepository productRepository;
+
     public void createBid(Long userId, Product product, Integer price, Timestamp timestamp) throws Exception {
 
         System.out.println("상품 입찰 크릿 진행!");
@@ -88,47 +89,41 @@ public class BidService {
         }
     }
 
-    @Transactional
-    public Boolean endAuction(){
+    public Boolean endAuction(Product product) throws Exception {
         // 마감될 경매 조회
-        List<Product> products = productService.getProductsWithEndTimeAtCurrentMinute();
 
-//        List<Product> products = productService.findAll(); 테스트용코드
         // 제일 비싼 사람들얻어오기
         System.out.println("마감 경매 조회");
-        List<TopBidDto> TopBids = findTopBidsByProducts(products);
+        Bid bid = bidRepository.findTopByProductIdOrderByMyPriceDesc(product.getId()).orElse(null);
+        if(bid == null){
+            product.setAuctionStatus(AuctionStatus.END);
+            productRepository.save(product);
+        }
+        else {
+            System.out.println("제일 비싼 입찰자 얻어오기");
 
-        System.out.println("제일 비싼 입찰자 얻어오기");
-        //위 두개 조회 쿼리 하나의 쿼리로 합쳐도 ㄱㅊ을듯?
-
-
-        // 해당 입찰기록으로 프로덕츠에 위너로 넣기 (위너 리스트 반환)
-        List<WinnerDto> winnerDtos = new ArrayList<>();
-        for(TopBidDto topBid : TopBids) {
             WinnerReqDto winnerReqDto = (WinnerReqDto.builder().
-                    productId(topBid.getProduct().getId())).
-                    buyPrice(topBid.getMyPrice()).
-                    buyTime(topBid.getBidTime()).
+                    productId(bid.getProduct().getId())).
+                    buyPrice(bid.getMyPrice()).
+                    buyTime(bid.getBidTime()).
                     build();
             WinnerDto winnerDto = WinnerDto.builder().
-                    userId(topBid.getMemberId()).
-                    product(topBid.getProduct()).
+                    userId(bid.getMemberId()).
+                    product(bid.getProduct()).
                     winnerReqDto(winnerReqDto).
                     build();
-            winnerDtos.add(winnerDto);
-            //위너 디티오 만들기 리스트로 만들기.
-
-            System.out.println("입찰자 낙찰자로 변환" + topBid.getMemberId());
+            System.out.println("입찰자 낙찰자로 변환" + bid.getMemberId());
+            String email = memberService.findEmailById(bid.getMemberId());
             EmailMessage emailMessage = EmailMessage.builder()
-                    .to(memberService.findEmailById(topBid.getMemberId()))
+                    .to(email)
                     .subject("중고 스포츠 유니폼 판매 플랫폼 레디옥션입니다.")
-                    .message("<html><head></head><body><div style=\"background-color: gray;\">"+winnerDto.getProduct().getName()  +" 경매에서 낙찰자로 선정되신 것을 축하드립니다. 결제를 위해 레디옥션 사이트를 방문 해주세요"+"<div></body></html>")
+                    .message("<html><head></head><body><div style=\"background-color: gray;\">" + winnerDto.getProduct().getName() + " 경매에서 낙찰자로 선정되신 것을 축하드립니다. 결제를 위해 레디옥션 사이트를 방문 해주세요" + "<div></body></html>")
                     .build();
             emailService.sendMail(emailMessage);
             System.out.println("성공 이메일 보내기");
-        }
-        productService.createWinners(winnerDtos);
+            productService.createWinner(winnerDto);
 
+        }
         //  비낙찰자 롤백시키기 (위너 리스트의 멤버아이디를 통해 비낙찰자 찾아내고 롤백 시키기.)
 
 
@@ -137,12 +132,7 @@ public class BidService {
 
 
     public BidResDto startBid(String email, BidDto bidDto) {
-        final RLock lock = redissonClient.getLock(String.format("orderProduct:productId:%d", bidDto.getProductId()));
         try {
-            if (!lock.tryLock(10, 1, TimeUnit.SECONDS)) {
-                throw new RuntimeException("Redisson lock timeout");
-            }
-
             Long userId = memberService.findMemberByEmail(email).getId();
             Product product = productService.findById(bidDto.getProductId())
                     .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + bidDto.getProductId()));
@@ -153,10 +143,6 @@ public class BidService {
 
         } catch (Exception e) {
             throw new RuntimeException("Error during bidding: " + e.getMessage(), e);
-        } finally {
-            if (lock.isHeldByCurrentThread()) {
-                lock.unlock();
-            }
         }
     }
 
@@ -227,7 +213,7 @@ public class BidService {
             throw e;
         }
 
-        return createBidResDto(currentPrice, BidStatus.ACCEPTED, Timestamp.from(Instant.now()));
+        return createBidResDto(currentPrice, BidStatus.CONFIRMED, Timestamp.from(Instant.now()));
     }
 
     public List<TopBidDto> findTopBidsByProducts(List<Product> products){
@@ -315,4 +301,8 @@ public class BidService {
     public List<Product> getFailedBids(Long memberId) {
         return productRepository.findFailedBids(memberId);
     }
- }
+
+    public Bid findTopByProductIdOrderByMyPriceDesc(Long id) {
+        return bidRepository.findTopByProductIdOrderByMyPriceDesc(id).orElse(null);
+    }
+}

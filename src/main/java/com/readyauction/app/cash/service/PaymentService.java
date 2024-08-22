@@ -292,4 +292,12 @@ public class PaymentService {
                 .build();
     }
 
+    public List<Long> findCompletedProductIdsByMemberId(Long memberId, PaymentStatus paymentStatus) {
+        return paymentRepository.findCompletedProductIdsByMemberId(memberId, paymentStatus);
+    }
+    // 거래 완료 (payment의 status가 COMPLETED인 경우)
+    public List<Product> getCompletedProducts(Long memberId) {
+        List<Long> productIds = findCompletedProductIdsByMemberId(memberId, PaymentStatus.COMPLETED);
+        return productService.findByIdIn(productIds);
+    }
 }

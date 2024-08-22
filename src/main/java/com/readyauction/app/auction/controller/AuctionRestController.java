@@ -4,6 +4,7 @@ import com.readyauction.app.auction.dto.*;
 import com.readyauction.app.auction.entity.PurchaseCategory;
 import com.readyauction.app.auction.service.BidService;
 import com.readyauction.app.auction.service.ProductService;
+import com.readyauction.app.auction.service.RedisLockService;
 import com.readyauction.app.chat.service.ChatService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class AuctionRestController {
     final ProductService productService;
     final BidService bidService;
     final SimpMessagingTemplate simpMessagingTemplate;
+    final RedisLockService redisLockService;
 
     @PostMapping("/create")
         public ResponseEntity<ProductRepDto> createAuction(HttpServletRequest request,@RequestBody ProductReqDto productReqDto) {
@@ -78,7 +80,7 @@ public class AuctionRestController {
         BidResDto bidResDto = new BidResDto();
         try {
             System.out.println("입찰중 "+ email);
-            bidResDto = bidService.startBid(email, bidDto);
+            bidResDto = redisLockService.bidLock(email, bidDto);
             System.out.println(bidDto);
             simpMessagingTemplate.convertAndSend("/sub/"+bidDto.getProductId(),bidResDto);
             return ResponseEntity.ok(bidResDto); // 성공적으로 처리되면, 200 OK와 함께 bidDto를 반환
@@ -95,7 +97,7 @@ public class AuctionRestController {
             String email = authentication.getName();
             System.out.println("즉시구매중" + winnerReqDto);
             winnerReqDto.setCategory(PurchaseCategory.IMMEDIATE);
-            return ResponseEntity.ok(productService.startWinnerProcess(email,winnerReqDto));
+            return ResponseEntity.ok(redisLockService.winnerLock(email,winnerReqDto));
         }
         catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Bid failed: " + e.getMessage());
