@@ -43,9 +43,11 @@ public class ProductService {
     private final MemberService memberService;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final EmailService emailService;
+
     public List<Product> findAll(){
         return productRepository.findAll();
     }
+
     public ProductRepDto createProduct(String email, ProductReqDto productReqDto) {
         Long userId = getUserIdFromRequest(email);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());

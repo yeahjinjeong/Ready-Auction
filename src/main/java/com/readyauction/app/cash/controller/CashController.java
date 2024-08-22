@@ -143,7 +143,7 @@ public class CashController {
             redirectAttributes.addFlashAttribute("message", "성공적으로 출금되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "출금 중 문제가 발생했습니다.");
-            return "redirect:/cash-withdrawal";
+            return "redirect:/cash/cash-withdrawal";
         }
 
         return "redirect:/mypage";

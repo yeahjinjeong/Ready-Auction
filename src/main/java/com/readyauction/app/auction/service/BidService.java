@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.readyauction.app.auction.entity.BidStatus;
@@ -285,11 +284,22 @@ public class BidService {
         }
     }
 
+
     /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
-    public List<Bid> getBidsByStatus(Long memberId, BidStatus status) {
-        List<Bid> bids = bidRepository.findByMemberIdAndBidStatus(memberId, status);
-        System.out.println("Bids for status " + status + ": " + bids);
-        return bids;
+
+    // 입찰 중 내역
+    public List<Product> getActiveBids(Long memberId) {
+        return bidRepository.findActiveBids(memberId);
+    }
+
+    // 낙찰 내역
+    public List<Product> getWinningBids(Long memberId) {
+        return productRepository.findWinningBids(memberId);
+    }
+
+    // 패찰 내역
+    public List<Product> getFailedBids(Long memberId) {
+        return productRepository.findFailedBids(memberId);
     }
 
     public Bid findTopByProductIdOrderByMyPriceDesc(Long id) {
