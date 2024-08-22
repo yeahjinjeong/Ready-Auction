@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface CashRepository extends JpaRepository<Cash, Long> {
     Optional<Cash> findCashByMemberId(Long memberId);
 
-    List<Cash> findAllByAccountIdOrderByDateDesc(Long accountId);
+    List<Cash> findAllByAccountId(Long accountId);
 }

@@ -1,4 +1,18 @@
 spring:
+  mail:
+    host: smtp.gmail.com # 1
+    port: 587 # 2
+    username: fkausthd12@gmail.com # 3
+    password: tnva emrs xogi auxs # 4
+
+
+    properties:
+      mail:
+        smtp:
+          auth: true # 5
+          timeout: 5000 # 6
+          starttls:
+            enable: true # 7
   profiles:
     default: prod
   application:
@@ -34,11 +48,7 @@ server:
   servlet:
     context-path: /app
 
-  spring:
-    redis:
-      host: localhost
-      port: 6379
-
   redis:
-    bid:
-      prefix: bids
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}

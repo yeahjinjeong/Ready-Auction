@@ -1,14 +1,13 @@
 package com.readyauction.app.mypage.controller;
 
-import com.readyauction.app.auction.entity.AuctionStatus;
 import com.readyauction.app.auction.entity.Bid;
-import com.readyauction.app.auction.entity.BidStatus;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.service.BidService;
 import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.cash.dto.AccountDto;
 import com.readyauction.app.cash.dto.TransactionDto;
 import com.readyauction.app.cash.service.AccountService;
+import com.readyauction.app.cash.service.PaymentService;
 import com.readyauction.app.cash.service.TransactionService;
 import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.user.dto.MemberDto;
@@ -37,6 +36,7 @@ public class MypageController {
     private final TransactionService transactionService;
     private final BidService bidService;
     private final ProductService productService;
+    private final PaymentService paymentService;
 
     // 마이페이지
     @GetMapping("")
@@ -56,31 +56,33 @@ public class MypageController {
 
             // ProfileDto 가져오기
             ProfileDto profileDto = memberService.toProfileDto(currentUserName);
-            log.debug("profileDto: {}", profileDto);
             model.addAttribute("profileDto", profileDto);
 
             // AccountDto 가져오기
             AccountDto accountDto = accountService.findAccountDtoByMemberId(memberDto.getId());
-            log.debug("accountDto: {}", accountDto);
             model.addAttribute("accountDto", accountDto);
 
             // 캐시와 결제 내역 조회
-            List<TransactionDto> transactionHistory = transactionService.getTransactionHistory(accountDto.getId());
+            List<TransactionDto> transactionHistory = transactionService.getTransactionHistory(memberDto.getId(), accountDto.getId());
             log.debug("transactionHistory: {}", transactionHistory);
             model.addAttribute("transactionHistory", transactionHistory);
 
-            // 경매 참여 내역 조회 - 각 bidStatus별로 데이터 가져오기
-            List<Bid> confirmedBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.CONFIRMED); // 입찰 중
-            List<Bid> acceptedBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.ACCEPTED); // 낙찰
-            List<Bid> rollbackBids = bidService.getBidsByStatus(memberDto.getId(), BidStatus.ROLLBACK); // 패찰
+            // 경매 참여 내역 조회
+            // 입찰 중 내역
+            List<Bid> biddingBids = bidService.getBiddingBids(memberDto.getId());
+            model.addAttribute("biddingBids", biddingBids);
 
-            model.addAttribute("confirmedBids", confirmedBids);
-            model.addAttribute("acceptedBids", acceptedBids);
-            model.addAttribute("rollbackBids", rollbackBids);
+            // 낙찰 내역
+            List<Bid> winningBids = bidService.getWinningBids(memberDto.getId());
+            model.addAttribute("winningBids", winningBids);
+
+            // 패찰 내역
+            List<Bid> losingBids = bidService.getLosingBids(memberDto.getId());
+            model.addAttribute("losingBids", losingBids);
 
             // 경매 등록 내역 조회 - 각 조건 별로 데이터 가져오기
             List<Product> activeProducts = productService.getActiveProducts(memberDto.getId()); // 판매 중
-            List<Product> completedProducts = productService.getCompletedProducts(memberDto.getId()); // 거래 완료
+            List<Product> completedProducts = paymentService.getCompletedProducts(memberDto.getId()); // 거래 완료
             List<Product> failedProducts = productService.getFailedProducts(memberDto.getId()); // 유찰
 
             model.addAttribute("activeProducts", activeProducts);

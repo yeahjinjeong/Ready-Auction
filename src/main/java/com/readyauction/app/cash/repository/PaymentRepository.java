@@ -24,9 +24,12 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<List<Payment>> findByProductIdAndMemberIdAndCategoryNotAndStatusOrStatus(Long productId,Long memberId,PaymentCategory category, PaymentStatus status, PaymentStatus status2);
     Optional<List<Payment>> findByProductIdAndStatus(Long productId, PaymentStatus status);
 
-    // 송신 계좌 또는 수신 계좌와 연관된 모든 결제 내역을 조회
-    @Query("SELECT p FROM Payment p WHERE p.senderAccount.id = :accountId OR p.receiverAccount.id = :accountId ORDER BY p.date DESC")
-    List<Payment> findAllByAccountIdOrderByDateDesc(@Param("accountId") Long accountId);
+    /** 지영 - memberId와 일치하는 결제 내역 조회 **/
+    List<Payment> findAllByMemberId(Long memberId);
+
+    /** 지영 - 판매자 계좌와 연관된 모든 결제 내역을 조회 **/
+    @Query("SELECT p FROM Payment p WHERE p.receiverAccount.id = :accountId")
+    List<Payment> findAllByReceiverAccountId(@Param("accountId") Long accountId);
 
     /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
     @Query("SELECT p.productId FROM Payment p WHERE p.status = :status AND p.memberId = :memberId")

@@ -12,7 +12,6 @@
 
     <meta charset="UTF-8">
     <title>통계 관리</title>
-    <link rel="stylesheet" th:href="@{/css/styles.css}">
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -217,7 +216,7 @@
                 </script>
                 <!-- 활동중/탈퇴 회원 수 끝 -->
 
-                <!-- Reports -->
+                <!-- 구매확정 거래량/금액 구현 -->
                 <div class="col-12">
                     <div class="card">
                         <div class="filter">
@@ -227,97 +226,108 @@
                                     <h6>Filter</h6>
                                 </li>
                                 <li><a class="dropdown-item" href="#" onclick="loadReports('today')">Today</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadReports('week')">This Week</a></li>
                                 <li><a class="dropdown-item" href="#" onclick="loadReports('month')">This Month</a></li>
                                 <li><a class="dropdown-item" href="#" onclick="loadReports('year')">This Year</a></li>
                             </ul>
                         </div>
 
                         <div class="card-body">
-                            <h5 class="card-title">Reports <span id="reportsPeriod">| Today</span></h5>
-
-                            <!-- Line Chart -->
-                            <div id="reportsChart"></div>
-
-                            <script>
-                                function loadReports(period) {
-                                    let url;
-                                    if (period === 'today') {
-                                        url = '/app/api/statistics/reports/today';
-                                    } else if (period === 'month') {
-                                        url = '/app/api/statistics/reports/month';
-                                    } else if (period === 'year') {
-                                        url = '/app/api/statistics/reports/year';
-                                    }
-
-                                    fetch(url)
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            const salesData = data.sales;
-                                            const revenueData = data.revenue;
-                                            const customersData = data.customers;
-                                            const categories = data.dates;
-
-                                            new ApexCharts(document.querySelector("#reportsChart"), {
-                                                series: [{
-                                                    name: 'Sales',
-                                                    data: salesData
-                                                }, {
-                                                    name: 'Revenue',
-                                                    data: revenueData
-                                                }, {
-                                                    name: 'Customers',
-                                                    data: customersData
-                                                }],
-                                                chart: {
-                                                    height: 350,
-                                                    type: 'area',
-                                                    toolbar: {
-                                                        show: false
-                                                    },
-                                                },
-                                                markers: {
-                                                    size: 4
-                                                },
-                                                colors: ['#4154f1', '#2eca6a', '#ff771d'],
-                                                fill: {
-                                                    type: "gradient",
-                                                    gradient: {
-                                                        shadeIntensity: 1,
-                                                        opacityFrom: 0.3,
-                                                        opacityTo: 0.4,
-                                                        stops: [0, 90, 100]
-                                                    }
-                                                },
-                                                dataLabels: {
-                                                    enabled: false
-                                                },
-                                                stroke: {
-                                                    curve: 'smooth',
-                                                    width: 2
-                                                },
-                                                xaxis: {
-                                                    type: 'datetime',
-                                                    categories: categories
-                                                },
-                                                tooltip: {
-                                                    x: {
-                                                        format: 'dd/MM/yy HH:mm'
-                                                    },
-                                                }
-                                            }).render();
-                                        })
-                                        .catch(error => console.error('Error:', error));
-                                }
-
-                                // 기본적으로 오늘의 리포트 로드
-                                document.addEventListener("DOMContentLoaded", () => loadReports('today'));
-                            </script>
-                            <!-- End Line Chart -->
-
+                            <h5 class="card-title">구매확정 통계 그래프 <span id="reportsPeriod">| This Week</span></h5>
+                            <div id="reportsChart" style="max-width: 100%;"></div>
                         </div>
                     </div>
                 </div>
 
+                <script>
+                    function loadReports(period) {
+                        fetch(`/app/api/statistics/transactions/statistics?period=${period}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const options = {
+                                    series: [
+                                        {
+                                            name: 'Transaction Amount (₩)',
+                                            type: 'line',
+                                            data: data.transactionAmounts
+                                        },
+                                        {
+                                            name: 'Transaction Count',
+                                            type: 'bar',
+                                            data: data.transactionCounts
+                                        }
+                                    ],
+                                    chart: {
+                                        height: 400,
+                                        type: 'line',
+                                        stacked: false,
+                                        toolbar: { show: false }
+                                    },
+                                    stroke: {
+                                        width: [4, 0],
+                                        curve: 'smooth'
+                                    },
+                                    plotOptions: {
+                                        bar: {
+                                            columnWidth: '20%',
+                                            borderRadius: 5
+                                        }
+                                    },
+                                    xaxis: {
+                                        categories: data.periods,
+                                        title: { text: 'Date' }
+                                    },
+                                    yaxis: [
+                                        {
+                                            title: {
+                                                text: 'Transaction Amount (₩)',
+                                            },
+                                            labels: {
+                                                formatter: function (value) {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        },
+                                        {
+                                            opposite: true,
+                                            title: {
+                                                text: 'Transaction Count',
+                                            },
+                                            labels: {
+                                                formatter: function (value) {
+                                                    return Math.round(value);
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    tooltip: {
+                                        shared: true,
+                                        intersect: false,
+                                        x: {
+                                            format: 'dd MMM'
+                                        }
+                                    },
+                                    colors: ['#4154f1', '#2eca6a'],
+                                    grid: {
+                                        borderColor: '#f1f1f1',
+                                    },
+                                    legend: {
+                                        position: 'top',
+                                        horizontalAlign: 'right'
+                                    }
+                                };
+
+                                document.getElementById('reportsChart').innerHTML = '';
+                                new ApexCharts(document.querySelector("#reportsChart"), options).render();
+
+                                document.getElementById('reportsPeriod').textContent = `| ${period.charAt(0).toUpperCase() + period.slice(1)}`;
+                            })
+                            .catch(error => console.error('Error fetching transaction statistics:', error));
+                    }
+
+                    document.addEventListener("DOMContentLoaded", () => loadReports('week'));
+                </script>
+                <!-- 구매확정 거래량/금액 구현 -->
 
                 <!-- Recent Sales -->
                 <div class="col-12">

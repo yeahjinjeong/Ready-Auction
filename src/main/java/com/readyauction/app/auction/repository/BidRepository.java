@@ -23,9 +23,40 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
             "FROM Bid b WHERE b.product IN :products GROUP BY b.memberId, b.product")
     Optional<List<TopBidDto>> findTopBidsByProducts(@Param("products") List<Product> products);
 
+    Optional<Bid> findTopByProductIdOrderByMyPriceDesc(Long productId);
     /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
     List<Bid> findByMemberIdAndBidStatus(Long memberId, BidStatus bidStatus);
+    /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
+    // 입찰 중
+    @Query("""
+    SELECT b FROM Bid b
+    WHERE b.memberId = :memberId
+    AND b.bidStatus = 'CONFIRMED'
+    AND b.product.auctionStatus <> 'END'
+    """)
+    List<Bid> findBiddingBids(@Param("memberId") Long memberId);
 
+    // 낙찰
+    @Query("""
+    SELECT b FROM Bid b
+    WHERE b.memberId = :memberId
+    AND b.product.winner.memberId = :memberId
+    """)
+    List<Bid> findWinningBids(@Param("memberId") Long memberId);
+
+    // 패찰
+    @Query("""
+    SELECT b FROM Bid b 
+    WHERE b.memberId = :memberId 
+    AND b.product.auctionStatus = 'END'
+    AND b.myPrice < (
+        SELECT MAX(b2.myPrice) FROM Bid b2 
+        WHERE b2.product.id = b.product.id
+        )
+    """)
+    List<Bid> findLosingBids(@Param("memberId") Long memberId);
+
+    /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
     @Query("SELECT DISTINCT b.product.id FROM Bid b WHERE b.memberId = :memberId")
     List<Long> findProductIdsWithBidsByMemberId(Long memberId);
 }
