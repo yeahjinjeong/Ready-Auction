@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/mypage")
@@ -74,19 +76,35 @@ public class MypageController {
 
             // 낙찰 내역
             List<Bid> winningBids = bidService.getWinningBids(memberDto.getId());
+
+            Map<Long, Boolean> isWinnerConfirmedMap = new HashMap<>();
+            Map<Long, Boolean> isPaymentCompleteMap = new HashMap<>();
+
+            for (Bid bid : winningBids) {
+                Long productId = bid.getProduct().getId();
+                isWinnerConfirmedMap.put(productId, productService.isWinnerConfirmed(productId, memberDto.getId()));
+                isPaymentCompleteMap.put(productId, productService.isPaymentComplete(productId, memberDto.getId()));
+            }
+
             model.addAttribute("winningBids", winningBids);
+            model.addAttribute("isWinnerConfirmedMap", isWinnerConfirmedMap);
+            model.addAttribute("isPaymentCompleteMap", isPaymentCompleteMap);
 
             // 패찰 내역
             List<Bid> losingBids = bidService.getLosingBids(memberDto.getId());
             model.addAttribute("losingBids", losingBids);
 
-            // 경매 등록 내역 조회 - 각 조건 별로 데이터 가져오기
-            List<Product> activeProducts = productService.getActiveProducts(memberDto.getId()); // 판매 중
-            List<Product> completedProducts = paymentService.getCompletedProducts(memberDto.getId()); // 거래 완료
-            List<Product> failedProducts = productService.getFailedProducts(memberDto.getId()); // 유찰
-
+            // 경매 등록 내역 조회
+            // 판매 중 내역
+            List<Product> activeProducts = productService.getActiveProducts(memberDto.getId());
             model.addAttribute("activeProducts", activeProducts);
+
+            // 거래 완료 내역
+            List<Product> completedProducts = paymentService.getCompletedProducts(memberDto.getId());
             model.addAttribute("completedProducts", completedProducts);
+
+            // 유찰 내역
+            List<Product> failedProducts = bidService.getFailedProducts(memberDto.getId());
             model.addAttribute("failedProducts", failedProducts);
 
         } catch (UserNotFoundException e) {

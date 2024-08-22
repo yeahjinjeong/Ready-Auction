@@ -86,7 +86,7 @@
                     <div class="item-bid-timer">
                         <div class="auction-bid">
                             <p>낙찰가</p>
-                            <h5 th:text="'₩' + ${#numbers.formatDecimal(productDetail.immediatePrice, 0, 'COMMA', 0, 'POINT')}"></h5>
+                            <h5 th:text="'₩' + ${#numbers.formatDecimal(productDetail.currentPrice, 0, 'COMMA', 0, 'POINT')}"></h5>
                         </div>
                     </div>
 
@@ -187,7 +187,7 @@
                                         // 요청에 보낼 데이터 (PaymentReqDto에 해당하는 데이터 구성)
                                         var paymentData = {
                                             productId: [[${productDetail.id}]],  // 상품 ID
-                                            amount: [[${productDetail.immediatePrice}]],  // 즉시 구매가
+                                            amount: [[${productDetail.currentPrice}]],  // 현재가
                                             payTime: new Date().toISOString()  // 현재 시간을 ISO 8601 형식으로 설정
                                         };
 
