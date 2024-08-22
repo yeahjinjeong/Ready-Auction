@@ -2,7 +2,6 @@ package com.readyauction.app.cash.service;
 
 import com.readyauction.app.auction.dto.EmailMessage;
 import com.readyauction.app.auction.entity.Product;
-import com.readyauction.app.auction.service.BidService;
 import com.readyauction.app.auction.service.EmailService;
 import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.cash.dto.PaymentReqDto;
@@ -38,16 +37,7 @@ public class PaymentService {
     public Payment createBidPayment(Long userId, PaymentReqDto paymentReqDto) throws Exception {
         System.out.println("상품 입찰 선불금 지불 중!");
         try {
-            Optional<List<Payment>> payments = paymentRepository.findByProductIdAndMemberIdAndCategoryAndStatusOrStatus(
-                    paymentReqDto.getProductId(),
-                    userId,
-                    PaymentCategory.BID,
-                    PaymentStatus.PROCESSING,
-                    PaymentStatus.COMPLETED);
-            if(payments.isPresent() && !payments.get().isEmpty()){
-                throw new EntityNotFoundException("Payment already exists");
-            };
-
+            System.out.println("거래 입금 내역");
             // 보낸이 조회
             Long senderId = userId;
             if (senderId == null) {
@@ -292,12 +282,16 @@ public class PaymentService {
                 .build();
     }
 
-    public List<Long> findCompletedProductIdsByMemberId(Long memberId, PaymentStatus paymentStatus) {
-        return paymentRepository.findCompletedProductIdsByMemberId(memberId, paymentStatus);
-    }
-    // 거래 완료 (payment의 status가 COMPLETED인 경우)
+    /** 지영 - 경매 등록 내역 조회 시 필요 **/
+
+    // 거래 완료 내역 (payment의 status가 COMPLETED인 경우)
     public List<Product> getCompletedProducts(Long memberId) {
         List<Long> productIds = findCompletedProductIdsByMemberId(memberId, PaymentStatus.COMPLETED);
         return productService.findByIdIn(productIds);
+    }
+
+    // 거래 완료 내역
+    public List<Long> findCompletedProductIdsByMemberId(Long memberId, PaymentStatus paymentStatus) {
+        return paymentRepository.findCompletedProductIdsByMemberId(memberId, paymentStatus);
     }
 }

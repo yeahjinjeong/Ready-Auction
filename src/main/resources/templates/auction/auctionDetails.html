@@ -452,25 +452,26 @@
                         }
                     </script>
 
+                    <div class="report-dropdown" style="position: relative; text-align: right; margin-bottom: 5px;">
+                        <button class="report-btn">신고하기</button>
+                        <div class="report-dropdown-content" style="position: absolute; right: 0; display: none; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1;">
+                            <a href="#" class="report-option" data-value="부적절한 내용">부적절한 내용</a>
+                            <a href="#" class="report-option" data-value="허위 정보">허위 정보</a>
+                            <a href="#" class="report-option" data-value="기타">기타</a>
+                        </div>
+                    </div>
+
                     <!-- 이미지 리스트 아래 작은 이미지 표시 부분 -->
-                    <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">
-                        <li class="nav-item">
-                            <!-- 작은 이미지 리스트를 추가할 수 있습니다. -->
-                        </li>
-                    </ul>
+<!--                    <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">-->
+<!--                        <li class="nav-item">-->
+<!--                            &lt;!&ndash; 작은 이미지 리스트를 추가할 수 있습니다. &ndash;&gt;-->
+<!--                        </li>-->
+<!--                    </ul>-->
                 </div>
                 <div class="col-lg-6">
                     <div class="widget-right-area">
                         <div class="single-widget">
                             <h5 class="widget-title">상품 상세정보</h5>
-                            <div class="report-dropdown" style="position: relative; text-align: right; margin-bottom: 5px;">
-                                <button class="report-btn">신고하기</button>
-                                <div class="report-dropdown-content" style="position: absolute; right: 0; display: none; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1;">
-                                    <a href="#" class="report-option" data-value="부적절한 내용">부적절한 내용</a>
-                                    <a href="#" class="report-option" data-value="허위 정보">허위 정보</a>
-                                    <a href="#" class="report-option" data-value="기타">기타</a>
-                                </div>
-                            </div>
                             <ul class="widget-list">
                                 <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
                                 <li>

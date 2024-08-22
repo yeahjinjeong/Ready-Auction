@@ -305,4 +305,12 @@ public class BidService {
     public Bid findTopByProductIdOrderByMyPriceDesc(Long id) {
         return bidRepository.findTopByProductIdOrderByMyPriceDesc(id).orElse(null);
     }
+
+    /** 지영 - 마이페이지 경매 등록 내역 조회 **/
+
+    // 유찰 (auctionStatus가 END이고, 해당 상품에 대해 입찰 내역이 없는 경우)
+    public List<Product> getFailedProducts(Long memberId) {
+        List<Long> productIdsWithBids = bidRepository.findProductIdsWithBidsByMemberId(memberId);
+        return productRepository.findByMemberIdAndAuctionStatusAndIdNotIn(memberId, AuctionStatus.END, productIdsWithBids);
+    }
 }
