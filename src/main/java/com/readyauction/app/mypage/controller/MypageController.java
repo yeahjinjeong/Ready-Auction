@@ -9,6 +9,7 @@ import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.cash.dto.AccountDto;
 import com.readyauction.app.cash.dto.TransactionDto;
 import com.readyauction.app.cash.service.AccountService;
+import com.readyauction.app.cash.service.PaymentService;
 import com.readyauction.app.cash.service.TransactionService;
 import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.user.dto.MemberDto;
@@ -37,6 +38,7 @@ public class MypageController {
     private final TransactionService transactionService;
     private final BidService bidService;
     private final ProductService productService;
+    private final PaymentService paymentService;
 
     // 마이페이지
     @GetMapping("")
@@ -80,7 +82,7 @@ public class MypageController {
 
             // 경매 등록 내역 조회 - 각 조건 별로 데이터 가져오기
             List<Product> activeProducts = productService.getActiveProducts(memberDto.getId()); // 판매 중
-            List<Product> completedProducts = productService.getCompletedProducts(memberDto.getId()); // 거래 완료
+            List<Product> completedProducts = paymentService.getCompletedProducts(memberDto.getId()); // 거래 완료
             List<Product> failedProducts = productService.getFailedProducts(memberDto.getId()); // 유찰
 
             model.addAttribute("activeProducts", activeProducts);
