@@ -2,7 +2,6 @@ package com.readyauction.app.auction.repository;
 
 import com.readyauction.app.auction.dto.TopBidDto;
 import com.readyauction.app.auction.entity.Bid;
-import com.readyauction.app.auction.entity.BidStatus;
 import com.readyauction.app.auction.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,9 +23,9 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     Optional<List<TopBidDto>> findTopBidsByProducts(@Param("products") List<Product> products);
 
     Optional<Bid> findTopByProductIdOrderByMyPriceDesc(Long productId);
+
     /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
-    List<Bid> findByMemberIdAndBidStatus(Long memberId, BidStatus bidStatus);
-    /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
+
     // 입찰 중
     @Query("""
     SELECT b FROM Bid b
@@ -56,7 +55,7 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     """)
     List<Bid> findLosingBids(@Param("memberId") Long memberId);
 
-    /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
+    /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
     @Query("SELECT DISTINCT b.product.id FROM Bid b WHERE b.memberId = :memberId")
     List<Long> findProductIdsWithBidsByMemberId(Long memberId);
 }
