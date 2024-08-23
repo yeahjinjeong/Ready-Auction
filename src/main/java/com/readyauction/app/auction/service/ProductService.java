@@ -147,9 +147,12 @@ public class ProductService {
     }
 
     public ProductDto startWinnerProcess(String email, WinnerReqDto winnerReqDto) {
+        //유저 조회
         Long userId = getUserIdFromRequest(email);
+        // 상품 검색
         Product product = findProductById(winnerReqDto.getProductId());
-
+        //10퍼 계산하는 코드
+        // 맴버아이디가 판매자와 다른지, 이미 상품에 낙찰자가 존재하는지 유효성 검사
         if(userId.equals(product.getMemberId())) {
             throw new IllegalStateException("Seller can't start bid for product with ID: " + winnerReqDto.getProductId());
         }
