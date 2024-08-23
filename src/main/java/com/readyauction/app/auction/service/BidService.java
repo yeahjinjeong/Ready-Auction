@@ -133,12 +133,16 @@ public class BidService {
 
     public BidResDto startBid(String email, BidDto bidDto) {
         try {
+            //유저 조회
             Long userId = memberService.findMemberByEmail(email).getId();
+
+            //상품 조회
             Product product = productService.findById(bidDto.getProductId())
                     .orElseThrow(() -> new EntityNotFoundException("Product not found with ID: " + bidDto.getProductId()));
-
+            //해당 상품이 입찰 할 수 있는 조건들을 잘 지키고 있는지 유효성 검사
             validateBid(userId, product, bidDto);
 
+            //입찰 로직 시작
             return processBid(userId, product, bidDto);
 
         } catch (Exception e) {
@@ -161,11 +165,14 @@ public class BidService {
     }
 
     private BidResDto processBid(Long userId, Product product, BidDto bidDto) {
+        // 상품이 거래되고 있는중이다. (입찰이 존재한다)
         product.setAuctionStatus(AuctionStatus.PROGRESS);
 
+        // 입찰가가 즉시구매가면 즉시 낙찰로 처리
         if (product.getImmediatePrice().equals(bidDto.getBidPrice())) {
             return handleImmediatePurchase(userId, product, bidDto);
         } else {
+            // 정상적인 입찰
             return handleStandardBid(userId, product, bidDto);
         }
     }
@@ -187,6 +194,7 @@ public class BidService {
         return createBidResDto(product.getImmediatePrice(), BidStatus.ACCEPTED, Timestamp.from(Instant.now()));
     }
 
+    // 입찰이 존재하면 update, 없으면 create
     private BidResDto handleStandardBid(Long userId, Product product, BidDto bidDto) {
         Integer currentPrice = updateBidPrice(product, bidDto.getBidPrice());
 
@@ -305,7 +313,9 @@ public class BidService {
     public Bid findTopByProductIdOrderByMyPriceDesc(Long id) {
         return bidRepository.findTopByProductIdOrderByMyPriceDesc(id).orElse(null);
     }
-
+    public Bid findByProductIdAndMemberId(Long productId, Long memberId) {
+        return bidRepository.findByMemberIdAndProductId(memberId,productId).orElse(null);
+    }
     /** 지영 - 마이페이지 경매 등록 내역 조회 **/
 
     // 유찰 (auctionStatus가 END이고, 해당 상품에 대해 입찰 내역이 없는 경우)
