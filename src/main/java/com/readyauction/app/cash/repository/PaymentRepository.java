@@ -20,7 +20,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("UPDATE Payment p SET p.status = 'ROLLBACK' WHERE p.productId = :productId AND p.category = :category AND p.status = :status")
     int updateStatusToRollbackByProductIdAndCategory(@Param("productId") Long productId, @Param("category") PaymentCategory category, @Param("status") PaymentStatus status);
 
-    Optional<List<Payment>> findByProductIdAndMemberIdAndCategoryAndStatusOrStatus(Long productId,Long memberId,PaymentCategory category, PaymentStatus status, PaymentStatus status2);
+    Optional<List<Payment>> findByProductIdAndMemberIdAndCategory(Long productId,Long memberId,PaymentCategory category);
     Optional<List<Payment>> findByProductIdAndMemberIdAndCategoryNotAndStatusOrStatus(Long productId,Long memberId,PaymentCategory category, PaymentStatus status, PaymentStatus status2);
     Optional<List<Payment>> findByProductIdAndStatus(Long productId, PaymentStatus status);
 
