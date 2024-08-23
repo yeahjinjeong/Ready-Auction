@@ -314,6 +314,7 @@
               <th scope="col">Bid Status</th>
               <th scope="col">My price</th>
               <th scope="col">Bid Time</th>
+              <th scope="col">Payment</th>
              </tr>
              </thead>
              <tbody>
@@ -322,6 +323,16 @@
               <td th:text="${bid.bidStatus}"></td>
               <td class="price" th:text="${bid.myPrice}"></td>
               <td th:text="${#dates.format(bid.bidTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              <td>
+               <a th:if="${isWinnerConfirmedMap[bid.product.id]}"
+                  th:href="@{/cash/payment/{productId}(productId=${bid.product.id})}"
+                  class="btn btn-primary">
+                결제
+               </a>
+               <span th:unless="${isWinnerConfirmedMap[bid.product.id]}" class="btn btn-secondary">
+                결제 완료
+               </span>
+              </td>
              </tr>
              </tbody>
             </table>

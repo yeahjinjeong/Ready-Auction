@@ -6,6 +6,51 @@
 <head>
     <style>
         /* 추가 스타일을 원한다면 여기에 작성하세요 */
+        /* 신고하기 버튼과 드롭다운 스타일 */
+        .report-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .report-btn {
+            background-color: #f44336; /* 빨간색 버튼 */
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .report-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 200px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 5px;
+        }
+
+        .report-dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .report-dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .report-dropdown:hover .report-dropdown-content {
+            display: block;
+        }
+
+        .report-dropdown:hover .report-btn {
+            background-color: #d32f2f;
+        }
         .swiper-container {
             width: 80%;
             max-width: 600px;
@@ -407,12 +452,21 @@
                         }
                     </script>
 
+                    <div class="report-dropdown" style="position: relative; text-align: right; margin-bottom: 5px;">
+                        <button class="report-btn">신고하기</button>
+                        <div class="report-dropdown-content" style="position: absolute; right: 0; display: none; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1;">
+                            <a href="#" class="report-option" data-value="부적절한 내용">부적절한 내용</a>
+                            <a href="#" class="report-option" data-value="허위 정보">허위 정보</a>
+                            <a href="#" class="report-option" data-value="기타">기타</a>
+                        </div>
+                    </div>
+
                     <!-- 이미지 리스트 아래 작은 이미지 표시 부분 -->
-                    <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">
-                        <li class="nav-item">
-                            <!-- 작은 이미지 리스트를 추가할 수 있습니다. -->
-                        </li>
-                    </ul>
+<!--                    <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">-->
+<!--                        <li class="nav-item">-->
+<!--                            &lt;!&ndash; 작은 이미지 리스트를 추가할 수 있습니다. &ndash;&gt;-->
+<!--                        </li>-->
+<!--                    </ul>-->
                 </div>
                 <div class="col-lg-6">
                     <div class="widget-right-area">
@@ -436,6 +490,60 @@
                                     <span class="description" th:text="${productDetail.description}">상품 설명</span></li>
                             </ul>
                         </div>
+                        <script>
+                            // Dropdown toggle
+                            document.querySelector('.report-btn').addEventListener('click', function() {
+                                const dropdown = document.querySelector('.report-dropdown-content');
+                                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                            });
+
+                            // Handling the click event on report options
+                            // 신고 옵션을 클릭했을 때 처리
+                            document.querySelectorAll(".report-option").forEach(option => {
+                                option.addEventListener("click", function(event) {
+                                    const productId = document.getElementById('productId').value;
+
+                                    event.preventDefault(); // 기본 동작(링크 클릭)을 막음
+                                    const reportValue = this.getAttribute("data-value");
+                                    const ProductReportDto ={
+                                        productId : productId,
+                                        reportReason : reportValue,
+                                        userId : null
+                                    }
+                                    // AJAX 요청으로 서버에 신고 정보 전송
+                                    fetch('[[@{/report/save}]]', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                           'X-CSRF-TOKEN': '${_csrf.token}' // 필요에 따라 CSRF 토큰 추가
+                                        },
+                                        body: JSON.stringify(ProductReportDto)
+                                    })
+                                        .then(response => {
+                                            if (!response.ok) {
+                                                throw new Error('Network response was not ok');
+                                            }
+                                            return response.text(); // JSON이 아닌 텍스트 응답 처리
+                                        })
+                                        .then(data => {
+                                            alert(data); // 성공 메시지
+                                            // 추가로 필요한 처리가 있으면 여기에 작성
+                                        })
+                                        .catch(error => {
+                                            console.error("신고 처리 중 오류 발생:", error);
+                                        });
+                                });
+                            });
+
+                            // Hide dropdown if clicked outside
+                            document.addEventListener('click', function(event) {
+                                const dropdown = document.querySelector('.report-dropdown-content');
+                                if (!event.target.closest('.report-dropdown')) {
+                                    dropdown.style.display = 'none';
+                                }
+                            });
+                        </script>
+
                         <div class="single-widget">
                             <form class="widget-form" id="bidForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">

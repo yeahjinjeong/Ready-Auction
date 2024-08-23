@@ -32,6 +32,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findAllByReceiverAccountId(@Param("accountId") Long accountId);
 
     /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
+
+    // 거래 완료 (payment의 status가 COMPLETED인 경우)
     @Query("SELECT p.productId FROM Payment p WHERE p.status = :status AND p.memberId = :memberId")
     List<Long> findCompletedProductIdsByMemberId(Long memberId, PaymentStatus status);
 
