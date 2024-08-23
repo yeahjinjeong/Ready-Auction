@@ -322,6 +322,7 @@
                                         <p>${message}</p>
                                         ${status == 0 ? '<span>1</span>' : ''}<span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
                                     </div>`)
+
                                 } else if(chatRoomId == $chatRoomId && senderId != $memberId) {
                                     // 받았을 때 읽음 처리
                                     $.ajax({
@@ -344,12 +345,17 @@
                                             </div>
                                         </div>
                                     </div>`)
+
                                 } else { // 챗룸아이디가 다르면 받은 메시지의 챗룸아이디 배지 찾아서 +1 해라
                                     const badge = document.querySelector(`.badge[data-chat-room-id="${chatRoomId}"]`);
                                     if (badge) {
                                         badge.textContent = Number(badge.textContent) + 1; // 메시지 개수 삽입
                                     }
                                 }
+                                // 최신 메시지로 스크롤
+                                window.scrollTo(0, document.body.scrollHeight);
+                                $container.scrollTop = $container.scrollHeight;
+
                                 // 채팅방 목록의 마지막 메시지도 바로바로 바뀌게 한다.
                                 const lastMessage = document.querySelector(`.last_message[data-chat-room-id="${chatRoomId}"]`);
                                 lastMessage.textContent = message;
@@ -364,6 +370,7 @@
     $(document).ready(function() {
         // 페이지가 로드되면 첫 번째 채팅방을 자동으로 클릭
         $('.chat_list').first().trigger('click');
+        window.scrollTo(0, document.body.scrollHeight);
     });
 
     function displayChatProfiles(infos, currentMemberId) {
@@ -479,13 +486,6 @@
                     <div class="recent_heading">
                         <h4>Recent</h4>
                     </div>
-                    <div class="srch_bar">
-                    <div class="stylish-input-group">
-                            <input type="text" class="search-bar"  placeholder="Search" >
-                            <span class="input-group-addon">
-                <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
-                </span> </div>
-                    </div>
                 </div>
                 <div class="inbox_chat">
 <!--                    <div class="chat_list active_chat">-->
@@ -566,7 +566,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     const $message = document.querySelector("#message");
-    document.querySelector("#send").addEventListener('click', (e) => {
+    const $messageBtn = document.querySelector("#send");
+
+
+    // 입력 필드에 키보드 이벤트 리스너를 추가합니다.
+    $message.addEventListener('keyup', function(event) {
+        if (event.key === 'Enter') { // 엔터 키가 눌렸는지 확인합니다.
+            if ($message.value.trim() !== '') { // 입력 필드가 비어있지 않은지 확인합니다.
+                $messageBtn.click(); // 버튼 클릭 이벤트를 강제로 발생시킵니다.
+            }
+        }
+    });
+
+    $messageBtn.addEventListener('click', (e) => {
         const message = {
             id : null,
             chatRoomId: $chatRoomId,
@@ -584,6 +596,7 @@
         $message.value = "";
         // window.location.href(`/sub/${$chatRoomId}`);
     });
+
 </script>
 </body>
 </html>
