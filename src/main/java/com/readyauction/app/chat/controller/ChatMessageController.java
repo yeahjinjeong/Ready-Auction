@@ -7,6 +7,7 @@ import com.readyauction.app.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +24,8 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 public class ChatMessageController {
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
     private final ChatService chatService;
 
     @GetMapping("/api/authentication/member")
@@ -55,10 +58,15 @@ public class ChatMessageController {
     // chatRoomId의 모든 메시지들의 상태를 1 (읽음)으로 바꾼다
     @PostMapping("/chat/message/{chatRoomId}/read")
     public void updateMessages(
-            @PathVariable Long chatRoomId
+            @PathVariable Long chatRoomId,
+            @AuthenticationPrincipal AuthPrincipal principal
     ) {
         log.info("읽었냐고요!");
         chatService.updateMessageStatus(chatRoomId);
+        // 내가 아닌 상대 멤버 찾기
+        Long memberId = chatService.findOppositeMemberIdByChatRoomId(chatRoomId, principal.getMember().getId());
+        String userName = chatService.findReceiverEmailByMemberId(memberId);
+        simpMessagingTemplate.convertAndSendToUser(userName, "/sub", new MessageDto(null, chatRoomId, null, "entry", null, null, null, null));
     }
 
     @GetMapping("chat/profile/{productId}")

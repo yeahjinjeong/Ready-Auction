@@ -269,8 +269,8 @@
                     badge.textContent = ''; // 메시지 개수 삽입
                 }
 
-                console.log(productId);
-                console.log($chatRoomId);
+                console.log("productId : " + productId);
+                console.log("chatRoomId : " + $chatRoomId);
 
                 $.ajax({
                     url : `[[@{/chat/profile/${productId}}]]`,
@@ -309,56 +309,80 @@
                             (frame) => {
                                 console.log(url + "을 구독하였습니다");
                                 //특정 채팅방 안읽은 문자 갯수 ui업데이트 메서드
-                                document.querySelector(`.chat_list[data-chat-room-id="${$chatRoomId}"]`).click();
+                                // document.querySelector(`.chat_list[data-chat-room-id="${$chatRoomId}"]`).click();
                                 //수신한 채팅이 일반채팅이 아닌 채팅방 입장알림 이면 내가 보낸 문자들의 안읽음 처리를 => 읽음처리로 수정 ui 업데이트 메서드
 
                                 const data = JSON.parse(frame.body);
                                 const $container = document.querySelector("#target");
                                 const {chatMsgId, chatRoomId, senderId, message, createdAt, status} = data;
-                                if (chatRoomId == $chatRoomId && senderId == $memberId) { // 만약 내가 보낸 거면
-                                    $container.insertAdjacentHTML('beforeend',
-                                    `<div class="outgoing_msg">
-                                        <div class="sent_msg">
-                                        <p>${message}</p>
-                                        ${status == 0 ? '<span>1</span>' : ''}<span class="time_date">${new Date(createdAt).toLocaleString()}</span></div>
-                                    </div>`)
 
-                                } else if(chatRoomId == $chatRoomId && senderId != $memberId) {
-                                    // 받았을 때 읽음 처리
-                                    $.ajax({
-                                        url : `[[@{/chat/message/${$chatRoomId}/read}]]`,
-                                        method : 'post', // 기본값
-                                        dataType : 'json', // 기대하는 응답 MIME
-                                        data: { anotherMemberId: senderId },
-                                        success: function(response) {
-                                            console.log('요청 성공:', response);
-                                        },
-                                    })
+                                // 메시지가 현재 채팅방에 관련된 경우
+                                if (chatRoomId == $chatRoomId) {
 
-                                    $container.insertAdjacentHTML('beforeend',
-                                    `<div class="incoming_msg">
-<!--                                        <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>-->
-                                        <div class="received_msg">
-                                            <div class="received_withd_msg">
-                                                <p>${message}</p>
-                                                <span class="time_date">${new Date(createdAt).toLocaleString()}</span>
-                                            </div>
-                                        </div>
-                                    </div>`)
+                                    // 'entry' 메시지인 경우, 채팅방의 읽음 상태를 초기화
+                                    if (message === "entry") {
+                                        document.querySelectorAll(".chat_read").forEach((c) => c.textContent = '');
+                                    } else {
+                                        // 메시지를 보낸 사람의 ID가 현재 사용자와 같은 경우
+                                        if (senderId == $memberId) {
+                                            $container.insertAdjacentHTML('beforeend',
+                                                `<div class="outgoing_msg">
+                                                    <div class="sent_msg">
+                                                        <p>${message}</p>
+                                                        ${status == 0 ? '<span class="chat_read">1</span>' : ''}<span class="time_date">${new Date(createdAt).toLocaleString()}</span>
+                                                    </div>
+                                                </div>`
+                                            );
+                                        } else {
+                                            // 메시지를 받은 경우
+                                            document.querySelectorAll(".chat_read").forEach((c) => c.textContent = '');
+                                            $.ajax({
+                                                url: `[[@{/chat/message/${$chatRoomId}/read}]]`,
+                                                method: 'post',
+                                                dataType: 'json',
+                                                data: { anotherMemberId: senderId },
+                                                success: function(response) {
+                                                    console.log('요청 성공:', response);
+                                                },
+                                            });
 
-                                } else { // 챗룸아이디가 다르면 받은 메시지의 챗룸아이디 배지 찾아서 +1 해라
-                                    const badge = document.querySelector(`.badge[data-chat-room-id="${chatRoomId}"]`);
-                                    if (badge) {
-                                        badge.textContent = Number(badge.textContent) + 1; // 메시지 개수 삽입
+                                            $container.insertAdjacentHTML('beforeend',
+                                                `<div class="incoming_msg">
+                                                    <div class="received_msg">
+                                                        <div class="received_withd_msg">
+                                                            <p>${message}</p>
+                                                            <span class="time_date">${new Date(createdAt).toLocaleString()}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>`
+                                            );
+                                        }
+
+                                        // 채팅방 목록의 마지막 메시지 업데이트
+                                        const lastMessage = document.querySelector(`.last_message[data-chat-room-id="${chatRoomId}"]`);
+                                        if (lastMessage) {
+                                            lastMessage.textContent = message;
+                                        }
+                                    }
+
+                                    // 최신 메시지로 스크롤
+                                    window.scrollTo(0, document.body.scrollHeight);
+                                    $container.scrollTop = $container.scrollHeight;
+
+                                } else {
+                                    // 다른 채팅방에서 메시지를 받은 경우
+                                    // 채팅방 목록의 마지막 메시지 업데이트
+                                    if (message !== "entry") {
+                                        const badge = document.querySelector(`.badge[data-chat-room-id="${chatRoomId}"]`);
+                                        if (badge) {
+                                            badge.textContent = Number(badge.textContent) + 1; // 메시지 개수 삽입
+                                        }
+                                        const lastMessage = document.querySelector(`.last_message[data-chat-room-id="${chatRoomId}"]`);
+                                        if (lastMessage) {
+                                            lastMessage.textContent = message;
+                                        }
                                     }
                                 }
-                                // 최신 메시지로 스크롤
-                                window.scrollTo(0, document.body.scrollHeight);
-                                $container.scrollTop = $container.scrollHeight;
-
-                                // 채팅방 목록의 마지막 메시지도 바로바로 바뀌게 한다.
-                                const lastMessage = document.querySelector(`.last_message[data-chat-room-id="${chatRoomId}"]`);
-                                lastMessage.textContent = message;
                             }
                         )
                     }
@@ -467,7 +491,7 @@
                     <div class="${isIncoming ? 'received_msg' : ''}">
                         <div class="${isIncoming ? 'received_withd_msg' : ''}">
                             <p>${msg.message}</p>
-                            ${isIncoming ? '' : msg.status == 0 ? '<span>1</span>' : ''}
+                            ${isIncoming ? '' : msg.status == 0 ? '<span class="chat_read">1</span>' : ''}
                             <span class="time_date">${dateTimeFormat}</span>
                         </div>
                     </div>
@@ -521,35 +545,9 @@
             </div>
             <div class="mesgs">
                 <div class="card text-center" id="profile-target">
-                    <div class="card-header">
-                        Featured
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">Special title treatment</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                    <div class="card-footer text-body-secondary">
-                        2 days ago
-                    </div>
                 </div>
                 &nbsp;&nbsp;
                 <div class="msg_history" id="target">
-                    <div class="incoming_msg">
-                        <div class="incoming_msg_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                        <div class="received_msg">
-                            <div class="received_withd_msg">
-                                <p>Test which is a new approach to have all
-                                    solutions</p>
-                                <span class="time_date"> 11:01 AM    |    June 9</span></div>
-                        </div>
-                    </div>
-                    <div class="outgoing_msg">
-                        <div class="sent_msg">
-                            <p>Test which is a new approach to have all
-                                solutions</p>
-                            <span class="time_date"> 11:01 AM    |    June 9</span> </div>
-                    </div>
                 </div>
                 <div class="type_msg">
                     <div class="input_msg_write">
@@ -567,7 +565,6 @@
 <script>
     const $message = document.querySelector("#message");
     const $messageBtn = document.querySelector("#send");
-
 
     // 입력 필드에 키보드 이벤트 리스너를 추가합니다.
     $message.addEventListener('keyup', function(event) {
