@@ -43,12 +43,9 @@ public class MypageController {
     // 마이페이지
     @GetMapping("")
     public String getMyPage(Model model) {
-        log.info("GET /mypage");
-
         // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName(); // 로그인한 이메일
-        System.out.println("currentUserName : " + currentUserName);
 
         try {
             // MemberDto 가져오기
@@ -77,7 +74,9 @@ public class MypageController {
             // 낙찰 내역
             List<Bid> winningBids = bidService.getWinningBids(memberDto.getId());
 
+            // 결제 전 결제하기 버튼
             Map<Long, Boolean> isWinnerConfirmedMap = new HashMap<>();
+            // 결제 완료 - 결제하기 버튼 사라짐
             Map<Long, Boolean> isPaymentCompleteMap = new HashMap<>();
 
             for (Bid bid : winningBids) {
@@ -116,10 +115,8 @@ public class MypageController {
     }
     
     // 프로필 수정
-    @GetMapping("/profile-update")
+    @GetMapping("/profile/update")
     public String updateProfile(Model model) {
-        log.info("GET /profile-update");
-
         // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
@@ -132,11 +129,10 @@ public class MypageController {
     }
 
     // 프로필 수정
-    @PostMapping("/profile-update")
+    @PostMapping("/profile/update")
     public String updateProfile(@RequestParam("nickname") String nickname,
                                 @RequestParam("image") MultipartFile image,
                                 @RequestParam(value="isRemovedImage") boolean isRemovedImage) {
-        log.info("POST /profile-update");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
 
@@ -151,7 +147,7 @@ public class MypageController {
     }
 
     // 회원정보 수정
-    @GetMapping("/userInfo-edit")
+    @GetMapping("/userInfo/edit")
     public String editUserInfo() {
         return "mypage/userInfo-edit";
     }

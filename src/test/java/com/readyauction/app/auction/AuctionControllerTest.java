@@ -53,7 +53,7 @@ public class AuctionControllerTest {
 
     @Test
     public void testSearchAuction() {
-        String url = "http://localhost:" + port + "/auction/auction";
+        String url = "http://localhost:" + port + "/auction";
 
         ResponseEntity<List<ProductDto>> response = restTemplate.exchange(
                 url,
