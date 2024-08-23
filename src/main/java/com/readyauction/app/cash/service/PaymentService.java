@@ -142,13 +142,13 @@ public class PaymentService {
     public PaymentResDto createPayment(String email, PaymentReqDto paymentReqDto) {
         try {
             // 보낸이 조회
-
-            Optional<List<Payment>> payments = paymentRepository.findByProductIdAndMemberIdAndCategoryNotAndStatusOrStatus(
+// 1        PaymentCategory.BID_COMPLETE이고,  PaymentStatus.PROCESSING이거나,PaymentStatus.COMPLETED인게 있으면 이미 결제가 진행했던거다.
+            System.out.println(paymentReqDto.getProductId() +"프로덕트 아이디");
+            Optional<List<Payment>> payments = paymentRepository.findByProductIdAndMemberIdAndCategory(
                     paymentReqDto.getProductId(),
                     memberService.findByEmail(email).getId(),
-                    PaymentCategory.BID,
-                    PaymentStatus.PROCESSING,
-                    PaymentStatus.COMPLETED);
+                    PaymentCategory.BID_COMPLETE);
+
             if(payments.isPresent() && !payments.get().isEmpty()){
                 throw new EntityNotFoundException("Payment already exists");
             };
@@ -195,11 +195,13 @@ public class PaymentService {
                     .receiverAccount(receiverAccount)
                     .memberId(senderId)
                     .status(PaymentStatus.PROCESSING)
-                    .category(paymentReqDto.getCategory())
+                    .category(PaymentCategory.BID_COMPLETE)
                     .build();
 
             // Payment 저장
             Payment savedPayment = paymentRepository.save(payment);
+
+            //비 낙찰자들 돈 롤백
             rollbackPayment(product.getId());
             if (savedPayment == null) {
                 throw new RuntimeException("Failed to save the payment");
@@ -229,7 +231,8 @@ public class PaymentService {
             if (senderId == null) {
                 throw new EntityNotFoundException("Sender not found for email: " + email);
             }
-            Payment payment = paymentRepository.findByMemberIdAndProductIdAndCategory(senderId,paymentReqDto.getProductId(), PaymentCategory.BID_COMPLETE).orElseThrow();
+            // 구매완료가 이미 됐나 확인
+            Payment payment = paymentRepository.findByMemberIdAndProductIdAndCategory(senderId,paymentReqDto.getProductId(), PaymentCategory.BID_COMPLETE).orElse(null);
             if(payment.getStatus() == PaymentStatus.COMPLETED) {
                 throw new EntityNotFoundException("Payment is already completed");
             }
