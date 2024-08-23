@@ -26,7 +26,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-    private final AccountService accountService;
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
 
