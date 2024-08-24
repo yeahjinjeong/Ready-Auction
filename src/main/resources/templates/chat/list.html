@@ -187,7 +187,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script>
     // 채팅방에 안 읽은 메시지 개수 띄우기
-    fetch('[[@{/chat/list/count}]]')
+    fetch('[[@{/chat/list/unread}]]')
         .then(response => response.json())
         .then(data => {
             // 데이터 순회하며 매핑
@@ -203,6 +203,7 @@
         })
         .catch(error => console.error('Error fetching unread message counts:', error));
 
+    // 채팅방에 경매 상품 사진 띄우기
     fetch('[[@{/chat/list/image}]]')
         .then(response => response.json())
         .then(data => {
@@ -213,7 +214,7 @@
                 const chatRoomImage = document.querySelector(`.chat_img[data-product-id="${image.productId}"]`);
                 if (chatRoomImage) {
                     console.log(image.image);
-                    // chatRoomImage.innerHTML = ''; // 메시지 개수 삽입
+                    chatRoomImage.innerHTML = ''; // 일단 있는 이미지 지우고
                     chatRoomImage.insertAdjacentHTML('beforeend',
                         ` <img src="${image.image}" alt=""> `)
                 }
@@ -272,6 +273,7 @@
                 console.log("productId : " + productId);
                 console.log("chatRoomId : " + $chatRoomId);
 
+                // 채팅방 상품 정보 불러오기
                 $.ajax({
                     url : `[[@{/chat/profile/${productId}}]]`,
                     method : 'get', // 기본값
@@ -285,7 +287,7 @@
                     }
                 })
 
-                // location.href = `[[@{/chat/${productId}}]]`;
+                // 채팅 내역 불러오기
                 $.ajax({
                     url : `[[@{/chat/message/${$chatRoomId}}]]`,
                     method : 'get', // 기본값
@@ -338,7 +340,7 @@
                                             document.querySelectorAll(".chat_read").forEach((c) => c.textContent = '');
                                             $.ajax({
                                                 url: `[[@{/chat/message/${$chatRoomId}/read}]]`,
-                                                method: 'post',
+                                                method: 'patch',
                                                 dataType: 'json',
                                                 data: { anotherMemberId: senderId },
                                                 success: function(response) {

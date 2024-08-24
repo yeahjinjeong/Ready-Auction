@@ -48,7 +48,7 @@ public class ChatController {
     }
 
     @ResponseBody
-    @PostMapping("/chat/create")
+    @PostMapping("/chat/room")
     public ResponseEntity<?> createChatRoom(@RequestBody Long productId) {
         log.info("productId : {}", productId);
         chatService.saveChatRooms(productId);
