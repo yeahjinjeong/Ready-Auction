@@ -67,10 +67,8 @@ public class CashController {
     /** 캐시 **/
 
     // 캐시 충전
-    @GetMapping("/cash-charge")
+    @GetMapping("/charge")
     public String charge(Model model) {
-        log.info("GET /cash-charge");
-
         // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
@@ -86,10 +84,8 @@ public class CashController {
     }
 
     // 캐시 충전
-    @PostMapping("/cash-charge")
+    @PostMapping("/charge")
     public String chargeCash(@ModelAttribute Cash cash, RedirectAttributes redirectAttributes) {
-        log.info("POST /cash-charge");
-
         // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
@@ -108,10 +104,8 @@ public class CashController {
     }
 
     // 캐시 환불
-    @GetMapping("/cash-withdrawal")
+    @GetMapping("/withdrawal")
     public String refund(Model model) {
-        log.info("GET /cash-withdrawal");
-
         // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
@@ -127,10 +121,8 @@ public class CashController {
     }
 
     // 캐시 환불
-    @PostMapping("/cash-withdrawal")
+    @PostMapping("/withdrawal")
     public String refundCash(@ModelAttribute Cash cash, RedirectAttributes redirectAttributes, @RequestParam(value="withdrawal") Integer withdrawal) {
-        log.info("POST /cash-withdrawal");
-
         // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();

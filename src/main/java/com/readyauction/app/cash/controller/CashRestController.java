@@ -27,7 +27,7 @@ public class CashRestController {
     public ResponseEntity<PaymentResDto> createAuction(@RequestBody PaymentReqDto paymentReqDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        paymentReqDto.setCategory(PaymentCategory.BID_COMPLETE);
+        paymentReqDto.setCategory(PaymentCategory.BID);
         PaymentResDto createPayment = paymentService.createPayment(email, paymentReqDto);
 
 

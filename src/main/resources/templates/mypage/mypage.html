@@ -72,7 +72,7 @@
             <li><span>받은 매너 평가 :</span><span text=""></span></li>
            </ul>
            <div style="text-align: right">
-            <a th:href="@{/mypage/profile-update}" class="alpha-btn-md-dark">Edit</a>
+            <a th:href="@{/mypage/profile/update}" class="alpha-btn-md-dark">Edit</a>
            </div>
           </div>
          </div>
@@ -90,8 +90,8 @@
           <li><label>잔액 :</label><span id="cash"></span></li>
          </ul>
          <div style="text-align: right">
-          <a th:href="@{/cash/cash-charge}" class="alpha-btn-md-dark">충전</a>
-          <a th:href="@{/cash/cash-withdrawal}" class="alpha-btn-md-dark">출금</a>
+          <a th:href="@{/cash/charge}" class="alpha-btn-md-dark">충전</a>
+          <a th:href="@{/cash/withdrawal}" class="alpha-btn-md-dark">출금</a>
          </div>
         </div>
 
@@ -117,11 +117,10 @@
              <table class="table table-striped">
               <thead class="table-dark">
               <tr>
-               <th scope="col">Type</th>
-               <th scope="col">Status</th>
-               <th scope="col">Product Name</th>
-               <th scope="col">Amount</th>
-               <th scope="col">Date</th>
+               <th scope="col" colspan="2">구분</th>
+               <th scope="col">상품명</th>
+               <th scope="col">금액</th>
+               <th scope="col">일시</th>
               </tr>
               </thead>
               <tbody>
@@ -137,7 +136,7 @@
                       class="amount">
                 </span>
                </td>
-               <td th:text="${#dates.format(transaction.date, 'yyyy. MM. dd. HH: mm : ss')}"></td>
+               <td th:text="${#dates.format(transaction.date, 'yyyy년 M월 d일 HH:mm')}"></td>
               </tr>
               </tbody>
              </table>
@@ -150,11 +149,10 @@
              <table class="table table-striped">
               <thead class="table-dark">
               <tr>
-               <th scope="col">Type</th>
-               <th scope="col">Status</th>
-               <th scope="col">Product Name</th>
-               <th scope="col">Amount</th>
-               <th scope="col">Date</th>
+               <th scope="col" colspan="2">구분</th>
+               <th scope="col">상품명</th>
+               <th scope="col">금액</th>
+               <th scope="col">일시</th>
               </tr>
               </thead>
               <tbody>
@@ -171,7 +169,7 @@
                       class="amount">
                 </span>
                </td>
-               <td th:text="${#dates.format(transaction.date, 'yyyy. MM. dd. HH: mm : ss')}"></td>
+               <td th:text="${#dates.format(transaction.date, 'yyyy년 M월 d일 HH:mm')}"></td>
               </tr>
               </tbody>
              </table>
@@ -184,11 +182,10 @@
              <table class="table table-striped">
               <thead class="table-dark">
               <tr>
-               <th scope="col">Type</th>
-               <th scope="col">Status</th>
-               <th scope="col">Product Name</th>
-               <th scope="col">Amount</th>
-               <th scope="col">Date</th>
+               <th scope="col" colspan="2">구분</th>
+               <th scope="col">상품명</th>
+               <th scope="col">금액</th>
+               <th scope="col">일시</th>
               </tr>
               </thead>
               <tbody>
@@ -205,7 +202,7 @@
                       class="amount">
                 </span>
                </td>
-               <td th:text="${#dates.format(transaction.date, 'yyyy. MM. dd. HH: mm : ss')}"></td>
+               <td th:text="${#dates.format(transaction.date, 'yyyy년 M월 d일 HH:mm')}"></td>
               </tr>
               </tbody>
              </table>
@@ -285,18 +282,24 @@
             <table class="table table-striped">
              <thead class="table-dark">
               <tr>
-               <th scope="col">Product Name</th>
-               <th scope="col">Bid Status</th>
-               <th scope="col">My price</th>
-               <th scope="col">Bid Time</th>
+               <th scope="col">상품명</th>
+<!--               <th scope="col">Bid Status</th>-->
+               <th scope="col">나의 입찰가</th>
+               <th scope="col">현재 입찰가</th>
+               <th scope="col">시작일</th>
+               <th scope="col">마감일</th>
               </tr>
              </thead>
              <tbody>
               <tr th:each="bid : ${biddingBids}">
-               <td th:text="${bid.product.name}"></td>
-               <td th:text="${bid.bidStatus}"></td>
+               <td>
+                <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
+               </td>
+<!--               <td th:text="${bid.bidStatus}"></td>-->
                <td class="price" th:text="${bid.myPrice}"></td>
-               <td th:text="${#dates.format(bid.bidTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+               <td class="price" th:text="${bid.product.currentPrice}"></td>
+               <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일 HH:mm')}"></td>
+               <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일 HH:mm')}"></td>
               </tr>
              </tbody>
             </table>
@@ -310,19 +313,23 @@
              <thead class="table-dark">
              <tr>
              <tr>
-              <th scope="col">Product Name</th>
-              <th scope="col">Bid Status</th>
-              <th scope="col">My price</th>
-              <th scope="col">Bid Time</th>
-              <th scope="col">Payment</th>
+              <th scope="col">상품명</th>
+<!--              <th scope="col">Bid Status</th>-->
+              <th scope="col">나의 입찰가</th>
+              <th scope="col">시작일</th>
+              <th scope="col">마감일</th>
+              <th scope="col">결제</th>
              </tr>
              </thead>
              <tbody>
              <tr th:each="bid : ${winningBids}">
-              <td th:text="${bid.product.name}"></td>
-              <td th:text="${bid.bidStatus}"></td>
+              <td>
+               <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
+              </td>
+<!--              <td th:text="${bid.bidStatus}"></td>-->
               <td class="price" th:text="${bid.myPrice}"></td>
-              <td th:text="${#dates.format(bid.bidTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일 HH:mm')}"></td>
+              <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일 HH:mm')}"></td>
               <td>
                <a th:if="${isWinnerConfirmedMap[bid.product.id]}"
                   th:href="@{/cash/payment/{productId}(productId=${bid.product.id})}"
@@ -345,18 +352,24 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-              <th scope="col">Product Name</th>
-              <th scope="col">Bid Status</th>
-              <th scope="col">My price</th>
-              <th scope="col">Bid Time</th>
+              <th scope="col">상품명</th>
+<!--               <th scope="col">Bid Status</th>-->
+              <th scope="col">나의 입찰가</th>
+              <th scope="col">현재 입찰가</th>
+              <th scope="col">시작일</th>
+              <th scope="col">마감일</th>
              </tr>
              </thead>
              <tbody>
              <tr th:each="bid : ${losingBids}">
-              <td th:text="${bid.product.name}"></td>
-              <td th:text="${bid.bidStatus}"></td>
+              <td>
+               <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
+              </td>
+<!--              <td th:text="${bid.bidStatus}"></td>-->
               <td class="price" th:text="${bid.myPrice}"></td>
-              <td th:text="${#dates.format(bid.bidTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              <td class="price" th:text="${bid.product.currentPrice}"></td>
+              <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일 HH:mm')}"></td>
+              <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일 HH:mm')}"></td>
              </tr>
              </tbody>
             </table>
