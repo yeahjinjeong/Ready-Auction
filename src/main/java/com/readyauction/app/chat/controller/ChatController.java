@@ -23,8 +23,8 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class ChatController {
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+//    @Autowired
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     private final ChatService chatService;
     @MessageMapping("{memberId}") // pub/{chatRoomId}
@@ -39,16 +39,16 @@ public class ChatController {
         chatService.saveMessages(messageDto);
         String userName = chatService.findReceiverEmailByMemberId(messageDto.getReceiverId());
         String memberEmail = chatService.findReceiverEmailByMemberId(memberId);
-        log.info("userName = {}", userName);
+        log.info("userName = {}", userName); // 상대방
         log.info("memberEmail = {}", memberEmail);
-        simpMessagingTemplate.convertAndSendToUser(userName, "/sub", messageDto);
+        simpMessagingTemplate.convertAndSendToUser(userName, "/sub", messageDto); // 상대방에게
 //        simpMessagingTemplate.convertAndSendToUser(userName, "/sub", messageDto);
-        simpMessagingTemplate.convertAndSendToUser(memberEmail, "/sub", messageDto);
+        simpMessagingTemplate.convertAndSendToUser(memberEmail, "/sub", messageDto); // 나에게
 //        return messageDto;
     }
 
     @ResponseBody
-    @PostMapping("/chat/create")
+    @PostMapping("/chat/room")
     public ResponseEntity<?> createChatRoom(@RequestBody Long productId) {
         log.info("productId : {}", productId);
         chatService.saveChatRooms(productId);
