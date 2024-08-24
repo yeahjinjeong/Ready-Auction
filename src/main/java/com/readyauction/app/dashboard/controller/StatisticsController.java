@@ -14,7 +14,7 @@ import java.util.List;
 
 @Controller
 @Slf4j
-@RequestMapping("dashboard")
+@RequestMapping("admin")
 public class StatisticsController {
 
     private final StatisticsService statisticsService;
@@ -30,7 +30,7 @@ public class StatisticsController {
         List<MemberStatisticsDto> memberStatistics = statisticsService.getMembersByStatus(UserStatus.active);
         model.addAttribute("memberStatistics", memberStatistics);
 
-        return "dashboard/dashboard";
+        return "admin/dashboard";
     }
 
 }

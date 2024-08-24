@@ -20,7 +20,7 @@ public class UserManagementController {
 
     private final UserManagementService userManagementService;
 
-    @GetMapping("/userManagement")
+    @GetMapping("/user-management")
     public String showUserManagementPage(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "15") int size,
@@ -32,6 +32,6 @@ public class UserManagementController {
         model.addAttribute("usersPage", usersPage); // Add the Page object to the model
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", usersPage.getTotalPages());
-        return "admin/userManagement"; // Return the template for user management
+        return "admin/user-management"; // Return the template for user management
     }
 }
