@@ -145,12 +145,12 @@
             <!-- Pagination -->
             <ul class="pagination pagination-style-one justify-content-center pt-50">
                 <li th:if="${products.hasPrevious()}" class="page-item page-arrow">
-                    <a class="page-link" th:href="@{/auction/auction(page=${products.number - 1})}"><i class="bi bi-arrow-left"></i></a>
+                    <a class="page-link" th:href="@{/auction(page=${products.number - 1})}"><i class="bi bi-arrow-left"></i></a>
                 </li>
 
                 <li th:each="pageNum : ${#numbers.sequence(1, products.totalPages)}"
                     th:classappend="${pageNum == products.number + 1} ? 'active'">
-                    <a class="page-link" th:href="@{/auction/auction(page=${pageNum - 1})}">[[${pageNum}]]</a>
+                    <a class="page-link" th:href="@{/auction(page=${pageNum - 1})}">[[${pageNum}]]</a>
                 </li>
 
                 <li th:if="${products.hasNext()}" class="page-item page-arrow">

@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    <form id="withdrawalForm" class="auction-winner-wrapper pt-110" th:action="@{/cash/cash-withdrawal}" method="post" enctype="multipart/form-data">
+    <form id="withdrawalForm" class="auction-winner-wrapper pt-110" th:action="@{/cash/withdrawal}" method="post" enctype="multipart/form-data">
         <div class="container">
             <div class="single-widget">
                 <div class="qsn-form">
@@ -43,12 +43,12 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            var cash = [[${accountDto.cash}]]; // Thymeleaf에서 값을 삽입
+            const cash = [[${accountDto.cash}]]; // Thymeleaf에서 값을 삽입
             document.getElementById('balance').textContent = formatNumber(cash) + '원';
         });
 
         document.getElementById('withdrawalForm').addEventListener('submit', function(event) {
-            var cash = [[${accountDto.cash}]];
+            const cash = [[${accountDto.cash}]];
             const withdrawal = parseFloat(document.getElementById('withdrawal').value);
 
             if (withdrawal > cash) {
