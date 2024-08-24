@@ -40,7 +40,6 @@ public class ProductService {
 
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
-    private final RedisLockService redisLockService;
 
     public List<Product> findAll(){
         return productRepository.findAll();
@@ -255,12 +254,7 @@ public class ProductService {
             // 제품을 저장
             Product savedProduct = productRepository.save(winnerDto.getProduct());
 
-            EmailMessage emailMessage = EmailMessage.builder()
-                    .to(email)
-                    .subject("Congratulations! You have won the auction.")
-                    .message("<html><head></head><body><div>" + productDto.getName() + " auction was won by you. Please visit our website to complete the payment.</div></body></html>")
-                    .build();
-            emailService.sendMail(emailMessage);
+
             if (savedProduct == null) {
                 throw new RuntimeException("Failed to save the product with the winner");
             }

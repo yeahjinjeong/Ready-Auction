@@ -87,14 +87,15 @@ public class BidService {
         return redisLockService.executeWithLock(lockKey, 30, 30, TimeUnit.SECONDS, () -> {
             Long userId = memberService.findByEmail(email).getId();
             if (!productService.findById(winnerReqDto.getProductId()).get().hasWinner()) {
-                PaymentReqDto paymentReqDto = PaymentReqDto.builder()
-                        .productId(winnerReqDto.getProductId())
-                        .payTime(winnerReqDto.getBuyTime())
-                        .amount(winnerReqDto.getBuyPrice() / 10)
-                        .category(PaymentCategory.BID)
-                        .build();
-
-                paymentService.createBidPayment(userId, paymentReqDto);
+                if(bidRepository.findByMemberIdAndProductId(userId, winnerReqDto.getProductId()).isEmpty()) {
+                    PaymentReqDto paymentReqDto = PaymentReqDto.builder()
+                            .productId(winnerReqDto.getProductId())
+                            .payTime(winnerReqDto.getBuyTime())
+                            .amount(winnerReqDto.getBuyPrice() / 10)
+                            .category(PaymentCategory.BID)
+                            .build();
+                    paymentService.createBidPayment(userId, paymentReqDto);
+                }
                 ProductDto productDto = productService.startWinnerProcess(email, winnerReqDto);
                 EmailMessage emailMessage = EmailMessage.builder()
                         .to(email)
