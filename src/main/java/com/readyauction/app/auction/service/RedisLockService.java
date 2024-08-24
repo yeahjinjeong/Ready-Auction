@@ -1,20 +1,11 @@
 package com.readyauction.app.auction.service;
 
-import com.readyauction.app.auction.dto.*;
-import com.readyauction.app.auction.entity.Product;
-import com.readyauction.app.cash.dto.PaymentReqDto;
-import com.readyauction.app.cash.entity.Payment;
-import com.readyauction.app.cash.entity.PaymentCategory;
-import com.readyauction.app.cash.service.PaymentService;
-import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -22,56 +13,37 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class RedisLockService {
 
-    private final PaymentService paymentService;
     private final RedissonClient redissonClient;
-    private final BidService bidService;
-    private final ProductService productService;
-    private final MemberService memberService;
-    public BidResDto bidLock(String email, BidDto bidDto){
-        final RLock lock = redissonClient.getLock(String.format("Product:productId:%d", bidDto.getProductId()));
-        try {
-            if (!lock.tryLock(10, 1, TimeUnit.SECONDS)) {
-                throw new RuntimeException("Redisson lock timeout");
-            }
-            // 비즈니스 로직을 콜백 함수로 처리
-            return bidService.startBid(email, bidDto);
 
+    /**
+     * Executes the given callback within a Redis lock.
+     *
+     * @param lockKey      the key for the lock
+     * @param waitTime     the maximum time to wait for the lock
+     * @param leaseTime    the time to hold the lock after granting it
+     * @param timeUnit     the time unit of the waitTime and leaseTime parameters
+     * @param callback     the callback function to execute within the lock
+     * @param <T>          the return type of the callback function
+     * @return the result of the callback function
+     */
+    public <T> T executeWithLock(String lockKey, long waitTime, long leaseTime, TimeUnit timeUnit, LockCallback<T> callback) {
+        final RLock lock = redissonClient.getLock(lockKey);
+        try {
+            if (!lock.tryLock(waitTime, leaseTime, timeUnit)) {
+                throw new RuntimeException("Redisson lock timeout for key: " + lockKey);
+            }
+            return callback.execute();
         } catch (Exception e) {
-            throw new RuntimeException("Error during operation: " + e.getMessage(), e);
+            throw new RuntimeException("Error during operation with lock: " + e.getMessage(), e);
         } finally {
             if (lock.isHeldByCurrentThread()) {
                 lock.unlock();
             }
         }
-
-    }
-    public ProductDto winnerLock(String email, WinnerReqDto winnerReqDto){
-        final RLock lock = redissonClient.getLock(String.format("Product:productId:%d", winnerReqDto.getProductId()));
-        try {
-            if (!lock.tryLock(10, 1, TimeUnit.SECONDS)) {
-                throw new RuntimeException("Redisson lock timeout");
-            }
-
-            PaymentReqDto paymentReqDto = PaymentReqDto.builder()
-                    .productId(winnerReqDto.getProductId())
-                    .payTime(winnerReqDto.getBuyTime())
-                    .amount(winnerReqDto.getBuyPrice()/10)
-                    .category(PaymentCategory.BID)
-                    .build();
-            // 이전에 입찰 내역이 없으면 즉시 낙찰 시에도 10퍼 미리결제
-            if(bidService.findByProductIdAndMemberId(winnerReqDto.getProductId(),memberService.findByEmail(email).getId()) == null)
-                paymentService.createBidPayment(memberService.findByEmail(email).getId(),paymentReqDto);
-            // 비즈니스 로직을 콜백 함수로 처리
-            return productService.startWinnerProcess(email,winnerReqDto);
-
-        } catch (Exception e) {
-            throw new RuntimeException("Error during operation: " + e.getMessage(), e);
-        } finally {
-            if (lock.isHeldByCurrentThread()) {
-                lock.unlock();
-            }
-        }
-
     }
 
+    @FunctionalInterface
+    public interface LockCallback<T> {
+        T execute() throws Exception;
+    }
 }

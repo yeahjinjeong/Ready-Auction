@@ -4,6 +4,8 @@ import com.readyauction.app.auction.dto.*;
 import com.readyauction.app.auction.entity.*;
 import com.readyauction.app.auction.repository.ProductRepository;
 
+import com.readyauction.app.cash.dto.PaymentReqDto;
+import com.readyauction.app.cash.entity.PaymentCategory;
 import com.readyauction.app.ncp.dto.FileDto;
 import com.readyauction.app.ncp.service.NcpObjectStorageService;
 import com.readyauction.app.user.service.MemberService;
@@ -26,24 +28,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-@Transactional
+
 public class ProductService {
 
     private final ProductRepository productRepository;
 
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
-    private final SimpMessagingTemplate simpMessagingTemplate;
-    private final EmailService emailService;
+    private final RedisLockService redisLockService;
 
     public List<Product> findAll(){
         return productRepository.findAll();
     }
-
+    @Transactional
     public ProductRepDto createProduct(String email, ProductReqDto productReqDto) {
         Long userId = getUserIdFromRequest(email);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -67,7 +69,7 @@ public class ProductService {
 
         return convertToProductRepDto(product);
     }
-
+    @Transactional
     public String uploadFile(String email, MultipartFile multipartFile) {
         validateMultipartFile(multipartFile);
         List<FileDto> s3Files = ncpObjectStorageService.uploadFiles(Collections.singletonList(multipartFile), "productIMG/"+ email);
@@ -77,12 +79,12 @@ public class ProductService {
                 .map(FileDto::getUploadFileUrl)
                 .orElseThrow(() -> new IllegalStateException("File upload failed"));
     }
-
+    @Transactional
     public ProductRepDto productDetail(Long productId) {
         Product product = findProductById(productId);
         return convertToProductRepDto(product);
     }
-
+    @Transactional
     public Integer updateBidPrice(Product product, Integer bidPrice) {
         try {
             product.setCurrentPrice(bidPrice + product.getBidUnit());
@@ -92,23 +94,24 @@ public class ProductService {
             throw new RuntimeException("Update bid price failed", e);
         }
     }
-
+    @Transactional
     public Integer findCurrentPriceById(Long productId)
     {
         Product productResult = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
         return productResult.getCurrentPrice();
     }
-
+    @Transactional
     public Optional<Product> findById(Long productId) {
         return productRepository.findById(productId);
     }
-
+    @Transactional
     public boolean statusUpdate(HttpServletRequest request, Long productId, PurchaseStatus purchaseStatus) {
         Product product = findProductById(productId);
         product.getWinner().setStatus(purchaseStatus);
         productRepository.save(product);
         return true;
     }
+    @Transactional
     public List<Product> getProductsWithEndTimeAtCurrentMinute() {
         try {
             // 현재 시간의 시분으로 설정, 초와 나노초를 0으로 만듦
@@ -131,7 +134,7 @@ public class ProductService {
         }
     }
 
-
+    @Transactional
     public List<Product> setProductsStatus(List<Product> products) {
         try {
             // Product 목록 저장
@@ -145,7 +148,7 @@ public class ProductService {
             throw new RuntimeException("Unexpected error occurred while saving products status: " + e.getMessage(), e);
         }
     }
-
+    @Transactional
     public ProductDto startWinnerProcess(String email, WinnerReqDto winnerReqDto) {
         //유저 조회
         Long userId = getUserIdFromRequest(email);
@@ -167,7 +170,7 @@ public class ProductService {
         return convertToProductDto(createWinner(winnerDto));
     }
 
-
+    @Transactional
     public Product progressWinnerProcess(Long productId) {
         try {
 
@@ -199,7 +202,7 @@ public class ProductService {
         }
     }
 
-
+    @Transactional
     public Product progressWinnerAccepted(Long productId) {
         try {
 
@@ -233,7 +236,7 @@ public class ProductService {
 
 
 
-
+    @Transactional
     public Product createWinner(WinnerDto winnerDto) {
         try {
             // Winner 객체를 생성하고 제품에 설정
@@ -252,16 +255,16 @@ public class ProductService {
             // 제품을 저장
             Product savedProduct = productRepository.save(winnerDto.getProduct());
 
+            EmailMessage emailMessage = EmailMessage.builder()
+                    .to(email)
+                    .subject("Congratulations! You have won the auction.")
+                    .message("<html><head></head><body><div>" + productDto.getName() + " auction was won by you. Please visit our website to complete the payment.</div></body></html>")
+                    .build();
+            emailService.sendMail(emailMessage);
             if (savedProduct == null) {
                 throw new RuntimeException("Failed to save the product with the winner");
             }
 
-            EmailMessage emailMessage = EmailMessage.builder()
-                    .to(memberService.findEmailById(winnerDto.getUserId()))
-                    .subject("중고 스포츠 유니폼 판매 플랫폼 레디옥션입니다.")
-                    .message("<html><head></head><body><div style=\"background-color: gray;\">"+winnerDto.getProduct().getName()  +" 경매에서 낙찰자로 선정되신 것을 축하드립니다. 결제를 위해 레디옥션 사이트를 방문 해주세요"+"<div></body></html>")
-                    .build();
-            emailService.sendMail(emailMessage);
             return savedProduct;
         } catch (DataAccessException e) {
             // 데이터베이스 관련 예외 처리
@@ -272,50 +275,6 @@ public class ProductService {
         }
     }
 
-
-    public List<Product> createWinners(List<WinnerDto> winnerDtos) {
-        try {
-            System.out.println("입찰자 낙찰자로 진짜 변환!");
-            // Winner 객체를 생성하고 제품에 설정
-            List<Product> products = new ArrayList<>();
-            for(WinnerDto winnerDto : winnerDtos){
-                Winner winner = Winner.builder()
-                        .memberId(winnerDto.getUserId())
-                        .status(PurchaseStatus.CONFIRMED)
-                        .price(winnerDto.getWinnerReqDto().getBuyPrice())
-                        .winnerTime(winnerDto.getWinnerReqDto().getBuyTime())
-                        .category(PurchaseCategory.BID)
-                        .build();
-                winnerDto.getProduct().setWinner(winner);
-                winnerDto.getProduct().setAuctionStatus(AuctionStatus.END);
-
-                log.info("Winner created successfully for product ID: {}", winnerDto.getProduct().getId());
-                // 제품을 저장
-                products.add(winnerDto.getProduct());
-                AlarmDto alarmDto = AlarmDto.builder()
-                        .productId(winnerDto.getProduct().getId())
-                        .productName(winnerDto.getProduct().getName())
-                        .payPrice(winnerDto.getProduct().getCurrentPrice())
-                        .payTime(winnerDto.getWinnerReqDto().getBuyTime())
-                        .build();
-                simpMessagingTemplate.convertAndSendToUser(memberService.findById(winnerDto.getUserId()).getEmail(),"/alarm/sub", alarmDto);
-                EmailMessage emailMessage = EmailMessage.builder()
-                        .to(memberService.findEmailById(winnerDto.getUserId()))
-                        .subject(winnerDto.getProduct().getName() + " 경매에서 낙찰자로 선정되었습니다. 웹사이트에 접속해서 결제를 진행해주세요!")
-                        .message("안녕하세요,\n\n" + winnerDto.getProduct().getName() + " 경매에서 낙찰자로 선정되었습니다.\n\n 웹사이트에 접속해서 결제를 진행해주세요!\n\n감사합니다.") // 이메일 본문 추가
-                        .build();
-                emailService.sendMail(emailMessage);
-                System.out.println("이메일 보내기 성공");
-            }
-            return productRepository.saveAll(products);
-        } catch (DataAccessException e) {
-            // 데이터베이스 관련 예외 처리
-            throw new RuntimeException("Database error during saving the product with the winner: " + e.getMessage(), e);
-        } catch (Exception e) {
-            // 기타 예외 처리
-            throw new RuntimeException("Unexpected error occurred during creating the winner: " + e.getMessage(), e);
-        }
-    }
 
     private Long getUserIdFromRequest(String email) {
         try {
@@ -367,18 +326,19 @@ public class ProductService {
         );
     }
 
-
+    @Transactional
     public Page<ProductDto> searchProductsByName(String name, Pageable pageable) {
         return productRepository.searchByNameAndStatus(name, AuctionStatus.END, pageable)
                 .map(this::convertToProductDto);
     }
-
+    @Transactional
     public Page<ProductDto> getAllProducts(Pageable pageable) {
         return productRepository.findActiveProducts(AuctionStatus.END, pageable)
                 .map(this::convertToProductDto);
     }
 
     /** 지영 - 계좌 내역 조회 시 필요**/
+    @Transactional
     public String findProductNameById(Long productId) {
         return productRepository.findById(productId)
                 .map(Product::getName)
@@ -388,19 +348,21 @@ public class ProductService {
     /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
 
     // 판매 중 (auctionStatus가 START 또는 PROGRESS)
+    @Transactional
     public List<Product> getActiveProducts(Long memberId) {
         return productRepository.findByMemberIdAndAuctionStatusIn(memberId, List.of(AuctionStatus.START, AuctionStatus.PROGRESS));
     }
-
+    @Transactional
     public List<Product> findByIdIn(List<Long> productIds) {
         return productRepository.findByIdIn(productIds);
     }
-
+    @Transactional
     public void save(Product product) {
         productRepository.save(product);
     }
 
     // 지영 - 마이페이지 경매 참여 - 낙찰 시 결제 버튼
+    @Transactional
     public boolean isWinnerConfirmed(Long productId, Long memberId) {
         // Product에서 Winner의 상태를 확인하는 로직
         Product product = productRepository.findById(productId)
@@ -413,6 +375,7 @@ public class ProductService {
     }
 
     // 지영 - 마이페이지 경매 참여 - 낙찰 시 결제 완료 버튼
+    @Transactional
     public boolean isPaymentComplete(Long productId, Long memberId) {
         // Product에서 Winner의 상태를 확인하는 로직
         Product product = productRepository.findById(productId)
