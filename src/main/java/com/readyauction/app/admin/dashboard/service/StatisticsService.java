@@ -1,9 +1,9 @@
-package com.readyauction.app.dashboard.service;
+package com.readyauction.app.admin.dashboard.service;
 
+import com.readyauction.app.admin.dashboard.dto.MemberStatisticsDto;
 import com.readyauction.app.cash.entity.Payment;
 import com.readyauction.app.cash.entity.PaymentStatus;
 import com.readyauction.app.cash.repository.PaymentRepository;
-import com.readyauction.app.dashboard.dto.MemberStatisticsDto;
 import com.readyauction.app.user.entity.UserStatus;
 import com.readyauction.app.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

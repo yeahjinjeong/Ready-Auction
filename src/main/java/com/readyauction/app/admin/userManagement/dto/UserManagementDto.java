@@ -1,4 +1,4 @@
-package com.readyauction.app.admin.dto;
+package com.readyauction.app.admin.userManagement.dto;
 
 import com.readyauction.app.user.entity.Gender;
 import lombok.AllArgsConstructor;

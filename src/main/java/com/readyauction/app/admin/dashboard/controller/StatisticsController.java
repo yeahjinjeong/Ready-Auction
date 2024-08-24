@@ -1,7 +1,7 @@
-package com.readyauction.app.dashboard.controller;
+package com.readyauction.app.admin.dashboard.controller;
 
-import com.readyauction.app.dashboard.dto.MemberStatisticsDto;
-import com.readyauction.app.dashboard.service.StatisticsService;
+import com.readyauction.app.admin.dashboard.dto.MemberStatisticsDto;
+import com.readyauction.app.admin.dashboard.service.StatisticsService;
 import com.readyauction.app.user.entity.UserStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
