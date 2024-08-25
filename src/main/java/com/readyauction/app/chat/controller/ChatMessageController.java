@@ -7,14 +7,12 @@ import com.readyauction.app.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -22,17 +20,20 @@ import java.util.Map;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/chat")
 public class ChatMessageController {
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
     private final ChatService chatService;
 
-    @GetMapping("/api/authentication/member")
+    @GetMapping("/authentication/member")
     public ResponseEntity<?> getMemberId(
             @AuthenticationPrincipal AuthPrincipal principal
     ) {
         return ResponseEntity.ok(principal.getMember());
     }
 
-    @GetMapping("chat/message/{chatRoomId}")
+    @GetMapping("/message/{chatRoomId}")
     public List<MessageDto> findMessages(
             @PathVariable Long chatRoomId,
             @AuthenticationPrincipal AuthPrincipal principal
@@ -53,15 +54,33 @@ public class ChatMessageController {
     }
 
     // chatRoomId의 모든 메시지들의 상태를 1 (읽음)으로 바꾼다
-    @PostMapping("/chat/message/{chatRoomId}/read")
+    // 업데이트
+    @PostMapping("/message/{chatRoomId}/read")
     public void updateMessages(
-            @PathVariable Long chatRoomId
+            @PathVariable Long chatRoomId,
+            @RequestParam Long anotherMemberId
     ) {
-        log.info("읽었냐고요!");
+        log.info("senderId : {}", anotherMemberId); // 상대방 아이디
+        // 채팅방 모든 문자 읽기
         chatService.updateMessageStatus(chatRoomId);
+        // 내가 아닌 상대 멤버 찾기
+        String userName = chatService.findReceiverEmailByMemberId(anotherMemberId);
+        simpMessagingTemplate.convertAndSendToUser(userName, "/sub", new MessageDto(null, chatRoomId, null, "enㅇtㅌrㄹy", null, null, null, null));
     }
 
-    @GetMapping("chat/profile/{productId}")
+    @GetMapping("/message/{chatRoomId}/entry")
+    public void sendEntryMessage(
+            @PathVariable Long chatRoomId,
+            @AuthenticationPrincipal AuthPrincipal principal
+    ) {
+        // 내가 아닌 상대 멤버 찾기
+        Long memberId = chatService.findOppositeMemberIdByChatRoomId(chatRoomId, principal.getMember().getId());
+        String userName = chatService.findReceiverEmailByMemberId(memberId);
+        simpMessagingTemplate.convertAndSendToUser(userName, "/sub", new MessageDto(null, chatRoomId, null, "enㅇtㅌrㄹy", null, null, null, null));
+    }
+
+    // 프로필 조회
+    @GetMapping("/profile/{productId}")
     public ResponseEntity<?> findProfiles(@PathVariable Long productId
     ) {
         ChatProductDto chatProductDto = chatService.findProductById(productId);
@@ -74,7 +93,8 @@ public class ChatMessageController {
         ));
     }
 
-    @GetMapping("/chat/list/count")
+    // 읽지 않은 메시지 카운트 조회
+    @GetMapping("/list/unread")
     public ResponseEntity<?> chatCountList(
             @AuthenticationPrincipal AuthPrincipal principal) {
         // 상대방이 보낸 메시지 중(멤버아이디가 다름) 0인 메시지 상태에 대해 카운트한다.
@@ -83,7 +103,8 @@ public class ChatMessageController {
         return ResponseEntity.ok(countList);
     }
 
-    @GetMapping("/chat/list/image")
+    // 상품 이미지 조회
+    @GetMapping("/list/image")
     public ResponseEntity<?> findChatRoomImages(
             @AuthenticationPrincipal AuthPrincipal principal) {
         List<ChatImageDto> imageList = chatService.findImagesByChatRoomList(principal.getMember().getId());

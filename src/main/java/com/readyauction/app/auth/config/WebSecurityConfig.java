@@ -39,9 +39,9 @@ public class WebSecurityConfig {
         http.authorizeHttpRequests((registry) -> {
 
             // 특수한 경우부터 보편적인 경우순으로 작성
-            registry.requestMatchers("/auction-api/create", "/auction/auction", "/", "/index", "/inquiry/faq").permitAll() // 누구나 허용
+            registry.requestMatchers("/auction-api/create", "/auction", "/", "/index", "/inquiry/faq").permitAll() // 누구나 허용
                     .requestMatchers( "/member/register").anonymous() // 인증하지 않은 사용자만 허용
-                    .requestMatchers("/mypage/**").authenticated() // 인증된 사용자만 허용
+                    .requestMatchers("/mypage/**", "/auction/**").authenticated() // 인증된 사용자만 허용
 //                    .requestMatchers("/admin/**").hasRole("ADMIN")  // ROLE_ADMIN 권한이 있는 사용자만 허용
                     .anyRequest().authenticated();
         });
@@ -53,7 +53,7 @@ public class WebSecurityConfig {
                     .loginProcessingUrl("/auth/login") // POST 로그인처리 url
                     .usernameParameter("email") // name="username"인 아닌 경우 작성필요
                     .passwordParameter("password") // name="password"가 아닌 경우 작성필요
-                    .defaultSuccessUrl("/auction/auction", true) // 로그인 성공시 이동할 URL
+                    .defaultSuccessUrl("/auction", true) // 로그인 성공시 이동할 URL
                     .failureUrl("/auth/login") // 로그인 실패 시 리다이렉트할 URL을 설정
                     .permitAll(); // 누구나 허용
         });
@@ -62,7 +62,7 @@ public class WebSecurityConfig {
          */
         http.logout(configurer -> {
             configurer.logoutUrl("/auth/logout")
-                    .logoutSuccessUrl("/auction/auction"); // 로그아웃 후 리다이렉트 url (기본값은 로그인페이지)
+                    .logoutSuccessUrl("/auction"); // 로그아웃 후 리다이렉트 url (기본값은 로그인페이지)
         });
 
         return http.build();
