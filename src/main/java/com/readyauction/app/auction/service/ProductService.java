@@ -4,6 +4,11 @@ import com.readyauction.app.auction.dto.*;
 import com.readyauction.app.auction.entity.*;
 import com.readyauction.app.auction.repository.ProductRepository;
 
+import java.lang.management.ManagementFactory;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
+
 import com.readyauction.app.cash.dto.PaymentReqDto;
 import com.readyauction.app.cash.entity.PaymentCategory;
 import com.readyauction.app.ncp.dto.FileDto;
@@ -13,9 +18,13 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,14 +42,15 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-
 public class ProductService {
-
+    private final RedissonClient redissonClient;
     private final ProductRepository productRepository;
 
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
 
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
     public List<Product> findAll(){
         return productRepository.findAll();
     }
@@ -133,6 +143,26 @@ public class ProductService {
         }
     }
 
+    public ProductRepDto createAuction(String email, ProductReqDto productReqDto) {
+        // Redis에 경매 ID와 TTL 설정
+
+        ProductRepDto productRepDto = createProduct(email,productReqDto);
+        Timestamp currentTime = Timestamp.from(Instant.now());
+        long durationInSeconds = calculateTimeDifference(currentTime, productRepDto.getEndTime()).getSeconds();
+        // 경매 시작 시 TTL 설정 (예: 1시간)
+
+        String pid = ManagementFactory.getRuntimeMXBean().getName();
+        String key =  "Auction:ProductId:" + productRepDto.getId();
+        redisTemplate.opsForValue().set(key,pid);
+        redisTemplate.expire(key,durationInSeconds, TimeUnit.SECONDS);
+
+        log.info("Auction started for product ID: " + productRepDto.getId());
+        return productRepDto;
+    }
+    public static Duration calculateTimeDifference(Timestamp startTime, Timestamp endTime) {
+        // startTime과 endTime의 차이를 Duration 객체로 변환
+        return Duration.between(startTime.toInstant(), endTime.toInstant());
+    }
     @Transactional
     public List<Product> setProductsStatus(List<Product> products) {
         try {
