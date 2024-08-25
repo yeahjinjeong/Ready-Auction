@@ -1,15 +1,17 @@
 package com.readyauction.app.inquiry.controller;
 
+import com.readyauction.app.auth.principal.AuthPrincipal;
+import com.readyauction.app.inquiry.dto.InquiryAnswerDto;
 import com.readyauction.app.inquiry.dto.InquiryDetailDto;
 import com.readyauction.app.inquiry.dto.InquiryDto;
 import com.readyauction.app.inquiry.service.InquiryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,5 +42,27 @@ public class InquiryController {
         model.addAttribute("inquiry", inquiryDetailDto);
         log.info("inquiryDetailDto : {}", inquiryDetailDto);
         return "inquiry/admin-faq-detail";
+    }
+
+    @PostMapping("/detail/answer")
+    public String createInquiryDetailAnswer(
+            @ModelAttribute InquiryAnswerDto inquiryAnswerDto,
+            @AuthenticationPrincipal AuthPrincipal principal
+    ){
+        log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
+        inquiryService.addAnswer(principal.getMember().getId(), inquiryAnswerDto);
+        return "redirect:/inquiry/detail/" + inquiryAnswerDto.getInquiryId();
+    }
+
+    @ResponseBody
+    @PatchMapping("/detail/answer")
+    public ResponseEntity<?> updateInquiryDetailAnswer(
+            @RequestBody InquiryAnswerDto inquiryAnswerDto,
+            @AuthenticationPrincipal AuthPrincipal principal
+    ){
+        // 한번밖에 못단다고 가정하기
+        log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
+        inquiryService.changeAnswer(principal.getMember().getId(), inquiryAnswerDto);
+        return ResponseEntity.ok("ok");
     }
 }

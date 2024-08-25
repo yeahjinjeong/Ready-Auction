@@ -4,8 +4,6 @@
       layout:decorate="~{layout/default}">
 
 <body>
-
-
 <div layout:fragment="content1">
   <div class="breadcrumb breadcrumb-style-one mb-0 ">
     <div class="container">
@@ -44,18 +42,24 @@
             </div>
             <p class="common-para" th:text="${inquiry.content}"></p>
           </div>
+          &nbsp;
+          &nbsp;
+          <hr/>
+          &nbsp;
+          &nbsp;
 
           <div class="comment-area">
             <h4>Comments</h4>
             <ul class="comment-list">
               <li class="single-comment" th:each="answer : ${inquiry.getAnswers()}">
                 <div class="comment-header">
-                  <div class="comment-img">
-                    <img src="assets/images/blog/comm1.png" alt="">
-                  </div>
                   <div class="comment-title">
                     <h5 th:text="|admin${answer.authorId}|"></h5>
                     <p th:text="${answer.answeredAt}"></p>
+                  </div>
+                  <div>
+                    <a class="btn edit-btn" th:data-answer-answeredAt="${answer.getAnsweredAt()}">수정</a>
+                    <a class="btn delete-btn" th:data-answer-answeredAt="${answer.getAnsweredAt()}">삭제</a>
                   </div>
                 </div>
                 <div class="comment-body">
@@ -64,24 +68,14 @@
               </li>
             </ul>
             <h4>Leave A Comment</h4>
-            <form class="comment-form">
+            <form class="comment-form" th:action="@{/inquiry/detail/answer}" method="post" enctype="multipart/form-data">
               <div class="row">
-                <div class="col-md-6">
-                  <div class="form-inner">
-                    <label>Your Name</label>
-                    <input type="text" placeholder="Your Name">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-inner">
-                    <label>Your Email</label>
-                    <input type="text" placeholder="Enter Your Email">
-                  </div>
-                </div>
                 <div class="col-md-12">
                   <div class="form-inner">
+<!--                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>-->
+                    <input type="hidden" name="inquiryId" th:value="${inquiry.id}"/>
                     <label>Your Message</label>
-                    <textarea placeholder="Enter Your Message"></textarea>
+                    <textarea name="content" placeholder="Enter Your Message"></textarea>
                   </div>
                 </div>
                 <div class="col-md-12">
@@ -90,9 +84,13 @@
               </div>
             </form>
           </div>
+
+          <div>
+            <a th:href="@{/inquiry/admin-faq}" class="alpha-btn-md-dark">List</a>
+          </div>
         </div>
         <div class="col-lg-4">
-          <form class="sidebar-search">
+          <form class="sidebar-search" >
             <div class="form-inner d-flex justify-content-center ">
               <input type="text" placeholder="Enter Keward">
               <button class="search-btn">SEARCH</button>
@@ -103,5 +101,146 @@
     </div>
   </section>
 </div>
+
+<script layout:fragment="script">
+  document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('click', function(event) {
+
+      if (event.target.classList.contains('edit-btn')) {
+        event.preventDefault();
+        event.stopPropagation(); // 이벤트 전파 방지
+
+        const commentBody = event.target.closest('.single-comment').querySelector('.comment-body');
+        const pTag = commentBody.querySelector('p');
+
+        // 텍스트 영역을 생성합니다.
+        const textareaHtml = `
+        <textarea class="edit-textarea">${pTag.textContent}</textarea>
+      `;
+
+        // 기존 p 태그를 숨기고, 새로운 textarea를 추가합니다.
+        pTag.style.display = 'none';
+        commentBody.insertAdjacentHTML('beforeend', textareaHtml);
+
+        // 버튼의 텍스트를 '저장'으로 변경합니다.
+        event.target.textContent = '저장';
+        event.target.classList.remove('edit-btn');
+        event.target.classList.add('save-btn');
+      }
+
+      else if (event.target.classList.contains('save-btn')) {
+        event.preventDefault();
+        event.stopPropagation(); // 이벤트 전파 방지
+
+        const commentBody = event.target.closest('.single-comment').querySelector('.comment-body');
+        const textarea = commentBody.querySelector('.edit-textarea');
+        const pTag = commentBody.querySelector('p');
+
+        // p 태그의 내용을 텍스트 영역의 값으로 업데이트합니다.
+        pTag.textContent = textarea.value;
+
+        const answeredAt = event.target.getAttribute("data-answer-answeredAt");
+
+        const data = {
+          inquiryId : `[[${inquiry.id}]]`,
+          content : textarea.value,
+          answeredAt : answeredAt
+        }
+
+        fetch('[[@{/inquiry/detail/answer}]]', {
+          method: 'PATCH', // HTTP 메서드
+          headers: {
+            'Content-Type': 'application/json', // 요청의 내용 타입
+          },
+          body: JSON.stringify(data) // 서버로 보낼 데이터
+        }).then(response => {
+          if (response.ok) {
+            console.log('Request successful'); // 상태 코드가 200-299일 때
+          } else {
+            console.error('Request failed with status:', response.status); // 상태 코드가 200-299가 아닐 때
+          }
+        }) .catch(error => {
+          console.error('There was a problem with the fetch operation:', error); // 네트워크 오류 등
+        });
+
+        // p 태그를 다시 보이게 하고, 텍스트 영역을 제거합니다.
+        pTag.style.display = 'block';
+        textarea.remove();
+
+        // 버튼의 텍스트를 원래대로 되돌립니다.
+        event.target.textContent = '수정';
+        event.target.classList.remove('save-btn');
+        event.target.classList.add('edit-btn');
+      }
+    });
+
+    // document.querySelectorAll('.edit-btn').forEach(button => {
+    //   button.addEventListener('click', function() {
+    //     console.log("야야야야야야야ㅑ양");
+    //     // 현재 클릭된 버튼을 기준으로 부모 요소를 찾습니다.
+    //     const commentBody = this.closest('.single-comment').querySelector('.comment-body');
+    //     const pTag = commentBody.querySelector('p');
+    //
+    //     // 텍스트 영역을 생성합니다.
+    //     const textareaHtml = `
+    //     <textarea class="edit-textarea">${pTag.textContent}</textarea>`;
+    //
+    //     commentBody.insertAdjacentHTML('beforeend', textareaHtml);
+    //     console.log(commentBody);
+    //
+    //     // p 태그를 숨기고, 새로운 textarea를 추가합니다.
+    //     pTag.style.display = 'none';
+    //
+    //     // 버튼의 텍스트를 변경하여 '저장' 버튼으로 만듭니다.
+    //     button.textContent = '저장';
+    //     this.classList.remove('edit-btn');
+    //     this.classList.add('save-btn');
+    //
+    //     button.stopPropagation();
+    //   });
+    // });
+
+    // document.querySelectorAll('.save-btn').forEach(button => {
+    //   button.addEventListener('click', function() {
+    //     console.log("야아어ㅏㅓ야ㅓㅇ")
+    //     // 현재 클릭된 버튼을 기준으로 부모 요소를 찾습니다.
+    //     const commentBody = this.closest('.single-comment').querySelector('.comment-body');
+    //     const editTextarea = commentBody.querySelector('.edit-textarea');
+    //     const pTag = commentBody.querySelector('p');
+    //
+    //     pTag.textContent = editTextarea.textContent;
+    //     pTag.style.display = 'block';
+    //
+    //     const data = {
+    //       inquiryId : `[[${inquiry.id}]]`,
+    //       content : editTextarea.textContent
+    //     }
+    //
+    //     editTextarea.remove();
+    //
+    //     fetch('[[@{/inquiry/detail/answer}]]', {
+    //       method: 'PATCH', // HTTP 메서드
+    //       headers: {
+    //         'Content-Type': 'application/json', // 요청의 내용 타입
+    //       },
+    //       body: JSON.stringify(data) // 서버로 보낼 데이터
+    //     }).then(response => {
+    //       if (response.ok) {
+    //         console.log('Request successful'); // 상태 코드가 200-299일 때
+    //       } else {
+    //         console.error('Request failed with status:', response.status); // 상태 코드가 200-299가 아닐 때
+    //       }
+    //     }) .catch(error => {
+    //       console.error('There was a problem with the fetch operation:', error); // 네트워크 오류 등
+    //     });
+    //
+    //     // 버튼의 텍스트를 변경하여 '저장' 버튼으로 만듭니다.
+    //     button.textContent = '수정';
+    //     this.classList.remove('save-btn');
+    //     this.classList.add('edit-btn');
+    //   });
+    // })
+  });
+</script>
 </body>
 </html>
