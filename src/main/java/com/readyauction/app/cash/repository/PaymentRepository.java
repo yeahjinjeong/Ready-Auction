@@ -42,4 +42,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findConfirmedPaymentsInTimeRange(@Param("start") LocalDateTime start,
                                                    @Param("end") LocalDateTime end,
                                                    @Param("status") PaymentStatus status);
+
+    Optional<Payment> findByProductIdAndMemberIdAndStatus(Long id, Long memberId, PaymentCategory paymentCategory);
 }
