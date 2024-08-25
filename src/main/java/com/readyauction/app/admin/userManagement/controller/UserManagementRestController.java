@@ -1,8 +1,7 @@
-package com.readyauction.app.admin.controller;
+package com.readyauction.app.admin.userManagement.controller;
 
-import com.readyauction.app.admin.dto.UserManagementDto;
-import com.readyauction.app.admin.service.UserManagementService;
-import com.readyauction.app.user.entity.Member;
+import com.readyauction.app.admin.userManagement.dto.UserManagementDto;
+import com.readyauction.app.admin.userManagement.service.UserManagementService;
 import com.readyauction.app.user.entity.UserStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

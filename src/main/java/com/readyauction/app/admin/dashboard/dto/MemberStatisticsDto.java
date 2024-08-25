@@ -1,4 +1,4 @@
-package com.readyauction.app.dashboard.dto;
+package com.readyauction.app.admin.dashboard.dto;
 
 
 import com.readyauction.app.user.entity.Gender;
