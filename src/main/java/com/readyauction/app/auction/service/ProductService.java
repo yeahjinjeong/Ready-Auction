@@ -333,6 +333,7 @@ public class ProductService {
                 .currentPrice(product.getCurrentPrice())
                 .immediatePrice(product.getImmediatePrice())
                 .imgUrl(product.getImages())
+                .memberId(product.getMemberId())
                 .nickName(memberService.findMemberById(product.getMemberId()).getNickname())
                 .build();
     }

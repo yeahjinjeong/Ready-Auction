@@ -71,6 +71,7 @@ public class MemberService {
     public Member findById(Long id){
         return memberRepository.findById(id).get();
     }
+
     /** 프로필 **/
 
     public MemberDto findMemberDtoByEmail(String email) {
@@ -87,6 +88,12 @@ public class MemberService {
                 .orElseThrow(() -> new UserNotFoundException(email));
 
         // Member 엔티티의 toProfileDto 메소드를 호출하여 ProfileDto로 변환
+        return member.toProfileDto();
+    }
+
+    public ProfileDto findProfileDtoById(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id: " + id));
         return member.toProfileDto();
     }
 

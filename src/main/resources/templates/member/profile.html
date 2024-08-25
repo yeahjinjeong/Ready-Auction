@@ -34,20 +34,105 @@
     <div class="auction-winner-wrapper pt-110">
         <div class="container">
             <div class="image">
-                <img id="profilePicture" th:src="@{/assets/images/profile/basic-profile.png}" alt="Profile Image">
+                <img id="profilePicture" th:src="${profile.profilePicture != null ? profile.profilePicture : '../../assets/images/profile/basic-profile.png'}" alt="Profile Image">
             </div>
             <div class="single-widget">
                 <h5 class="wdget-title">Profile</h5>
                 <ul class="widget-list">
-                    <li><span>닉네임 :</span><span text="nickname"></span></li>
-                    <li><span>내 동네 :</span><span text="address"></span></li>
-                    <li><span>매너지수 :</span><span text="mannerScore"></span></li>
+                    <li><span>닉네임 :</span><span th:text="${profile.nickname}"></span></li>
+                    <li><span>내 동네 :</span><span th:text="${profile.address}"></span></li>
+                    <li><span>매너지수 :</span><span th:text="${profile.mannerScore}"></span></li>
                     <li><span>받은 매너 평가 :</span><span text=""></span></li>
-                    <li><span>경매 등록 내역 :</span><span text=""></span></li>
+                    <li><span>경매 등록 내역 :</span></li>
                 </ul>
+                <div class="item-describe-area">
+                    <ul class="nav nav-pills d-flex justify-content-center gap-sm-4 gap-1" id="pills-tab3" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active describe-btn" id="pills-home-tab3" data-bs-toggle="pill" data-bs-target="#pills-home3" type="button" role="tab" aria-controls="pills-home3" aria-selected="true">판매 중</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link describe-btn" id="pills-profile-tab3" data-bs-toggle="pill" data-bs-target="#pills-profile3" type="button" role="tab" aria-controls="pills-profile3" aria-selected="false">거래 완료</button>
+                        </li>
+                    </ul>
+
+                    <!-- 판매 중 내역 -->
+                    <div class="tab-content" id="pills-tabContent3">
+                        <div class="tab-pane fade show active" id="pills-home3" role="tabpanel" aria-labelledby="pills-home-tab3">
+                            <div class="describe-content">
+                                <table class="table table-striped">
+                                    <thead class="table-dark">
+                                    <tr>
+                                        <th scope="col">상품명</th>
+                                        <th scope="col">시작가</th>
+                                        <th scope="col">현재 입찰가</th>
+                                        <th scope="col">즉시 구매가</th>
+                                        <th scope="col">시작일</th>
+                                        <th scope="col">마감일</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="product : ${activeProducts}">
+                                        <td>
+                                            <a th:href="@{/auction/product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
+                                        </td>
+                                        <td class="price" th:text="${product.startPrice}"></td>
+                                        <td class="price" th:text="${product.currentPrice}"></td>
+                                        <td class="price" th:text="${product.immediatePrice}"></td>
+                                        <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일')}"></td>
+                                        <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일')}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 거래 완료 내역 -->
+                        <div class="tab-pane fade" id="pills-profile3" role="tabpanel" aria-labelledby="pills-profile-tab3">
+                            <div class="describe-content">
+                                <table class="table table-striped">
+                                    <thead class="table-dark">
+                                    <tr>
+                                    <tr>
+                                        <th scope="col">구분</th>
+                                        <th scope="col">상품명</th>
+                                        <th scope="col">시작가</th>
+                                        <th scope="col">현재 입찰가</th>
+                                        <th scope="col">즉시 구매가</th>
+                                        <th scope="col">시작일</th>
+                                        <th scope="col">마감일</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="product : ${completedProducts}">
+                                        <td>
+                                            <span th:text="${product.winner.status == 'CONFIRMED' ? '결제완료' : '구매확정'}"></span>
+                                        </td>
+                                        <td>
+                                            <a th:href="@{/auction/product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
+                                        </td>
+                                        <td class="price" th:text="${product.startPrice}"></td>
+                                        <td class="price" th:text="${product.currentPrice}"></td>
+                                        <td class="price" th:text="${product.immediatePrice}"></td>
+                                        <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일')}"></td>
+                                        <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일')}"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <script>
+        window.onload = function() {
+            document.querySelectorAll('.price').forEach(function(element) {
+                element.innerText = formatNumber(element.innerText);
+            });
+        };
+    </script>
 </div>
 </body>
 </html>

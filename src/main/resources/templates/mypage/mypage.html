@@ -270,6 +270,9 @@
            <button class="nav-link describe-btn" id="pills-profile-tab2" data-bs-toggle="pill" data-bs-target="#pills-profile2" type="button" role="tab" aria-controls="pills-profile2" aria-selected="false">낙찰</button>
           </li>
           <li class="nav-item" role="presentation">
+           <button class="nav-link describe-btn" id="pills-profile-tab4" data-bs-toggle="pill" data-bs-target="#pills-profile4" type="button" role="tab" aria-controls="pills-profile4" aria-selected="false">즉시 구매</button>
+          </li>
+          <li class="nav-item" role="presentation">
            <button class="nav-link describe-btn" id="pills-contact-tab2" data-bs-toggle="pill" data-bs-target="#pills-contact2" type="button" role="tab" aria-controls="pills-contact2" aria-selected="false">패찰</button>
           </li>
          </ul>
@@ -293,7 +296,6 @@
                <td>
                 <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
                </td>
-<!--               <td th:text="${bid.bidStatus}"></td>-->
                <td class="price" th:text="${bid.myPrice}"></td>
                <td class="price" th:text="${bid.product.currentPrice}"></td>
                <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
@@ -310,9 +312,7 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-             <tr>
               <th scope="col">상품명</th>
-<!--              <th scope="col">Bid Status</th>-->
               <th scope="col">나의 입찰가</th>
               <th scope="col">시작일</th>
               <th scope="col">마감일</th>
@@ -324,7 +324,6 @@
               <td>
                <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
               </td>
-<!--              <td th:text="${bid.bidStatus}"></td>-->
               <td class="price" th:text="${bid.myPrice}"></td>
               <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
               <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일')}"></td>
@@ -351,7 +350,6 @@
              <thead class="table-dark">
              <tr>
               <th scope="col">상품명</th>
-<!--               <th scope="col">Bid Status</th>-->
               <th scope="col">나의 입찰가</th>
               <th scope="col">현재 입찰가</th>
               <th scope="col">시작일</th>
@@ -363,7 +361,6 @@
               <td>
                <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
               </td>
-<!--              <td th:text="${bid.bidStatus}"></td>-->
               <td class="price" th:text="${bid.myPrice}"></td>
               <td class="price" th:text="${bid.product.currentPrice}"></td>
               <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
