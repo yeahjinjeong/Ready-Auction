@@ -1,6 +1,13 @@
 package com.readyauction.app.admin.dashboard.service;
 
+//import com.readyauction.app.admin.dashboard.dto.AuctionBidDto;
+import com.readyauction.app.admin.dashboard.dto.AuctionBidDto;
 import com.readyauction.app.admin.dashboard.dto.MemberStatisticsDto;
+import com.readyauction.app.auction.entity.AuctionStatus;
+import com.readyauction.app.auction.entity.Bid;
+import com.readyauction.app.auction.entity.Product;
+import com.readyauction.app.auction.repository.BidRepository;
+import com.readyauction.app.auction.repository.ProductRepository;
 import com.readyauction.app.cash.entity.Payment;
 import com.readyauction.app.cash.entity.PaymentStatus;
 import com.readyauction.app.cash.repository.PaymentRepository;
@@ -22,7 +29,8 @@ public class StatisticsService {
     private final MemberRepository memberRepository;
     private final PaymentRepository paymentRepository;
     private UserStatus status;
-
+    private final BidRepository bidRepository;
+    private final ProductRepository productRepository;
 
     // 회원 통계 (성별, 나이대, 회원 상태)
     public List<MemberStatisticsDto> getMembersByStatus(UserStatus status) {
@@ -146,7 +154,41 @@ public class StatisticsService {
                 throw new IllegalArgumentException("Invalid period: " + period);
         }
     }
+
+    // 통계관리 - 경매내역
+    public List<AuctionBidDto> getAuctionBidsByStatus(AuctionStatus status) {
+        return productRepository.findByAuctionStatus(status).stream()
+                .map(product -> {
+                    if (status == AuctionStatus.START || status == AuctionStatus.PROGRESS) {
+                        // START 상태일 경우, 가장 높은 입찰 금액을 가진 입찰자를 가져옴
+                        List<Bid> bids = bidRepository.findByProductOrderByMyPriceDesc(product);
+                        Bid highestBid = bids.isEmpty() ? null : bids.get(0); // 가장 높은 금액의 입찰자
+
+                        return new AuctionBidDto(
+                                product.getId(),
+                                product.getName(),
+                                product.getMemberId(),
+                                product.getCurrentPrice(),
+                                product.getAuctionStatus(),
+                                highestBid != null ? highestBid.getMemberId() : null,
+                                highestBid != null ? highestBid.getMyPrice() : null,
+                                null // START 상태에서는 PurchaseStatus가 필요하지 않음
+                        );
+                    } else if (status == AuctionStatus.END) {
+                        // END 상태일 경우 낙찰자 정보를 가져옴
+                        return new AuctionBidDto(
+                                product.getId(),
+                                product.getName(),
+                                product.getMemberId(),
+                                product.getCurrentPrice(),
+                                product.getAuctionStatus(),
+                                product.hasWinner() ? product.getWinner().getMemberId() : null,
+                                product.hasWinner() ? product.getWinner().getPrice() : null,
+                                product.hasWinner() ? product.getWinner().getStatus() : null
+                        );
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList());
+    }
 }
-
-
-
