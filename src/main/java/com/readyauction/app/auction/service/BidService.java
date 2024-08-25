@@ -6,6 +6,7 @@ import com.readyauction.app.auction.entity.Bid;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.entity.PurchaseCategory;
 import com.readyauction.app.auction.repository.BidRepository;
+import com.readyauction.app.auction.repository.ProductRepository;
 import com.readyauction.app.cash.entity.PaymentCategory;
 import com.readyauction.app.cash.dto.PaymentReqDto;
 import com.readyauction.app.cash.service.PaymentService;
@@ -13,11 +14,18 @@ import com.readyauction.app.user.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.readyauction.app.auction.entity.BidStatus;
+
+import java.lang.management.ManagementFactory;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -32,8 +40,11 @@ public class BidService {
     private final ProductService productService;
     private final PaymentService paymentService;
     private final EmailService emailService;
-    private final RedisLockService redisLockService;
 
+    private final RedisLockService redisLockService;
+    private final ProductRepository productRepository;
+
+    private final RedisTemplate<String, Object> redisTemplate;
     @Transactional
     public void createBid(Long userId, Product product, Integer price, Timestamp timestamp) throws Exception {
 
@@ -81,7 +92,7 @@ public class BidService {
 
     public ProductDto winnerLock(String email, WinnerReqDto winnerReqDto) {
         String lockKey = String.format("Product:productId:%d", winnerReqDto.getProductId());
-        return redisLockService.executeWithLock(lockKey, 30, 30, TimeUnit.SECONDS, () -> {
+        return redisLockService.executeWithLock(lockKey, 3, 30, TimeUnit.SECONDS, () -> {
             Long userId = memberService.findByEmail(email).getId();
             if (!productService.findById(winnerReqDto.getProductId()).get().hasWinner()) {
                 if(bidRepository.findByMemberIdAndProductId(userId, winnerReqDto.getProductId()).isEmpty()) {
@@ -94,6 +105,22 @@ public class BidService {
                     paymentService.createBidPayment(userId, paymentReqDto);
                 }
                 ProductDto productDto = productService.startWinnerProcess(email, winnerReqDto);
+
+                // 3일(72시간)을 초 단위로 변환
+                long durationInSeconds = 60;
+
+                // 프로세스 ID 가져오기
+                String pid = ManagementFactory.getRuntimeMXBean().getName();
+
+                // Redis 키 생성
+                String key = "EndPayment:ProductId:" + productDto.getId();
+
+                // Redis에 값 설정 및 TTL(3일) 설정
+                redisTemplate.opsForValue().set(key, pid);
+                redisTemplate.expire(key, durationInSeconds, TimeUnit.SECONDS);
+
+                log.info("Auction started for product ID: " + productDto.getId());
+                //레디스 추가 코드
                 EmailMessage emailMessage = EmailMessage.builder()
                         .to(email)
                         .subject("Congratulations! You have won the auction.")
