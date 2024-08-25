@@ -56,10 +56,6 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     """)
     List<Bid> findLosingBids(@Param("memberId") Long memberId);
 
-    /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
-    @Query("SELECT DISTINCT b.product.id FROM Bid b WHERE b.memberId = :memberId")
-    List<Long> findProductIdsWithBidsByMemberId(Long memberId);
-
     Optional<Bid> findByMemberIdAndProductId(Long memberId, Long productId);
 
     // 특정 상품에 대해 ACCEPTED 상태의 입찰 내역 가져오기
