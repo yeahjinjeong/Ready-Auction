@@ -98,12 +98,12 @@ public class MypageController {
             List<Product> activeProducts = productService.getActiveProducts(memberDto.getId());
             model.addAttribute("activeProducts", activeProducts);
 
-            // 거래 완료 내역
-            List<Product> completedProducts = paymentService.getCompletedProducts(memberDto.getId());
+            // 거래 완료 내역 (결제 완료, 구매 확정)
+            List<Product> completedProducts = productService.getCompletedProducts(memberDto.getId());
             model.addAttribute("completedProducts", completedProducts);
 
             // 유찰 내역
-            List<Product> failedProducts = bidService.getFailedProducts(memberDto.getId());
+            List<Product> failedProducts = productService.getFailedProducts(memberDto.getId());
             model.addAttribute("failedProducts", failedProducts);
 
         } catch (UserNotFoundException e) {

@@ -6,7 +6,6 @@ import com.readyauction.app.auction.entity.Bid;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.entity.PurchaseCategory;
 import com.readyauction.app.auction.repository.BidRepository;
-import com.readyauction.app.auction.repository.ProductRepository;
 import com.readyauction.app.cash.entity.PaymentCategory;
 import com.readyauction.app.cash.dto.PaymentReqDto;
 import com.readyauction.app.cash.service.PaymentService;
@@ -14,14 +13,11 @@ import com.readyauction.app.user.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.readyauction.app.auction.entity.BidStatus;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -36,9 +32,8 @@ public class BidService {
     private final ProductService productService;
     private final PaymentService paymentService;
     private final EmailService emailService;
-
     private final RedisLockService redisLockService;
-    private final ProductRepository productRepository;
+
     @Transactional
     public void createBid(Long userId, Product product, Integer price, Timestamp timestamp) throws Exception {
 
@@ -257,6 +252,10 @@ public class BidService {
     public List<Bid> getLosingBids(Long memberId) {
         return bidRepository.findLosingBids(memberId);
     }
+
+    /* 지영 작업 끝 */
+
+
     @Transactional
     public Bid findTopByProductIdOrderByMyPriceDesc(Long id) {
         return bidRepository.findTopByProductIdOrderByMyPriceDesc(id).orElse(null);
@@ -264,13 +263,5 @@ public class BidService {
     @Transactional
     public Bid findByProductIdAndMemberId(Long productId, Long memberId) {
         return bidRepository.findByMemberIdAndProductId(memberId,productId).orElse(null);
-    }
-    /** 지영 - 마이페이지 경매 등록 내역 조회 **/
-
-    // 유찰 (auctionStatus가 END이고, 해당 상품에 대해 입찰 내역이 없는 경우)
-    @Transactional
-    public List<Product> getFailedProducts(Long memberId) {
-        List<Long> productIdsWithBids = bidRepository.findProductIdsWithBidsByMemberId(memberId);
-        return productRepository.findByMemberIdAndAuctionStatusAndIdNotIn(memberId, AuctionStatus.END, productIdsWithBids);
     }
 }

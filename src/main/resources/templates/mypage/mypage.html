@@ -407,7 +407,6 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-              <th scope="col">Auction Status</th>
               <th scope="col">Product Name</th>
               <th scope="col">Start Price</th>
               <th scope="col">Current Price</th>
@@ -418,13 +417,12 @@
              </thead>
              <tbody>
              <tr th:each="product : ${activeProducts}">
-              <td th:text="${product.auctionStatus}"></td>
               <td th:text="${product.name}"></td>
               <td class="price" th:text="${product.startPrice}"></td>
               <td class="price" th:text="${product.currentPrice}"></td>
               <td class="price" th:text="${product.immediatePrice}"></td>
-              <td th:text="${#dates.format(product.startTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
-              <td th:text="${#dates.format(product.endTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일 HH:mm')}"></td>
+              <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일 HH:mm')}"></td>
              </tr>
              </tbody>
             </table>
@@ -438,7 +436,7 @@
              <thead class="table-dark">
              <tr>
              <tr>
-              <th scope="col">Auction Status</th>
+              <th scope="col">Type</th>
               <th scope="col">Product Name</th>
               <th scope="col">Start Price</th>
               <th scope="col">Current Price</th>
@@ -449,13 +447,15 @@
              </thead>
              <tbody>
              <tr th:each="product : ${completedProducts}">
-              <td th:text="${product.auctionStatus}"></td>
+              <td>
+               <span th:text="${product.winner.status == 'CONFIRMED' ? '결제완료' : '구매확정'}"></span>
+              </td>
               <td th:text="${product.name}"></td>
               <td class="price" th:text="${product.startPrice}"></td>
               <td class="price" th:text="${product.currentPrice}"></td>
               <td class="price" th:text="${product.immediatePrice}"></td>
-              <td th:text="${#dates.format(product.startTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
-              <td th:text="${#dates.format(product.endTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일 HH:mm')}"></td>
+              <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일 HH:mm')}"></td>
              </tr>
              </tbody>
             </table>
@@ -468,7 +468,6 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-              <th scope="col">Auction Status</th>
               <th scope="col">Product Name</th>
               <th scope="col">Start Price</th>
               <th scope="col">Current Price</th>
@@ -479,13 +478,12 @@
              </thead>
              <tbody>
              <tr th:each="product : ${failedProducts}">
-              <td th:text="${product.auctionStatus}"></td>
               <td th:text="${product.name}"></td>
               <td class="price" th:text="${product.startPrice}"></td>
               <td class="price" th:text="${product.currentPrice}"></td>
               <td class="price" th:text="${product.immediatePrice}"></td>
-              <td th:text="${#dates.format(product.startTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
-              <td th:text="${#dates.format(product.endTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일 HH:mm')}"></td>
+              <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일 HH:mm')}"></td>
              </tr>
              </tbody>
             </table>
