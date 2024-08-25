@@ -1,6 +1,7 @@
 package com.readyauction.app.cash.controller;
 
 import com.readyauction.app.auction.service.BidService;
+import com.readyauction.app.auction.service.RedisLockService;
 import com.readyauction.app.cash.entity.PaymentCategory;
 import com.readyauction.app.cash.dto.PaymentReqDto;
 import com.readyauction.app.cash.dto.PaymentResDto;
@@ -28,7 +29,7 @@ public class CashRestController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         paymentReqDto.setCategory(PaymentCategory.BID);
-        PaymentResDto createPayment = paymentService.createPayment(email, paymentReqDto);
+        PaymentResDto createPayment = paymentService.paymentLock(email, paymentReqDto);
 
 
         if (createPayment == null) {
@@ -43,7 +44,7 @@ public class CashRestController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
-        PaymentResDto createPayment = paymentService.completePayment(email, paymentReqDto);
+        PaymentResDto createPayment = paymentService.successLock(email, paymentReqDto);
         if (createPayment == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }

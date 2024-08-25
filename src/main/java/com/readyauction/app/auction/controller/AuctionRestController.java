@@ -80,7 +80,7 @@ public class AuctionRestController {
         BidResDto bidResDto = new BidResDto();
         try {
             System.out.println("입찰중 "+ email);
-            bidResDto = redisLockService.bidLock(email, bidDto);
+            bidResDto = bidService.bidLock(email, bidDto);
             System.out.println(bidDto);
             simpMessagingTemplate.convertAndSend("/sub/"+bidDto.getProductId(),bidResDto);
             return ResponseEntity.ok(bidResDto); // 성공적으로 처리되면, 200 OK와 함께 bidDto를 반환
@@ -97,7 +97,7 @@ public class AuctionRestController {
             String email = authentication.getName();
             System.out.println("즉시구매중" + winnerReqDto);
             winnerReqDto.setCategory(PurchaseCategory.IMMEDIATE);
-            return ResponseEntity.ok(redisLockService.winnerLock(email,winnerReqDto));
+            return ResponseEntity.ok(bidService.winnerLock(email,winnerReqDto));
         }
         catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Bid failed: " + e.getMessage());
