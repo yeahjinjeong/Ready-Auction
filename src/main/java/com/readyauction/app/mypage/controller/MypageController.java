@@ -54,7 +54,7 @@ public class MypageController {
             model.addAttribute("memberDto", memberDto);
 
             // ProfileDto 가져오기
-            ProfileDto profileDto = memberService.toProfileDto(currentUserName);
+            ProfileDto profileDto = memberService.findProfileDtoById(memberDto.getId());
             model.addAttribute("profileDto", profileDto);
 
             // AccountDto 가져오기
@@ -120,8 +120,9 @@ public class MypageController {
         // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
+        Long memberId = memberService.findMemberDtoByEmail(currentUserName).getId();
 
-        ProfileDto profileDto = memberService.toProfileDto(currentUserName);
+        ProfileDto profileDto = memberService.findProfileDtoById(memberId);
         log.debug("profileDto: {}", profileDto);
         model.addAttribute("profileDto", profileDto);
 

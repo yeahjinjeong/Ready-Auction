@@ -42,7 +42,24 @@
                     <li><span>닉네임 :</span><span th:text="${profile.nickname}"></span></li>
                     <li><span>내 동네 :</span><span th:text="${profile.address}"></span></li>
                     <li><span>매너지수 :</span><span th:text="${profile.mannerScore}"></span></li>
-                    <li><span>받은 매너 평가 :</span><span text=""></span></li>
+                    <li>
+                        <span>좋아요 :</span>
+                        <ul>
+                            <li th:each="entry : ${profile.likeCounts}">
+                                <span th:text="${entry.key}">항목명</span>:
+                                <span th:text="${entry.value}">0</span>개
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <span>싫어요 :</span>
+                        <ul>
+                            <li th:each="entry : ${profile.dislikeCounts}">
+                                <span th:text="${entry.key}">항목명</span>:
+                                <span th:text="${entry.value}">0</span>개
+                            </li>
+                        </ul>
+                    </li>
                     <li><span>경매 등록 내역 :</span></li>
                 </ul>
                 <div class="item-describe-area">
@@ -127,6 +144,11 @@
     </div>
 
     <script>
+        // 금액에 쉼표 추가
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
         window.onload = function() {
             document.querySelectorAll('.price').forEach(function(element) {
                 element.innerText = formatNumber(element.innerText);

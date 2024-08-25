@@ -68,7 +68,25 @@
             <li><span>닉네임 :</span><span th:text="${profileDto.nickname}"></span></li>
             <li><span>내 동네 :</span><span th:text="${profileDto.address}"></span></li>
             <li><span>매너지수 :</span><span th:text="${profileDto.mannerScore}"></span></li>
-            <li><span>받은 매너 평가 :</span><span text=""></span></li>
+            <li>
+             <span>좋아요 :</span>
+             <ul>
+              <li th:each="entry : ${profileDto.likeCounts}">
+               <span th:text="${entry.key}">항목명</span>:
+               <span th:text="${entry.value}">0</span>개
+              </li>
+             </ul>
+            </li>
+
+            <li>
+             <span>싫어요 :</span>
+             <ul>
+              <li th:each="entry : ${profileDto.dislikeCounts}">
+               <span th:text="${entry.key}">항목명</span>:
+               <span th:text="${entry.value}">0</span>개
+              </li>
+             </ul>
+            </li>
            </ul>
            <div style="text-align: right">
             <a th:href="@{/mypage/profile/update}" class="alpha-btn-md-dark">Edit</a>
