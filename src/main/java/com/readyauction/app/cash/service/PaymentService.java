@@ -4,6 +4,7 @@ import com.readyauction.app.auction.dto.EmailMessage;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.service.EmailService;
 import com.readyauction.app.auction.service.ProductService;
+import com.readyauction.app.auction.service.RedisLockService;
 import com.readyauction.app.cash.dto.PaymentReqDto;
 import com.readyauction.app.cash.dto.PaymentResDto;
 import com.readyauction.app.cash.entity.Account;
@@ -14,16 +15,18 @@ import com.readyauction.app.cash.repository.PaymentRepository;
 import com.readyauction.app.user.service.MemberService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentService {
 
     final private PaymentRepository paymentRepository;
@@ -32,7 +35,20 @@ public class PaymentService {
     final private ProductService productService;
     final private EmailService emailService;
     //입찰시 만들어지는 페이먼트
+    final private RedisLockService redisLockService;
+    public PaymentResDto paymentLock(String email, PaymentReqDto paymentReqDto) {
+        String lockKey = String.format("PaymentProduct:productId:%d", paymentReqDto.getProductId());
+        return redisLockService.executeWithLock(lockKey, 30, 30, TimeUnit.SECONDS, () -> {
+            return createPayment(email, paymentReqDto);
+        });
+    }
 
+    public PaymentResDto successLock(String email, PaymentReqDto paymentReqDto) {
+        String lockKey = String.format("SuccessProduct:productId:%d", paymentReqDto.getProductId());
+        return redisLockService.executeWithLock(lockKey, 3, 2, TimeUnit.SECONDS, () -> {
+            return completePayment(email, paymentReqDto);
+        });
+    }
     @Transactional
     public Payment createBidPayment(Long userId, PaymentReqDto paymentReqDto) throws Exception {
         System.out.println("상품 입찰 선불금 지불 중!");
@@ -103,6 +119,7 @@ public class PaymentService {
         }
     }
 
+    @Transactional
     public Boolean rollbackMoney(List<Payment> payments) {
         try {
             System.out.println("입찰 페이먼트 롤백 중 ");
@@ -138,76 +155,81 @@ public class PaymentService {
         }
     }
 
-
+    @Transactional
     public PaymentResDto createPayment(String email, PaymentReqDto paymentReqDto) {
         try {
             // 보낸이 조회
 // 1        PaymentCategory.BID_COMPLETE이고,  PaymentStatus.PROCESSING이거나,PaymentStatus.COMPLETED인게 있으면 이미 결제가 진행했던거다.
             System.out.println(paymentReqDto.getProductId() +"프로덕트 아이디");
-            Optional<List<Payment>> payments = paymentRepository.findByProductIdAndMemberIdAndCategory(
+            Payment payment1 = paymentRepository.findByProductIdAndMemberIdAndCategory(
                     paymentReqDto.getProductId(),
                     memberService.findByEmail(email).getId(),
-                    PaymentCategory.BID_COMPLETE);
+                    PaymentCategory.BID_COMPLETE).orElse(null);
 
-            if(payments.isPresent() && !payments.get().isEmpty()){
+
+            if(payment1 != null){
+                log.info("배열 안비어있다.");
                 throw new EntityNotFoundException("Payment already exists");
-            };
-            System.out.println("결제 하기 페이먼트 생성");
-            Long senderId = memberService.findByEmail(email).getId();
-            if (senderId == null) {
-                throw new EntityNotFoundException("Sender not found for email: " + email);
             }
+            else {
+                System.out.println("결제 하기 페이먼트 생성");
+                Long senderId = memberService.findByEmail(email).getId();
+                if (senderId == null) {
+                    throw new EntityNotFoundException("Sender not found for email: " + email);
+                }
 
-            // 보낸이 계좌 조회
-            Account senderAccount = accountService.findByMemberId(senderId);
-            if (senderAccount == null) {
-                throw new EntityNotFoundException("Sender's account not found for user ID: " + senderId);
+                // 보낸이 계좌 조회
+                Account senderAccount = accountService.findByMemberId(senderId);
+                if (senderAccount == null) {
+                    throw new EntityNotFoundException("Sender's account not found for user ID: " + senderId);
+                }
+
+                // 보낸이 계좌에서 출금
+                accountService.withdrawal(senderId, paymentReqDto.getAmount());
+
+                // 낙찰로그에서 거래중으로 상태값 바꾸기
+                Product product = productService.progressWinnerProcess(paymentReqDto.getProductId());
+                if (product == null) {
+                    throw new EntityNotFoundException("Product not found for ID: " + paymentReqDto.getProductId());
+                }
+//
+                // 받는이 조회
+                Long receiverId = product.getMemberId();
+                if (receiverId == null) {
+                    throw new EntityNotFoundException("Receiver not found for product ID: " + product.getId());
+                }
+
+                // 받는이 계좌 조회
+                Account receiverAccount = accountService.findByMemberId(receiverId);
+                if (receiverAccount == null) {
+                    throw new EntityNotFoundException("Receiver's account not found for user ID: " + receiverId);
+                }
+
+
+                // 위너 저장
+                Payment payment = Payment.builder()
+                        .date(paymentReqDto.getPayTime())
+                        .payAmount(paymentReqDto.getAmount())
+                        .productId(product.getId())
+                        .senderAccount(senderAccount)
+                        .receiverAccount(receiverAccount)
+                        .memberId(senderId)
+                        .status(PaymentStatus.PROCESSING)
+                        .category(PaymentCategory.BID_COMPLETE)
+                        .build();
+
+                // Payment 저장
+                Payment savedPayment = paymentRepository.save(payment);
+                rollbackPayment(product.getId());
+                //비 낙찰자들 돈 롤백
+
+                if (savedPayment == null) {
+                    throw new RuntimeException("Failed to save the payment");
+                }
+
+                return convertToPaymentResDto(savedPayment);
+
             }
-
-            // 보낸이 계좌에서 출금
-            accountService.withdrawal(senderId, paymentReqDto.getAmount());
-
-            // 낙찰로그에서 거래중으로 상태값 바꾸기
-            Product product = productService.progressWinnerProcess(paymentReqDto.getProductId());
-            if (product == null) {
-                throw new EntityNotFoundException("Product not found for ID: " + paymentReqDto.getProductId());
-            }
-
-            // 받는이 조회
-            Long receiverId = product.getMemberId();
-            if (receiverId == null) {
-                throw new EntityNotFoundException("Receiver not found for product ID: " + product.getId());
-            }
-
-            // 받는이 계좌 조회
-            Account receiverAccount = accountService.findByMemberId(receiverId);
-            if (receiverAccount == null) {
-                throw new EntityNotFoundException("Receiver's account not found for user ID: " + receiverId);
-            }
-
-
-            // 위너 저장
-            Payment payment = Payment.builder()
-                    .date(paymentReqDto.getPayTime())
-                    .payAmount(paymentReqDto.getAmount())
-                    .productId(product.getId())
-                    .senderAccount(senderAccount)
-                    .receiverAccount(receiverAccount)
-                    .memberId(senderId)
-                    .status(PaymentStatus.PROCESSING)
-                    .category(PaymentCategory.BID_COMPLETE)
-                    .build();
-
-            // Payment 저장
-            Payment savedPayment = paymentRepository.save(payment);
-
-            //비 낙찰자들 돈 롤백
-            rollbackPayment(product.getId());
-            if (savedPayment == null) {
-                throw new RuntimeException("Failed to save the payment");
-            }
-
-            return convertToPaymentResDto(savedPayment);
 
         } catch (EntityNotFoundException e) {
             // 특정 엔티티를 찾지 못했을 때의 예외 처리
@@ -220,8 +242,9 @@ public class PaymentService {
             // 출금할 때 잔액 부족 예외 처리
             throw new RuntimeException("Unexpected error occurred during payment creation: " + e.getMessage(), e);
         }
-    }
 
+    }
+    @Transactional
     public PaymentResDto completePayment(String email, PaymentReqDto paymentReqDto) {
         try {
 
@@ -233,7 +256,7 @@ public class PaymentService {
             }
             // 구매완료가 이미 됐나 확인
             Payment payment = paymentRepository.findByMemberIdAndProductIdAndCategory(senderId,paymentReqDto.getProductId(), PaymentCategory.BID_COMPLETE).orElse(null);
-            if(payment.getStatus() == PaymentStatus.COMPLETED) {
+            if(payment != null && payment.getStatus() == PaymentStatus.COMPLETED) {
                 throw new EntityNotFoundException("Payment is already completed");
             }
             // 받은이 계좌에 입금
@@ -268,7 +291,7 @@ public class PaymentService {
             throw new RuntimeException("Unexpected error occurred during payment creation: " + e.getMessage(), e);
         }
     }
-
+    @Transactional
     public Boolean rollbackPayment(Long productId) {
         // 맴버아이디스를 다 조회해서 롤백으로 스테이터스를 바꾸고, 돈을 보낸이들에게 해당 금액을 돌려주는 로직.
 //        paymentRepository.findByMemberIdAndProductId()
@@ -286,15 +309,20 @@ public class PaymentService {
     }
 
     /** 지영 - 경매 등록 내역 조회 시 필요 **/
-
+    @Transactional
     // 거래 완료 내역 (payment의 status가 COMPLETED인 경우)
     public List<Product> getCompletedProducts(Long memberId) {
         List<Long> productIds = findCompletedProductIdsByMemberId(memberId, PaymentStatus.COMPLETED);
         return productService.findByIdIn(productIds);
     }
 
+    @Transactional
     // 거래 완료 내역
     public List<Long> findCompletedProductIdsByMemberId(Long memberId, PaymentStatus paymentStatus) {
         return paymentRepository.findCompletedProductIdsByMemberId(memberId, paymentStatus);
+    }
+    @Transactional
+    public Payment findByProductIdAndMemberIdAndCategory(Long productId, Long id, PaymentCategory paymentCategory) {
+        return paymentRepository.findByProductIdAndMemberIdAndCategory(productId, id, paymentCategory).orElse(null);
     }
 }

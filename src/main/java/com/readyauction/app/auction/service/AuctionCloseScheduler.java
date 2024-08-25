@@ -56,7 +56,7 @@ public class AuctionCloseScheduler {
                 String email = memberService.findEmailById(bid.getMemberId());
 
 
-                redisLockService.winnerLock(email, winnerReqDto);
+                bidService.winnerLock(email, winnerReqDto);
             }
 
             System.out.println("경매 마감");
