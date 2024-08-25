@@ -75,5 +75,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     """)
     Optional<List<String>> findImagesById(Long productId);
     // 예진 작업 끝
-}
 
+    List<Product> findByAuctionStatus(AuctionStatus auctionStatus); // 필터링을 위한 메서드
+}

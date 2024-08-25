@@ -6,127 +6,159 @@
 <body>
 
 
-
-
-
-
 <div layout:fragment="content1">
-<div class="breadcrumb breadcrumb-style-one mb-0 ">
-<div class="container">
-<div class="col-lg-12 text-center">
-<h1 class="breadcrumb-title">FAQ</h1>
-<ul class="d-flex justify-content-center breadcrumb-items">
-<li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a href="../index.html">Home</a></li>
-<li class="breadcrumb-item active">FAQ</li>
-</ul>
-</div>
-</div>
-</div>
+    <div class="breadcrumb breadcrumb-style-one mb-0 ">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">FAQ</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a>
+                    <li class="breadcrumb-item active">FAQ</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
 
-<section class="faq-section pt-110">
-<div class="container">
-<div class="row gy-5">
-<div class="col-lg-4 order-lg-1 order-2">
-<div class="faq-left-area">
-<div class="article">
-<div class="article-header">
-<h5>Most Popular Articles</h5>
-</div>
-<ul class="article-body">
-<li>
-<h6>01. Tips For Winning</h6>
-<p>“Lorem ipsum dolor sit amet, consectetur adi scing elit, sed do eiusmod tempor incididunt ut labore et dolore</p>
-</li>
-<li>
-<h6>02. How to Win Bid</h6>
-<p>“Lorem ipsum dolor sit amet, consectetur adi scing elit, sed do eiusmod tempor incididunt ut labore et dolore</p>
-</li>
-</ul>
-</div>
-<div class="qsn-area">
-<h5>HAVE ANY QUESTIONS?</h5>
-<form class="qsn-form">
-<div class="form-inner">
-<label>Your Name</label>
-<input type="text" name="name" placeholder="Type your name ">
-</div>
-<div class="form-inner">
-<textarea name="message" rows="5" placeholder="Type your question"></textarea>
-</div>
-<button class="qsn-send-btn">Submit Now</button>
-</form>
-</div>
-</div>
-</div>
-<div class="col-lg-8 order-lg-2 order-1">
+    <section class="faq-section pt-110">
+        <div class="container">
+            <div class="row gy-5">
+                <div class="col-lg-4 order-lg-1 order-2">
+                    <div class="faq-left-area">
+                        <div class="article">
+                            <div class="article-header">
+                                <h5>Most Popular Articles</h5>
+                            </div>
+                            <ul class="article-body">
+                                <li>
+                                    <h6>01. Tips For Winning</h6>
+                                    <p>“Lorem ipsum dolor sit amet, consectetur adi scing elit, sed do eiusmod tempor
+                                        incididunt ut labore et dolore</p>
+                                </li>
+                                <li>
+                                    <h6>02. How to Win Bid</h6>
+                                    <p>“Lorem ipsum dolor sit amet, consectetur adi scing elit, sed do eiusmod tempor
+                                        incididunt ut labore et dolore</p>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="qsn-area">
+                            <h5>HAVE ANY QUESTIONS?</h5>
+                            <form class="qsn-form">
+                                <div class="form-inner">
+                                    <label>Your Name</label>
+                                    <input type="text" name="name" placeholder="Type your name ">
+                                </div>
+                                <div class="form-inner">
+                                    <textarea name="message" rows="5" placeholder="Type your question"></textarea>
+                                </div>
+                                <button class="qsn-send-btn">Submit Now</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8 order-lg-2 order-1">
 
-<div class="faq-wrap">
-<div class="faq-item">
-<h5 class="accordion-button" id="heading01" data-bs-toggle="collapse" data-bs-target="#collapse01" aria-controls="collapse01">
-<span class="faq-serial">01</span> Posuere vestibulum duis aliquam magnis laoreet?
-</h5>
-<div id="collapse01" class="accordion-collapse collapse show">
-<div class="faq-body">
-You configure credit limits when you create packages in Offer Design. When a customer purchases a package, the credit limits defined in the package apply to the customer's services. See Creating packages customer purchases.
-</div>
-</div>
-</div>
-<div class="faq-item">
-<h5 id="heading02" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse02" aria-controls="collapse02">
-<span class="faq-serial">02</span> We help to create visual strategies?
-</h5>
-<div id="collapse02" class="accordion-collapse collapse">
-<div class="faq-body">
-Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper, libero ex hendrerit nunc, ac sagittis eros metus ut diam. Donec a nibh in libero maximus vehicula. Etiam sit amet condimentum erat. Pellentesque ultrices sagittis turpis, quis tempus ante viverra et.Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper, tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper.
-</div>
-</div>
-</div>
-<div class="faq-item">
-<h5 id="heading03" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse03" aria-controls="collapse03">
-<span class="faq-serial">03</span> Questionnaire on online shopping behavior during COVID-19
-</h5>
-<div id="collapse03" class="accordion-collapse collapse">
-<div class="faq-body">
-Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper, libero ex hendrerit nunc, ac sagittis eros metus ut diam. Donec a nibh in libero maximus vehicula. Etiam sit amet condimentum erat. Pellentesque ultrices sagittis turpis, quis tempus ante viverra et.Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper, tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper.
-</div>
-</div>
-</div>
-<div class="faq-item">
-<h5 id="heading04" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse04" aria-controls="collapse04">
-<span class="faq-serial">04</span> How do I know if I'm the high bidder?
-</h5>
-<div id="collapse04" class="accordion-collapse collapse">
-<div class="faq-body">
-Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper, libero ex hendrerit nunc, ac sagittis eros metus ut diam. Donec a nibh in libero maximus vehicula. Etiam sit amet condimentum erat. Pellentesque ultrices sagittis turpis, quis tempus ante viverra et.Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper, tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper.
-</div>
-</div>
-</div>
-<div class="faq-item">
-<h5 id="heading05" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse05" aria-controls="collapse05">
-<span class="faq-serial">05</span> How will I know if my bid was successful?
-</h5>
-<div id="collapse05" class="accordion-collapse collapse">
-<div class="faq-body">
-Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper, libero ex hendrerit nunc, ac sagittis eros metus ut diam. Donec a nibh in libero maximus vehicula. Etiam sit amet condimentum erat. Pellentesque ultrices sagittis turpis, quis tempus ante viverra et.Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper, tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper.
-</div>
-</div>
-</div>
-<div class="faq-item">
-<h5 id="heading06" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse06" aria-controls="collapse06">
-<span class="faq-serial">06</span> What happens if I bid on the wrong lot?
-</h5>
-<div id="collapse06" class="accordion-collapse collapse">
-<div class="faq-body">
-Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper, libero ex hendrerit nunc, ac sagittis eros metus ut diam. Donec a nibh in libero maximus vehicula. Etiam sit amet condimentum erat. Pellentesque ultrices sagittis turpis, quis tempus ante viverra et.Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper, tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper.
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
+                    <div class="faq-wrap">
+                        <div class="faq-item">
+                            <h5 class="accordion-button" id="heading01" data-bs-toggle="collapse"
+                                data-bs-target="#collapse01" aria-controls="collapse01">
+                                <span class="faq-serial">01</span> Posuere vestibulum duis aliquam magnis laoreet?
+                            </h5>
+                            <div id="collapse01" class="accordion-collapse collapse show">
+                                <div class="faq-body">
+                                    You configure credit limits when you create packages in Offer Design. When a
+                                    customer purchases a package, the credit limits defined in the package apply to the
+                                    customer's services. See Creating packages customer purchases.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <h5 id="heading02" class="accordion-button collapsed" data-bs-toggle="collapse"
+                                data-bs-target="#collapse02" aria-controls="collapse02">
+                                <span class="faq-serial">02</span> We help to create visual strategies?
+                            </h5>
+                            <div id="collapse02" class="accordion-collapse collapse">
+                                <div class="faq-body">
+                                    Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius,
+                                    diam vitae posuere semper, libero ex hendrerit nunc, ac sagittis eros metus ut diam.
+                                    Donec a nibh in libero maximus vehicula. Etiam sit amet condimentum erat.
+                                    Pellentesque ultrices sagittis turpis, quis tempus ante viverra et.Morbi aliquam
+                                    quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae
+                                    posuere semper, tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <h5 id="heading03" class="accordion-button collapsed" data-bs-toggle="collapse"
+                                data-bs-target="#collapse03" aria-controls="collapse03">
+                                <span class="faq-serial">03</span> Questionnaire on online shopping behavior during
+                                COVID-19
+                            </h5>
+                            <div id="collapse03" class="accordion-collapse collapse">
+                                <div class="faq-body">
+                                    Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius,
+                                    diam vitae posuere semper, libero ex hendrerit nunc, ac sagittis eros metus ut diam.
+                                    Donec a nibh in libero maximus vehicula. Etiam sit amet condimentum erat.
+                                    Pellentesque ultrices sagittis turpis, quis tempus ante viverra et.Morbi aliquam
+                                    quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae
+                                    posuere semper, tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <h5 id="heading04" class="accordion-button collapsed" data-bs-toggle="collapse"
+                                data-bs-target="#collapse04" aria-controls="collapse04">
+                                <span class="faq-serial">04</span> How do I know if I'm the high bidder?
+                            </h5>
+                            <div id="collapse04" class="accordion-collapse collapse">
+                                <div class="faq-body">
+                                    Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius,
+                                    diam vitae posuere semper, libero ex hendrerit nunc, ac sagittis eros metus ut diam.
+                                    Donec a nibh in libero maximus vehicula. Etiam sit amet condimentum erat.
+                                    Pellentesque ultrices sagittis turpis, quis tempus ante viverra et.Morbi aliquam
+                                    quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae
+                                    posuere semper, tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <h5 id="heading05" class="accordion-button collapsed" data-bs-toggle="collapse"
+                                data-bs-target="#collapse05" aria-controls="collapse05">
+                                <span class="faq-serial">05</span> How will I know if my bid was successful?
+                            </h5>
+                            <div id="collapse05" class="accordion-collapse collapse">
+                                <div class="faq-body">
+                                    Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius,
+                                    diam vitae posuere semper, libero ex hendrerit nunc, ac sagittis eros metus ut diam.
+                                    Donec a nibh in libero maximus vehicula. Etiam sit amet condimentum erat.
+                                    Pellentesque ultrices sagittis turpis, quis tempus ante viverra et.Morbi aliquam
+                                    quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae
+                                    posuere semper, tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <h5 id="heading06" class="accordion-button collapsed" data-bs-toggle="collapse"
+                                data-bs-target="#collapse06" aria-controls="collapse06">
+                                <span class="faq-serial">06</span> What happens if I bid on the wrong lot?
+                            </h5>
+                            <div id="collapse06" class="accordion-collapse collapse">
+                                <div class="faq-body">
+                                    Morbi aliquam quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius,
+                                    diam vitae posuere semper, libero ex hendrerit nunc, ac sagittis eros metus ut diam.
+                                    Donec a nibh in libero maximus vehicula. Etiam sit amet condimentum erat.
+                                    Pellentesque ultrices sagittis turpis, quis tempus ante viverra et.Morbi aliquam
+                                    quis quam in luctus. Nullam tincidunt pulvinar imperdiet. Sed varius, diam vitae
+                                    posuere semper, tincidunt pulvinar imperdiet. Sed varius, diam vitae posuere semper.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 
 </div>
