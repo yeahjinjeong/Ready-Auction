@@ -82,6 +82,8 @@ public class BidService {
             return startBid(email, bidDto);
         });
     }
+
+
     public ProductDto winnerLock(String email, WinnerReqDto winnerReqDto) {
         String lockKey = String.format("Product:productId:%d", winnerReqDto.getProductId());
         return redisLockService.executeWithLock(lockKey, 30, 30, TimeUnit.SECONDS, () -> {
