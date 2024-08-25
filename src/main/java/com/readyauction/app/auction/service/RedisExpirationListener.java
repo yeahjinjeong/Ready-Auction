@@ -5,6 +5,7 @@ import com.readyauction.app.auction.entity.AuctionStatus;
 import com.readyauction.app.auction.entity.Bid;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.entity.PurchaseCategory;
+import com.readyauction.app.cash.service.PaymentService;
 import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ public class RedisExpirationListener implements MessageListener {
     private final BidService bidService;
     private final ProductService productService;
     private final MemberService memberService;
+    private final PaymentService paymentService;
     @Override
     public void onMessage(Message message, byte[] pattern) {
         String key = message.toString();
@@ -29,9 +31,20 @@ public class RedisExpirationListener implements MessageListener {
             String productId = key.substring("Auction:ProductId:".length());
             endAuction(Long.valueOf(productId));
 
-        } else {
+        } else if (key.startsWith("EndPayment:ProductId:")) {
+            String productId = key.substring("EndPayment:ProductId:".length());
+            paymentPenalty(Long.valueOf(productId));
+        } else{
             log.warn("Received expiration event for unknown key: " + key);
         }
+
+    }
+    public void paymentPenalty(Long productId){
+        paymentService.paymentPanalty(productId);
+        //paymentStatus OUTSTANDING 로 바꾸기. 페이먼트 저장...
+        //판매자에게 해당 페이먼트의 70퍼 입금
+        //비낙찰자들 선입금액 전부 롤백. 단 낙찰자는 제외.
+
     }
     public void endAuction(Long productId){
         log.warn("마감 경매 조회");
