@@ -55,7 +55,7 @@ public class ChatMessageController {
 
     // chatRoomId의 모든 메시지들의 상태를 1 (읽음)으로 바꾼다
     // 업데이트
-    @PostMapping("/message/{chatRoomId}/read")
+    @PatchMapping("/message/{chatRoomId}/read")
     public void updateMessages(
             @PathVariable Long chatRoomId,
             @RequestParam Long anotherMemberId
