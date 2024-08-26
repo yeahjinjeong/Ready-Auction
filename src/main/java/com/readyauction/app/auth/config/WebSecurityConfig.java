@@ -41,7 +41,7 @@ public class WebSecurityConfig {
             // 특수한 경우부터 보편적인 경우순으로 작성
             registry.requestMatchers("/auction-api/create", "/auction", "/", "/index", "/inquiry/faq").permitAll() // 누구나 허용
                     .requestMatchers( "/member/register").anonymous() // 인증하지 않은 사용자만 허용
-                    .requestMatchers("/mypage/**", "/auction/**", "/cash/**").authenticated() // 인증된 사용자만 허용
+                    .requestMatchers("/mypage/**", "/auction/**", "/cash/**", "/chat/**").authenticated() // 인증된 사용자만 허용
 //                    .requestMatchers("/admin/**").hasRole("ADMIN")  // ROLE_ADMIN 권한이 있는 사용자만 허용
                     .anyRequest().authenticated();
         });

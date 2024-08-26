@@ -6,9 +6,11 @@ import com.readyauction.app.auction.entity.Bid;
 import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.entity.PurchaseCategory;
 import com.readyauction.app.cash.service.PaymentService;
+import com.readyauction.app.ncp.service.NcpObjectStorageService;
 import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,9 @@ public class RedisExpirationListener implements MessageListener {
     private final ProductService productService;
     private final MemberService memberService;
     private final PaymentService paymentService;
+    private final NcpObjectStorageService ncpObjectStorageService;
+    @Value("${spring.s3.bucket}")
+    private String bucketName;
     @Override
     public void onMessage(Message message, byte[] pattern) {
         String key = message.toString();
@@ -34,10 +39,19 @@ public class RedisExpirationListener implements MessageListener {
         } else if (key.startsWith("EndPayment:ProductId:")) {
             String productId = key.substring("EndPayment:ProductId:".length());
             paymentPenalty(Long.valueOf(productId));
+        } else if(key.startsWith("Auction:ImageId:")){
+            String imageKey = key.substring("Auction:ImageId:".length());
+            deleteImage(imageKey);
         } else{
             log.warn("Received expiration event for unknown key: " + key);
         }
 
+    }
+    public void deleteImage(String imageUrl) {
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            String key = imageUrl.substring(imageUrl.indexOf(bucketName) + bucketName.length() + 1);
+            ncpObjectStorageService.deleteFile(key);
+        }
     }
     public void paymentPenalty(Long productId){
         paymentService.paymentPanalty(productId);

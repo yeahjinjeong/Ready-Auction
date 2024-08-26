@@ -6,6 +6,56 @@
     <!-- Include jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
+        /* 커스텀 알림창 스타일 */
+        .custom-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .custom-alert-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .custom-alert-box h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .custom-alert-box p {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .custom-alert-box p.warning {
+            color: red;
+            font-weight: bold;
+        }
+
+        .custom-alert-close-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
 
         /* Progress bar style */
         #progress-bar-container {
@@ -89,6 +139,33 @@
 <body>
 
 <div layout:fragment="content1">
+    <!-- Custom alert overlay -->
+    <div class="custom-alert-overlay" id="customAlert" style="display: none;">
+        <div class="custom-alert-box">
+            <h2>경고</h2>
+            <p>상품은 등록한 이후 수정할 수 없습니다.</p>
+            <p class="warning">이 내용을 확인 후 등록해 주세요.</p>
+            <button class="custom-alert-close-btn" onclick="closeCustomAlert()">확인</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check if the user has visited the page before
+            const visited = localStorage.getItem('visited');
+
+            // If not visited before, show the alert
+            if (!visited) {
+                document.getElementById('customAlert').style.display = 'flex';
+                localStorage.setItem('visited', 'true');
+            }
+        });
+
+        function closeCustomAlert() {
+            document.getElementById('customAlert').style.display = 'none';
+        }
+
+        // Your existing JavaScript code for handling form submission and other features
+    </script>
     <div class="breadcrumb breadcrumb-style-one mb-0 ">
         <div class="container">
             <div class="col-lg-12 text-center">
@@ -162,16 +239,16 @@
                     <div class="blog-widget widget-categories">
                         <h5 class="widget-title">경매 종료 날짜 및 시간 설정:</h5>
                         <ul class="sidebar-tag-list">
-                            <li><a onclick="setEndTime(1)">1일</a></li>
-                            <li><a onclick="setEndTime(3)">3일</a></li>
-                            <li><a onclick="setEndTime(5)">5일</a></li>
-                            <li><a onclick="setEndTime(7)">7일</a></li>
+                            <li><a onclick="setEndTime(1,this)">1일</a></li>
+                            <li><a onclick="setEndTime(3,this)">3일</a></li>
+                            <li><a onclick="setEndTime(5,this)">5일</a></li>
+                            <li><a onclick="setEndTime(7,this)">7일</a></li>
                         </ul>
-                        <input type="datetime-local" id="endTime" name="endTime" readonly>
+                        <input type="hidden"  id="endTime" name="endTime" readonly>
                     </div>
 
                     <script>
-                        function setEndTime(daysToAdd) {
+                        function setEndTime(daysToAdd,element) {
                             const endTimeInput = document.getElementById('endTime');
                             const currentDate = new Date();
 
@@ -188,6 +265,11 @@
                             // Formatting as ISO 8601 string for input type="datetime-local"
                             const formattedDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
                             endTimeInput.value = formattedDateTime;
+                            // Change the color of the clicked link to red
+                            if (element) {
+                                element.style.color = ''; // Reset the previous active link color
+                            }
+                            element.style.color = 'red'; // Set the clicked link color to red
                         }
 
                         document.addEventListener('DOMContentLoaded', function() {
