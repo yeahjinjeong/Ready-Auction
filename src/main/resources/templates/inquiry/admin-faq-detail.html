@@ -89,14 +89,6 @@
             <a th:href="@{/inquiry/admin-faq}" class="alpha-btn-md-dark">List</a>
           </div>
         </div>
-        <div class="col-lg-4">
-          <form class="sidebar-search" >
-            <div class="form-inner d-flex justify-content-center ">
-              <input type="text" placeholder="Enter Keward">
-              <button class="search-btn">SEARCH</button>
-            </div>
-          </form>
-        </div>
       </div>
     </div>
   </section>
@@ -114,9 +106,7 @@
         const pTag = commentBody.querySelector('p');
 
         // 텍스트 영역을 생성합니다.
-        const textareaHtml = `
-        <textarea class="edit-textarea">${pTag.textContent}</textarea>
-      `;
+        const textareaHtml = `<textarea class="edit-textarea" name="content" placeholder="${pTag.textContent}"></textarea>`;
 
         // 기존 p 태그를 숨기고, 새로운 textarea를 추가합니다.
         pTag.style.display = 'none';
@@ -137,13 +127,17 @@
         const pTag = commentBody.querySelector('p');
 
         // p 태그의 내용을 텍스트 영역의 값으로 업데이트합니다.
-        pTag.textContent = textarea.value;
+        if (textarea.value !== '') {
+          pTag.textContent = textarea.value;
+        }
 
+        console.log(event.target);
         const answeredAt = event.target.getAttribute("data-answer-answeredAt");
+        console.log(answeredAt);
 
         const data = {
           inquiryId : `[[${inquiry.id}]]`,
-          content : textarea.value,
+          content : pTag.textContent,
           answeredAt : answeredAt
         }
 
@@ -172,74 +166,41 @@
         event.target.classList.remove('save-btn');
         event.target.classList.add('edit-btn');
       }
-    });
 
-    // document.querySelectorAll('.edit-btn').forEach(button => {
-    //   button.addEventListener('click', function() {
-    //     console.log("야야야야야야야ㅑ양");
-    //     // 현재 클릭된 버튼을 기준으로 부모 요소를 찾습니다.
-    //     const commentBody = this.closest('.single-comment').querySelector('.comment-body');
-    //     const pTag = commentBody.querySelector('p');
-    //
-    //     // 텍스트 영역을 생성합니다.
-    //     const textareaHtml = `
-    //     <textarea class="edit-textarea">${pTag.textContent}</textarea>`;
-    //
-    //     commentBody.insertAdjacentHTML('beforeend', textareaHtml);
-    //     console.log(commentBody);
-    //
-    //     // p 태그를 숨기고, 새로운 textarea를 추가합니다.
-    //     pTag.style.display = 'none';
-    //
-    //     // 버튼의 텍스트를 변경하여 '저장' 버튼으로 만듭니다.
-    //     button.textContent = '저장';
-    //     this.classList.remove('edit-btn');
-    //     this.classList.add('save-btn');
-    //
-    //     button.stopPropagation();
-    //   });
-    // });
+  else if (event.target.classList.contains('delete-btn')) {
+      event.preventDefault();
+      event.stopPropagation(); // 이벤트 전파 방지
 
-    // document.querySelectorAll('.save-btn').forEach(button => {
-    //   button.addEventListener('click', function() {
-    //     console.log("야아어ㅏㅓ야ㅓㅇ")
-    //     // 현재 클릭된 버튼을 기준으로 부모 요소를 찾습니다.
-    //     const commentBody = this.closest('.single-comment').querySelector('.comment-body');
-    //     const editTextarea = commentBody.querySelector('.edit-textarea');
-    //     const pTag = commentBody.querySelector('p');
-    //
-    //     pTag.textContent = editTextarea.textContent;
-    //     pTag.style.display = 'block';
-    //
-    //     const data = {
-    //       inquiryId : `[[${inquiry.id}]]`,
-    //       content : editTextarea.textContent
-    //     }
-    //
-    //     editTextarea.remove();
-    //
-    //     fetch('[[@{/inquiry/detail/answer}]]', {
-    //       method: 'PATCH', // HTTP 메서드
-    //       headers: {
-    //         'Content-Type': 'application/json', // 요청의 내용 타입
-    //       },
-    //       body: JSON.stringify(data) // 서버로 보낼 데이터
-    //     }).then(response => {
-    //       if (response.ok) {
-    //         console.log('Request successful'); // 상태 코드가 200-299일 때
-    //       } else {
-    //         console.error('Request failed with status:', response.status); // 상태 코드가 200-299가 아닐 때
-    //       }
-    //     }) .catch(error => {
-    //       console.error('There was a problem with the fetch operation:', error); // 네트워크 오류 등
-    //     });
-    //
-    //     // 버튼의 텍스트를 변경하여 '저장' 버튼으로 만듭니다.
-    //     button.textContent = '수정';
-    //     this.classList.remove('save-btn');
-    //     this.classList.add('edit-btn');
-    //   });
-    // })
+      const commentBox = event.target.closest('.single-comment');
+      const commentBody = event.target.closest('.single-comment').querySelector('.comment-body');
+      const pTag = commentBody.querySelector('p');
+      const answeredAt = event.target.getAttribute("data-answer-answeredAt");
+
+      const data = {
+        inquiryId : `[[${inquiry.id}]]`,
+        content : pTag.textContent,
+        answeredAt : answeredAt
+      }
+
+      fetch('[[@{/inquiry/detail/delete/answer}]]', {
+        method: 'PATCH', // HTTP 메서드
+        headers: {
+          'Content-Type': 'application/json', // 요청의 내용 타입
+        },
+        body: JSON.stringify(data) // 서버로 보낼 데이터
+      }).then(response => {
+        if (response.ok) {
+          console.log('Request successful'); // 상태 코드가 200-299일 때
+        } else {
+          console.error('Request failed with status:', response.status); // 상태 코드가 200-299가 아닐 때
+        }
+      }) .catch(error => {
+        console.error('There was a problem with the fetch operation:', error); // 네트워크 오류 등
+      });
+
+      commentBox.innerHTML = '';
+    }
+  });
   });
 </script>
 </body>
