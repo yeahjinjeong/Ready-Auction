@@ -38,4 +38,8 @@ public class Inquiry {
     public void addAnswer(Answer answer) {
         this.answers.add(answer);
     }
+
+    public void deleteAnswer(List<Answer> answers) {
+        this.answers = answers;
+    }
 }

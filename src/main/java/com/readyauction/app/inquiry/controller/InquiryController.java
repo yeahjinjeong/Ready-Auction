@@ -60,9 +60,20 @@ public class InquiryController {
             @RequestBody InquiryAnswerDto inquiryAnswerDto,
             @AuthenticationPrincipal AuthPrincipal principal
     ){
-        // 한번밖에 못단다고 가정하기
         log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
         inquiryService.changeAnswer(principal.getMember().getId(), inquiryAnswerDto);
         return ResponseEntity.ok("ok");
     }
+
+    @ResponseBody
+    @PatchMapping("/detail/delete/answer")
+    public ResponseEntity<?> deleteInquiryDetailAnswer(
+            @RequestBody InquiryAnswerDto inquiryAnswerDto,
+            @AuthenticationPrincipal AuthPrincipal principal
+    ){
+        log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
+        inquiryService.deleteAnswer(principal.getMember().getId(), inquiryAnswerDto);
+        return ResponseEntity.ok("ok");
+    }
+
 }
