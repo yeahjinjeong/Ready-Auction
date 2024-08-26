@@ -325,19 +325,6 @@ public class PaymentService {
                 .build();
     }
 
-    /** 지영 - 경매 등록 내역 조회 시 필요 **/
-    @Transactional
-    // 거래 완료 내역 (payment의 status가 COMPLETED인 경우)
-    public List<Product> getCompletedProducts(Long memberId) {
-        List<Long> productIds = findCompletedProductIdsByMemberId(memberId, PaymentStatus.COMPLETED);
-        return productService.findByIdIn(productIds);
-    }
-
-    @Transactional
-    // 거래 완료 내역
-    public List<Long> findCompletedProductIdsByMemberId(Long memberId, PaymentStatus paymentStatus) {
-        return paymentRepository.findCompletedProductIdsByMemberId(memberId, paymentStatus);
-    }
     @Transactional
     public Payment findByProductIdAndMemberIdAndCategory(Long productId, Long id, PaymentCategory paymentCategory) {
         return paymentRepository.findByProductIdAndMemberIdAndCategory(productId, id, paymentCategory).orElse(null);

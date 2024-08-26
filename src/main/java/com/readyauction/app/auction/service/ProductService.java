@@ -371,21 +371,38 @@ public class ProductService {
 
     /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
 
-    // 판매 중 (auctionStatus가 START 또는 PROGRESS)
+    // 판매 중 내역
     @Transactional
     public List<Product> getActiveProducts(Long memberId) {
-        return productRepository.findByMemberIdAndAuctionStatusIn(memberId, List.of(AuctionStatus.START, AuctionStatus.PROGRESS));
-    }
-    @Transactional
-    public List<Product> findByIdIn(List<Long> productIds) {
-        return productRepository.findByIdIn(productIds);
-    }
-    @Transactional
-    public void save(Product product) {
-        productRepository.save(product);
+        return productRepository.findActiveProductsByMemberId(memberId);
     }
 
-    // 지영 - 마이페이지 경매 참여 - 낙찰 시 결제 버튼
+    // 거래 완료 내역
+    @Transactional
+    public List<Product> getCompletedProducts(Long memberId) {
+        // 결제 완료
+        List<Product> confirmedProducts = productRepository.findConfirmedProductsByMemberId(memberId);
+        // 구매 확정
+        List<Product> acceptedProducts = productRepository.findAcceptedProductsByMemberId(memberId);
+
+        // 두 리스트를 합치기
+        List<Product> completedProducts = new ArrayList<>();
+        completedProducts.addAll(confirmedProducts);
+        completedProducts.addAll(acceptedProducts);
+
+        return completedProducts;
+    }
+
+    // 유찰 내역
+    @Transactional
+    public List<Product> getFailedProducts(Long memberId) {
+        return productRepository.findFailedProductsByMemberId(memberId);
+    }
+
+
+    /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
+
+    // 낙찰 시 결제 버튼
     @Transactional
     public boolean isWinnerConfirmed(Long productId, Long memberId) {
         // Product에서 Winner의 상태를 확인하는 로직
@@ -398,7 +415,7 @@ public class ProductService {
                 product.getWinner().getStatus() == PurchaseStatus.CONFIRMED;
     }
 
-    // 지영 - 마이페이지 경매 참여 - 낙찰 시 결제 완료 버튼
+    // 낙찰 시 결제 완료 버튼
     @Transactional
     public boolean isPaymentComplete(Long productId, Long memberId) {
         // Product에서 Winner의 상태를 확인하는 로직
@@ -414,5 +431,9 @@ public class ProductService {
     @Transactional
     public String findByProductImage(String imageUrl) {
         return productRepository.findImageByProductImage(imageUrl).orElse(null);
+    }
+    @Transactional
+    public void save(Product product) {
+        productRepository.save(product);
     }
 }
