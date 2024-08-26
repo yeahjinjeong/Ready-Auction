@@ -31,11 +31,20 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.auctionStatus <> :status")
     Page<Product> findActiveProducts(@Param("status") AuctionStatus status, Pageable pageable);
 
+    /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
+    // 낙찰
+    @Query("""
+    SELECT p FROM Product p
+    WHERE p.winner.memberId = :memberId
+    """)
+    List<Product> findWinningBids(@Param("memberId") Long memberId);
+
     /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
+
     // 판매 중 내역 (start 또는 progress 상태인 경매)
     @Query("""
-    SELECT p FROM Product p 
-    WHERE p.memberId = :memberId 
+    SELECT p FROM Product p
+    WHERE p.memberId = :memberId
     AND (p.auctionStatus = 'START' OR p.auctionStatus = 'PROGRESS')
     """)
     List<Product> findActiveProductsByMemberId(@Param("memberId") Long memberId);
@@ -43,16 +52,16 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // 거래 완료 내역
     // 1. 결제 완료 (confirmed 상태인 winner)
     @Query("""
-    SELECT p FROM Product p 
-    WHERE p.memberId = :memberId 
+    SELECT p FROM Product p
+    WHERE p.memberId = :memberId
     AND p.winner.status = 'CONFIRMED'
     """)
     List<Product> findConfirmedProductsByMemberId(@Param("memberId") Long memberId);
 
     // 2. 구매확정 (accepted 상태인 winner)
     @Query("""
-    SELECT p FROM Product p 
-    WHERE p.memberId = :memberId 
+    SELECT p FROM Product p
+    WHERE p.memberId = :memberId
     AND p.winner.status = 'ACCEPTED'
     """)
     List<Product> findAcceptedProductsByMemberId(@Param("memberId") Long memberId);

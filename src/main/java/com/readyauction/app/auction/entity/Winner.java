@@ -15,7 +15,6 @@ import java.sql.Timestamp;
 @Builder
 public class Winner {
 
-
     @Column(name = "winner_member_id", table = "winner") // 열 이름을 명시적으로 지정
     private Long memberId;
     @Column(table = "winner")

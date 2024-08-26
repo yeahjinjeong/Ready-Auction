@@ -31,10 +31,6 @@ public class Member extends User {
         this.setName(name);
     }
 
-    public ProfileDto toProfileDto() {
-        return new ProfileDto(this.getNickname(), this.getAddress(), this.getMannerScore(), this.getProfilePicture());
-    }
-
     public Member(String nickname, String address, String profilePicture, Integer mannerScore) {
         super(nickname, address, profilePicture);  // User 필드 초기화
         this.mannerScore = mannerScore;
