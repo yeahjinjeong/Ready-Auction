@@ -350,7 +350,7 @@
                     </div>
 
                     <div class="card-body">
-                        <h5 class="card-title">전체 경매 내역 <span id="auctionFilterLabel">| 입찰 시작</span></h5>
+                        <h5 class="card-title">전체 경매 내역 <span id="auctionFilterLabel">| 경매 시작</span></h5>
 
                         <table class="table table-borderless datatable">
                             <thead>
@@ -358,7 +358,7 @@
                                 <th scope="col">상품ID</th>
                                 <th scope="col">상품명</th>
                                 <th scope="col">판매자ID</th>
-                                <th scope="col">현재 가격</th>
+                                <th scope="col">다음 입찰 가격</th>
                                 <th scope="col" id="bidOrWinnerHeader">입(낙)찰자 ID</th>
                                 <th scope="col" id="bidOrWinnerPriceHeader">입(낙)찰 가격</th>
                                 <th scope="col" id="purchaseStatusHeader">결제 상태</th>
@@ -391,7 +391,7 @@
                                 if (status === 'START' || status === 'PROGRESS') {
                                     purchaseStatusHeader.style.display = 'none';
                                     bidOrWinnerHeader.textContent = '최고 입찰자 ID'; // 헤더 텍스트 변경
-                                    bidOrWinnerPriceHeader.textContent = '입찰 가격'; // 헤더 텍스트 변경
+                                    bidOrWinnerPriceHeader.textContent = '최고 입찰 가격'; // 헤더 텍스트 변경
                                 } else if (status === 'END') {
                                     purchaseStatusHeader.style.display = 'table-cell';
                                     bidOrWinnerHeader.textContent = '낙찰자 ID'; // 헤더 텍스트 변경
@@ -442,7 +442,7 @@
                             .catch(error => console.error('Error fetching auction bid data:', error));
                     }
 
-                    document.addEventListener("DOMContentLoaded", () => loadAuctionBids('START', '입찰 시작'));
+                    document.addEventListener("DOMContentLoaded", () => loadAuctionBids('START', '경매 시작'));
                 </script>
 
                 <!-- 경매 내역 끝-->
