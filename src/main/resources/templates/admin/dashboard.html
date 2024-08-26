@@ -371,9 +371,12 @@
                     </div>
                 </div>
 
-                <script>
+                <script th:inline="javascript">
                     function loadAuctionBids(status, labelText) {
-                        fetch(`/app/api/statistics/auctions/bids?status=${status}`)
+                        // 타임리프에서 동적으로 URL을 생성
+                        let url = /*[[ @{/api/statistics/auctions/bids} ]]*/;
+
+                        fetch(url + `?status=${status}`)
                             .then(response => response.json())
                             .then(data => {
                                 const tableBody = document.getElementById('auctionBidsTableBody');
@@ -387,7 +390,7 @@
                                 // 결제 상태 헤더 숨기기 (START 또는 PROGRESS일 때)
                                 if (status === 'START' || status === 'PROGRESS') {
                                     purchaseStatusHeader.style.display = 'none';
-                                    bidOrWinnerHeader.textContent = '입찰자 ID'; // 헤더 텍스트 변경
+                                    bidOrWinnerHeader.textContent = '최고 입찰자 ID'; // 헤더 텍스트 변경
                                     bidOrWinnerPriceHeader.textContent = '입찰 가격'; // 헤더 텍스트 변경
                                 } else if (status === 'END') {
                                     purchaseStatusHeader.style.display = 'table-cell';
@@ -399,7 +402,7 @@
                                 auctionFilterLabel.textContent = `| ${labelText}`;
 
                                 if (data.length === 0) {
-                                    tableBody.innerHTML = `<tr><td colspan="7" class="text-center">No auction bids found for the selected status.</td></tr>`;
+                                    tableBody.innerHTML = `<tr><td colspan="7" class="text-center">경매 내역 없음.</td></tr>`;
                                     return;
                                 }
 
