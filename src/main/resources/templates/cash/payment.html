@@ -185,6 +185,31 @@
                                 $(document).ready(function() {
                                     $('#PaymentForm').on('submit', function(event) {
                                         event.preventDefault(); // 폼의 기본 제출 동작을 막습니다.
+
+                                        // 페이지 클릭 방지를 위한 오버레이 추가
+                                        const overlay = document.createElement('div');
+                                        overlay.style.position = 'fixed';
+                                        overlay.style.top = '0';
+                                        overlay.style.left = '0';
+                                        overlay.style.width = '100%';
+                                        overlay.style.height = '100%';
+                                        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                                        overlay.style.zIndex = '1000';
+                                        overlay.style.display = 'flex';
+                                        overlay.style.justifyContent = 'center';
+                                        overlay.style.alignItems = 'center';
+                                        document.body.appendChild(overlay);
+
+                                        // 로딩 스피너 추가
+                                        const spinner = document.createElement('div');
+                                        spinner.style.border = '16px solid #f3f3f3'; /* Light grey */
+                                        spinner.style.borderTop = '16px solid #3498db'; /* Blue */
+                                        spinner.style.borderRadius = '50%';
+                                        spinner.style.width = '120px';
+                                        spinner.style.height = '120px';
+                                        spinner.style.animation = 'spin 2s linear infinite';
+                                        overlay.appendChild(spinner);
+
                                         // 요청에 보낼 데이터 (PaymentReqDto에 해당하는 데이터 구성)
                                         var paymentData = {
                                             productId: [[${productDetail.id}]],  // 상품 ID
@@ -202,10 +227,11 @@
                                                 // 성공적으로 응답을 받은 경우 실행됩니다.
                                                 console.log('Payment created successfully:', response);
                                                 alert('결제가 성공적으로 처리되었습니다!');
-                                                // 필요에 따라 페이지 리다이렉션, 메시지 표시 등을 수행할 수 있습니다.
+
+                                                // 오버레이 및 스피너 제거
+                                                document.body.removeChild(overlay);
+
                                                 // 예진 작업 시작
-                                                // console.log([[${productDetail.id}]]);
-                                                // console.log(productId);
                                                 fetch(`[[@{/chat/room}]]`, {
                                                     method : 'post',
                                                     headers: {
@@ -213,23 +239,35 @@
                                                     },
                                                     body: JSON.stringify([[${productDetail.id}]])
                                                 }).then(response => {
-                                                    // 응답이 성공적인지 확인
                                                     if (!response.ok) {
                                                         throw new Error('Network response was not ok');
                                                     }
-                                                    // JSON 형식으로 응답 본문을 파싱
                                                     window.location.href= `[[@{/chat/list}]]`;
-                                                })
+                                                });
                                                 // 예진 작업 끝
                                             },
                                             error: function(xhr, status, error) {
                                                 // 요청이 실패한 경우 실행됩니다.
                                                 console.error('Error occurred while creating payment:', error);
                                                 alert('결제 중 오류가 발생했습니다. 다시 시도해주세요.');
+
+                                                // 오버레이 및 스피너 제거
+                                                document.body.removeChild(overlay);
                                             }
                                         });
                                     });
                                 });
+
+                                // 로딩 스피너 애니메이션을 위한 CSS
+                                const style = document.createElement('style');
+                                style.innerHTML = `
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+`;
+                                document.head.appendChild(style);
+
                             </script>
 
                         </div>

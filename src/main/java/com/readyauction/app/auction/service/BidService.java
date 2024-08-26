@@ -268,12 +268,6 @@ public class BidService {
         return bidRepository.findBiddingBids(memberId);
     }
 
-    // 낙찰 내역
-    @Transactional
-    public List<Bid> getWinningBids(Long memberId) {
-        return bidRepository.findWinningBids(memberId);
-    }
-
     // 패찰 내역
     @Transactional
     public List<Bid> getLosingBids(Long memberId) {

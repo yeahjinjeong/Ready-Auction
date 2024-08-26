@@ -8,21 +8,24 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class NcpObjectStorageService {
     private static final Logger log = LoggerFactory.getLogger(NcpObjectStorageService.class);
     private final AmazonS3Client amazonS3Client;
-
+    private final RedisTemplate<String, String> redisTemplate;
     @Value("${spring.s3.bucket}")
     private String bucketName;
 
@@ -81,6 +84,14 @@ public class NcpObjectStorageService {
                             .uploadFilePath(filePath)
                             .uploadFileUrl(uploadFileUrl)
                             .build());
+            String pid = ManagementFactory.getRuntimeMXBean().getName();
+
+            String key =  "Auction:ImageId:" + uploadFileUrl;
+            redisTemplate.opsForValue().set(key,pid);
+            redisTemplate.expire(key,5, TimeUnit.SECONDS);
+
+            log.info("Auction for Image ID: " + uploadFileUrl);
+
         }
 
         return s3files;

@@ -45,7 +45,7 @@
       <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
        <button class="nav-link active" id="v-btn-pp1" data-bs-toggle="pill" data-bs-target="#v-pills-pp1" type="button" role="tab" aria-controls="v-pills-pp1" aria-selected="true">내 프로필 </button>
        <button class="nav-link" id="v-btn-pp2" data-bs-toggle="pill" data-bs-target="#v-pills-pp2" type="button" role="tab" aria-controls="v-pills-pp2" aria-selected="false">캐시</button>
-       <button class="nav-link" id="v-btn-pp3" data-bs-toggle="pill" data-bs-target="#v-pills-pp3" type="button" role="tab" aria-controls="v-pills-pp3" aria-selected="false">계정</button>
+<!--       <button class="nav-link" id="v-btn-pp3" data-bs-toggle="pill" data-bs-target="#v-pills-pp3" type="button" role="tab" aria-controls="v-pills-pp3" aria-selected="false">계정</button>-->
        <button class="nav-link" id="v-btn-pp4" data-bs-toggle="pill" data-bs-target="#v-pills-pp4" type="button" role="tab" aria-controls="v-pills-pp4" aria-selected="false">경매 참여 내역</button>
        <button class="nav-link" id="v-btn-pp5" data-bs-toggle="pill" data-bs-target="#v-pills-pp5" type="button" role="tab" aria-controls="v-pills-pp5" aria-selected="false">경매 등록 내역</button>
        <button class="nav-link" id="v-btn-pp7" data-bs-toggle="pill" data-bs-target="#v-pills-pp6" type="button" role="tab" aria-controls="v-pills-pp6" aria-selected="false">1:1 문의 내역</button>
@@ -68,7 +68,25 @@
             <li><span>닉네임 :</span><span th:text="${profileDto.nickname}"></span></li>
             <li><span>내 동네 :</span><span th:text="${profileDto.address}"></span></li>
             <li><span>매너지수 :</span><span th:text="${profileDto.mannerScore}"></span></li>
-            <li><span>받은 매너 평가 :</span><span text=""></span></li>
+            <li>
+             <span>좋아요 :</span>
+             <ul>
+              <li th:each="entry : ${profileDto.likeCounts}">
+               <span th:text="${entry.key}">항목명</span>:
+               <span th:text="${entry.value}">0</span>개
+              </li>
+             </ul>
+            </li>
+
+            <li>
+             <span>싫어요 :</span>
+             <ul>
+              <li th:each="entry : ${profileDto.dislikeCounts}">
+               <span th:text="${entry.key}">항목명</span>:
+               <span th:text="${entry.value}">0</span>개
+              </li>
+             </ul>
+            </li>
            </ul>
            <div style="text-align: right">
             <a th:href="@{/mypage/profile/update}" class="alpha-btn-md-dark">Edit</a>
@@ -215,44 +233,44 @@
 
 
       <!-- 계정 -->
-      <div class="tab-pane fade" id="v-pills-pp3" role="tabpanel" aria-labelledby="v-btn-pp3">
-       <div class="tab-inner-contentbox mt-0">
-        <h5 class="pp-title pt-0">Introduction</h5>
-        <p>This Privacy Policy describes how your personal information is collected, used, and shared when you visit,
-         subscribe, register or make a purchase from nftfox, ‘Site’. </p>
-        <h5 class="pp-title">Definition of personal data</h5>
-        <p>Dictum vestibulum nulla justo sed, ligula rutrum sollicitudin, vivamus non. Nunc donec tincidunt, vivamus
-         repellat habitanaccumsan faucibus ante in mauris. Lorem purus leo eleifend semper sit, donec duis vel orci lorem
-         consectetuer, lacus lorem praesent elit odio ut, tortor id metus fermentum mi ipsum, quisque proin. Aptent
-         aliquet facilisis</p>
-        <ul class="pp-list">
-         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-          industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book. It has.</li>
-         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-          industry's standard dummy text ever since the 1500s.</li>
-         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-          industry's standard dummy text ever since the 1500s, when an unknown printer </li>
-        </ul>
-        <h5 class="pp-title">Cookies and Similar Technologies</h5>
-        <p>We use cookies and similar technologies to provide, protect, and improve our products and services, such as by personalizing content, offering and measuring advertisements, understanding user behavior, and providing a safer experience.</p>
-        <h6 class="highlighted-text">You can remove or reject cookies using your browser or device settings, but in some cases doing so may affect your ability to use our products and services.</h6>
-        <ul class="pp-list">
-         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown</li>
-         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer </li>
-        </ul>
-        <h5 class="pp-title">Your Rights</h5>
-        <p>Dictum vestibulum nulla justo sed, ligula rutrum sollicitudin, vivamus non. Nunc donec tincidunt, vivamus repellat habitanaccumsan faucibus ante in mauris. Lorem purus leo eleifend semper sit, donec duis vel orci lorem consectetuer, lacus lorem praesent elit odio ut, tortor id metus fermentum mi ipsum, quisque proin. Aptent aliquet facilisis</p>
-       </div>
-       <div class="tab-inner-contentbox">
-        <h5 class="pp-title pt-0">How you can contact us</h5>
-        <p>Sem adipiscing tempus ut dis vestibulum, feugiat scelerisque senectus magna sem vel curae. Nulla alias magnis fusce erat tincidunt pulvinar, varius nusenectus, ac hendrerit eget. Venenatis dictumst pellentesque orci lobortisquismassa mi lorem. Vel odio dui ac, pede quod fermentum quam urna, eu amet wisletie nulla, semper erat, donec morbi purus massa blandit rutru</p>
-       </div>
-       <div class="tab-inner-contentbox">
-        <h5 class="pp-title pt-0">Additional Information</h5>
-        <p>Dictum vestibulum nulla justo sed, ligula rutrum sollicitudin, vivamus non. Nunc donec tincidunt, vivamus repellat habitanaccumsan faucibus ante in mauris. Lorem purus leo eleifend semper sit, donec duis vel orci lorem consectetuer, lacus lorem praesent elit odio ut, tortor id metus fermentum mi ipsum, quisque proin. Aptent aliquet facilisis</p>
-       </div>
-      </div>
+<!--      <div class="tab-pane fade" id="v-pills-pp3" role="tabpanel" aria-labelledby="v-btn-pp3">-->
+<!--       <div class="tab-inner-contentbox mt-0">-->
+<!--        <h5 class="pp-title pt-0">Introduction</h5>-->
+<!--        <p>This Privacy Policy describes how your personal information is collected, used, and shared when you visit,-->
+<!--         subscribe, register or make a purchase from nftfox, ‘Site’. </p>-->
+<!--        <h5 class="pp-title">Definition of personal data</h5>-->
+<!--        <p>Dictum vestibulum nulla justo sed, ligula rutrum sollicitudin, vivamus non. Nunc donec tincidunt, vivamus-->
+<!--         repellat habitanaccumsan faucibus ante in mauris. Lorem purus leo eleifend semper sit, donec duis vel orci lorem-->
+<!--         consectetuer, lacus lorem praesent elit odio ut, tortor id metus fermentum mi ipsum, quisque proin. Aptent-->
+<!--         aliquet facilisis</p>-->
+<!--        <ul class="pp-list">-->
+<!--         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the-->
+<!--          industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and-->
+<!--          scrambled it to make a type specimen book. It has.</li>-->
+<!--         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the-->
+<!--          industry's standard dummy text ever since the 1500s.</li>-->
+<!--         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the-->
+<!--          industry's standard dummy text ever since the 1500s, when an unknown printer </li>-->
+<!--        </ul>-->
+<!--        <h5 class="pp-title">Cookies and Similar Technologies</h5>-->
+<!--        <p>We use cookies and similar technologies to provide, protect, and improve our products and services, such as by personalizing content, offering and measuring advertisements, understanding user behavior, and providing a safer experience.</p>-->
+<!--        <h6 class="highlighted-text">You can remove or reject cookies using your browser or device settings, but in some cases doing so may affect your ability to use our products and services.</h6>-->
+<!--        <ul class="pp-list">-->
+<!--         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown</li>-->
+<!--         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer </li>-->
+<!--        </ul>-->
+<!--        <h5 class="pp-title">Your Rights</h5>-->
+<!--        <p>Dictum vestibulum nulla justo sed, ligula rutrum sollicitudin, vivamus non. Nunc donec tincidunt, vivamus repellat habitanaccumsan faucibus ante in mauris. Lorem purus leo eleifend semper sit, donec duis vel orci lorem consectetuer, lacus lorem praesent elit odio ut, tortor id metus fermentum mi ipsum, quisque proin. Aptent aliquet facilisis</p>-->
+<!--       </div>-->
+<!--       <div class="tab-inner-contentbox">-->
+<!--        <h5 class="pp-title pt-0">How you can contact us</h5>-->
+<!--        <p>Sem adipiscing tempus ut dis vestibulum, feugiat scelerisque senectus magna sem vel curae. Nulla alias magnis fusce erat tincidunt pulvinar, varius nusenectus, ac hendrerit eget. Venenatis dictumst pellentesque orci lobortisquismassa mi lorem. Vel odio dui ac, pede quod fermentum quam urna, eu amet wisletie nulla, semper erat, donec morbi purus massa blandit rutru</p>-->
+<!--       </div>-->
+<!--       <div class="tab-inner-contentbox">-->
+<!--        <h5 class="pp-title pt-0">Additional Information</h5>-->
+<!--        <p>Dictum vestibulum nulla justo sed, ligula rutrum sollicitudin, vivamus non. Nunc donec tincidunt, vivamus repellat habitanaccumsan faucibus ante in mauris. Lorem purus leo eleifend semper sit, donec duis vel orci lorem consectetuer, lacus lorem praesent elit odio ut, tortor id metus fermentum mi ipsum, quisque proin. Aptent aliquet facilisis</p>-->
+<!--       </div>-->
+<!--      </div>-->
 
 
       <!-- 경매 참여 내역 -->
@@ -293,7 +311,6 @@
                <td>
                 <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
                </td>
-<!--               <td th:text="${bid.bidStatus}"></td>-->
                <td class="price" th:text="${bid.myPrice}"></td>
                <td class="price" th:text="${bid.product.currentPrice}"></td>
                <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
@@ -310,9 +327,7 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-             <tr>
               <th scope="col">상품명</th>
-<!--              <th scope="col">Bid Status</th>-->
               <th scope="col">나의 입찰가</th>
               <th scope="col">시작일</th>
               <th scope="col">마감일</th>
@@ -320,21 +335,20 @@
              </tr>
              </thead>
              <tbody>
-             <tr th:each="bid : ${winningBids}">
+             <tr th:each="product : ${winningBids}">
               <td>
-               <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
+               <a th:href="@{/auction/product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
               </td>
-<!--              <td th:text="${bid.bidStatus}"></td>-->
-              <td class="price" th:text="${bid.myPrice}"></td>
-              <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
-              <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일')}"></td>
+              <td class="price" th:text="${product.winner.price}"></td>
+              <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일')}"></td>
+              <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일')}"></td>
               <td>
-               <a th:if="${isWinnerConfirmedMap[bid.product.id]}"
-                  th:href="@{/cash/payment/{productId}(productId=${bid.product.id})}"
+               <a th:if="${isWinnerConfirmedMap[product.id]}"
+                  th:href="@{/cash/payment/{productId}(productId=${product.id})}"
                   class="btn btn-primary">
                 결제
                </a>
-               <span th:unless="${isWinnerConfirmedMap[bid.product.id]}" class="btn btn-secondary">
+               <span th:unless="${isWinnerConfirmedMap[product.id]}" class="btn btn-secondary">
                 결제 완료
                </span>
               </td>
@@ -351,7 +365,6 @@
              <thead class="table-dark">
              <tr>
               <th scope="col">상품명</th>
-<!--               <th scope="col">Bid Status</th>-->
               <th scope="col">나의 입찰가</th>
               <th scope="col">현재 입찰가</th>
               <th scope="col">시작일</th>
@@ -363,7 +376,6 @@
               <td>
                <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
               </td>
-<!--              <td th:text="${bid.bidStatus}"></td>-->
               <td class="price" th:text="${bid.myPrice}"></td>
               <td class="price" th:text="${bid.product.currentPrice}"></td>
               <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
