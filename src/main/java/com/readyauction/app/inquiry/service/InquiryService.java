@@ -5,6 +5,7 @@ import com.readyauction.app.inquiry.dto.InquiryDetailDto;
 import com.readyauction.app.inquiry.dto.InquiryDto;
 import com.readyauction.app.inquiry.entity.Answer;
 import com.readyauction.app.inquiry.entity.Inquiry;
+import com.readyauction.app.inquiry.entity.InquiryStatus;
 import com.readyauction.app.inquiry.repository.InquiryRepository;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.repository.MemberRepository;
@@ -55,6 +56,7 @@ public class InquiryService {
                 .answeredAt(LocalDateTime.now().withSecond(0).withNano(0))
                 .build();
         inquiry.addAnswer(answer);
+        inquiry.changeStatus(InquiryStatus.COMPLETE);
     }
 
     public void changeAnswer(Long authorId, InquiryAnswerDto inquiryAnswerDto) {
