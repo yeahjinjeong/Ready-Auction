@@ -335,20 +335,20 @@
              </tr>
              </thead>
              <tbody>
-             <tr th:each="bid : ${winningBids}">
+             <tr th:each="product : ${winningBids}">
               <td>
-               <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
+               <a th:href="@{/auction/product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
               </td>
-              <td class="price" th:text="${bid.myPrice}"></td>
-              <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
-              <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일')}"></td>
+              <td class="price" th:text="${product.winner.price}"></td>
+              <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일')}"></td>
+              <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일')}"></td>
               <td>
-               <a th:if="${isWinnerConfirmedMap[bid.product.id]}"
-                  th:href="@{/cash/payment/{productId}(productId=${bid.product.id})}"
+               <a th:if="${isWinnerConfirmedMap[product.id]}"
+                  th:href="@{/cash/payment/{productId}(productId=${product.id})}"
                   class="btn btn-primary">
                 결제
                </a>
-               <span th:unless="${isWinnerConfirmedMap[bid.product.id]}" class="btn btn-secondary">
+               <span th:unless="${isWinnerConfirmedMap[product.id]}" class="btn btn-secondary">
                 결제 완료
                </span>
               </td>

@@ -7,7 +7,6 @@ import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.cash.dto.AccountDto;
 import com.readyauction.app.cash.dto.TransactionDto;
 import com.readyauction.app.cash.service.AccountService;
-import com.readyauction.app.cash.service.PaymentService;
 import com.readyauction.app.cash.service.TransactionService;
 import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.user.dto.MemberDto;
@@ -38,7 +37,6 @@ public class MypageController {
     private final TransactionService transactionService;
     private final BidService bidService;
     private final ProductService productService;
-    private final PaymentService paymentService;
 
     // 마이페이지
     @GetMapping("")
@@ -46,6 +44,7 @@ public class MypageController {
         // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName(); // 로그인한 이메일
+        Long memberId = memberService.findMemberDtoByEmail(currentUserName).getId();
 
         try {
             // MemberDto 가져오기
@@ -54,25 +53,25 @@ public class MypageController {
             model.addAttribute("memberDto", memberDto);
 
             // ProfileDto 가져오기
-            ProfileDto profileDto = memberService.findProfileDtoById(memberDto.getId());
+            ProfileDto profileDto = memberService.findProfileDtoById(memberId);
             model.addAttribute("profileDto", profileDto);
 
             // AccountDto 가져오기
-            AccountDto accountDto = accountService.findAccountDtoByMemberId(memberDto.getId());
+            AccountDto accountDto = accountService.findAccountDtoByMemberId(memberId);
             model.addAttribute("accountDto", accountDto);
 
             // 캐시와 결제 내역 조회
-            List<TransactionDto> transactionHistory = transactionService.getTransactionHistory(memberDto.getId(), accountDto.getId());
+            List<TransactionDto> transactionHistory = transactionService.getTransactionHistory(memberId, accountDto.getId());
             log.debug("transactionHistory: {}", transactionHistory);
             model.addAttribute("transactionHistory", transactionHistory);
 
             // 경매 참여 내역 조회
             // 입찰 중 내역
-            List<Bid> biddingBids = bidService.getBiddingBids(memberDto.getId());
+            List<Bid> biddingBids = bidService.getBiddingBids(memberId);
             model.addAttribute("biddingBids", biddingBids);
 
             // 낙찰 내역
-            List<Product> winningBids = bidService.getWinningBids(memberDto.getId());
+            List<Product> winningBids = productService.getWinningBids(memberId);
 
             // 결제 전 결제하기 버튼
             Map<Long, Boolean> isWinnerConfirmedMap = new HashMap<>();
@@ -81,8 +80,8 @@ public class MypageController {
 
             for (Product product : winningBids) {
                 Long productId = product.getId();
-                isWinnerConfirmedMap.put(productId, productService.isWinnerConfirmed(productId, memberDto.getId()));
-                isPaymentCompleteMap.put(productId, productService.isPaymentComplete(productId, memberDto.getId()));
+                isWinnerConfirmedMap.put(productId, productService.isWinnerConfirmed(productId, memberId));
+                isPaymentCompleteMap.put(productId, productService.isPaymentComplete(productId, memberId));
             }
 
             model.addAttribute("winningBids", winningBids);
@@ -90,20 +89,20 @@ public class MypageController {
             model.addAttribute("isPaymentCompleteMap", isPaymentCompleteMap);
 
             // 패찰 내역
-            List<Bid> losingBids = bidService.getLosingBids(memberDto.getId());
+            List<Bid> losingBids = bidService.getLosingBids(memberId);
             model.addAttribute("losingBids", losingBids);
 
             // 경매 등록 내역 조회
             // 판매 중 내역
-            List<Product> activeProducts = productService.getActiveProducts(memberDto.getId());
+            List<Product> activeProducts = productService.getActiveProducts(memberId);
             model.addAttribute("activeProducts", activeProducts);
 
             // 거래 완료 내역 (결제 완료, 구매 확정)
-            List<Product> completedProducts = productService.getCompletedProducts(memberDto.getId());
+            List<Product> completedProducts = productService.getCompletedProducts(memberId);
             model.addAttribute("completedProducts", completedProducts);
 
             // 유찰 내역
-            List<Product> failedProducts = productService.getFailedProducts(memberDto.getId());
+            List<Product> failedProducts = productService.getFailedProducts(memberId);
             model.addAttribute("failedProducts", failedProducts);
 
         } catch (UserNotFoundException e) {

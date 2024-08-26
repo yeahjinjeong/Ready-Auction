@@ -403,6 +403,12 @@ public class ProductService {
 
     /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
 
+    // 낙찰 내역
+    @Transactional
+    public List<Product> getWinningBids(Long memberId) {
+        return productRepository.findWinningBids(memberId);
+    }
+
     // 낙찰 시 결제 버튼
     @Transactional
     public boolean isWinnerConfirmed(Long productId, Long memberId) {

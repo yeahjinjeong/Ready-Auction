@@ -36,14 +36,6 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
     """)
     List<Bid> findBiddingBids(@Param("memberId") Long memberId);
 
-    // 낙찰
-    @Query("""
-    SELECT b FROM Bid b
-    WHERE b.memberId = :memberId
-    AND b.product.winner.memberId = :memberId
-    """)
-    List<Bid> findWinningBids(@Param("memberId") Long memberId);
-
     // 패찰
     @Query("""
     SELECT b FROM Bid b
