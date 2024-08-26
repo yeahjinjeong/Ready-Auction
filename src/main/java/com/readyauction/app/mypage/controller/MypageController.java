@@ -72,15 +72,15 @@ public class MypageController {
             model.addAttribute("biddingBids", biddingBids);
 
             // 낙찰 내역
-            List<Bid> winningBids = bidService.getWinningBids(memberDto.getId());
+            List<Product> winningBids = bidService.getWinningBids(memberDto.getId());
 
             // 결제 전 결제하기 버튼
             Map<Long, Boolean> isWinnerConfirmedMap = new HashMap<>();
             // 결제 완료 - 결제하기 버튼 사라짐
             Map<Long, Boolean> isPaymentCompleteMap = new HashMap<>();
 
-            for (Bid bid : winningBids) {
-                Long productId = bid.getProduct().getId();
+            for (Product product : winningBids) {
+                Long productId = product.getId();
                 isWinnerConfirmedMap.put(productId, productService.isWinnerConfirmed(productId, memberDto.getId()));
                 isPaymentCompleteMap.put(productId, productService.isPaymentComplete(productId, memberDto.getId()));
             }
