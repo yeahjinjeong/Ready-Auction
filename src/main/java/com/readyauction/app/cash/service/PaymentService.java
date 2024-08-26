@@ -20,6 +20,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -119,24 +120,24 @@ public class PaymentService {
         }
     }
 
-    @Transactional
+
     public Boolean rollbackMoney(List<Payment> payments) {
         try {
             System.out.println("입찰 페이먼트 롤백 중 ");
             // 맴버아이디스를 다 조회해서 롤백으로 스테이터스를 바꾸고, 돈을 보낸이들에게 해당 금액을 돌려주는 로직.
             payments.forEach(payment -> {
                 try {
-                    System.out.println(payment.getId() + "payment 롤백중");
-                    accountService.deposit(payment.getSenderAccount().getId(), payment.getPayAmount());
-                    payment.setStatus(PaymentStatus.ROLLBACK_COMPLETED);
-                    paymentRepository.save(payment);
-
-                    EmailMessage emailMessage = EmailMessage.builder()
-                            .to(memberService.findEmailById(payment.getMemberId()))
-                            .subject("중고 스포츠 유니폼 판매 플랫폼 레디옥션입니다.")
-                            .message("<html><head></head><body><div style=\"background-color: gray;\">"+productService.findById(payment.getProductId()).orElseThrow().getName() + " 경매에서 낙찰에 실패 했습니다. 입찰금은 환불처리돼 계좌에 입금 됐습니다! "+"<div></body></html>")
-                            .build();
-                    emailService.sendMail(emailMessage);
+                    if(paymentRepository.findByProductIdAndMemberIdAndCategory(payment.getId(), payment.getMemberId(), PaymentCategory.BID_COMPLETE).isPresent()) {
+                        log.info(payment.getId() + " payment 구매자");
+                    }else {
+                        rollbackPayment(payment);
+                        EmailMessage emailMessage = EmailMessage.builder()
+                                .to(memberService.findEmailById(payment.getMemberId()))
+                                .subject("중고 스포츠 유니폼 판매 플랫폼 레디옥션입니다.")
+                                .message("<html><head></head><body><div style=\"background-color: gray;\">" + productService.findById(payment.getProductId()).orElseThrow().getName() + " 경매에서 낙찰에 실패 했습니다. 입찰금은 환불처리돼 계좌에 입금 됐습니다! " + "<div></body></html>")
+                                .build();
+                        emailService.sendMail(emailMessage);
+                    }
                 } catch (Exception e) {
                     // 개별 입금 실패 예외 처리
                     System.err.println("Failed to deposit money for Payment ID: " + payment.getId() + ", Member ID: " + payment.getMemberId());
@@ -153,6 +154,22 @@ public class PaymentService {
             // 기타 예외 처리
             throw new RuntimeException("Unexpected error occurred during money rollback: " + e.getMessage(), e);
         }
+    }
+
+    @Transactional
+    public void rollbackPayment(Payment payment) {
+        log.info(payment.getId() + " payment 롤백 중");
+
+        // 조건에 맞는 Payment가 존재하는지 확인
+        // 계좌에 금액을 다시 입금
+        accountService.deposit(payment.getSenderAccount().getId(), payment.getPayAmount());
+
+        // Payment 상태를 롤백 완료로 변경
+        payment.setStatus(PaymentStatus.ROLLBACK_COMPLETED);
+
+        // 변경된 Payment를 저장
+        paymentRepository.save(payment);
+
     }
 
     @Transactional
@@ -308,21 +325,46 @@ public class PaymentService {
                 .build();
     }
 
-    /** 지영 - 경매 등록 내역 조회 시 필요 **/
-    @Transactional
-    // 거래 완료 내역 (payment의 status가 COMPLETED인 경우)
-    public List<Product> getCompletedProducts(Long memberId) {
-        List<Long> productIds = findCompletedProductIdsByMemberId(memberId, PaymentStatus.COMPLETED);
-        return productService.findByIdIn(productIds);
-    }
-
-    @Transactional
-    // 거래 완료 내역
-    public List<Long> findCompletedProductIdsByMemberId(Long memberId, PaymentStatus paymentStatus) {
-        return paymentRepository.findCompletedProductIdsByMemberId(memberId, paymentStatus);
-    }
     @Transactional
     public Payment findByProductIdAndMemberIdAndCategory(Long productId, Long id, PaymentCategory paymentCategory) {
         return paymentRepository.findByProductIdAndMemberIdAndCategory(productId, id, paymentCategory).orElse(null);
+    }
+    public void paymentPanalty(Long productId) {
+        //paymentStatus OUTSTANDING 로 바꾸기. 페이먼트 저장...
+        //판매자에게 해당 페이먼트의 70퍼 입금
+        //비낙찰자들 선입금액 전부 롤백. 단 낙찰자는 제외.
+        //프로덕트 위너검색. 멤버 아이디 추출
+        // 멤 버 아이디 + 프로덕트 아이디로 검색 카테고리가 BID인 튜플 검색 . 페이먼트 추출
+        // paymentStatus OUTSTANDING으로 바꾸기 세이브
+        // paymentRepository.updateStatusToRollbackByProductIdAndCategory(productId,PaymentCategory.BID,PaymentStatus.PROCESSING);
+        // rollbackMoney(paymentRepository.findByProductIdAndStatus(productId, PaymentStatus.ROLLBACK).orElseThrow());
+        sendToSellerPanalty(productId);
+
+        // 4. 비낙찰자들의 선입금액을 롤백
+         paymentRepository.updateStatusToRollbackByProductIdAndCategory(productId,PaymentCategory.BID,PaymentStatus.PROCESSING);
+         rollbackMoney(paymentRepository.findByProductIdAndStatus(productId, PaymentStatus.ROLLBACK).orElseThrow());
+
+
+    }
+    @Transactional
+    public void sendToSellerPanalty(Long productId){
+        // 1. 프로덕트의 낙찰자 정보를 검색
+        Product product = productService.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found for ID: " + productId));
+        Long winnerMemberId = product.getWinner().getMemberId(); // 낙찰자 ID 추출
+
+        // 2. 낙찰자의 결제 상태를 OUTSTANDING으로 변경
+        Payment winnerPayment = paymentRepository.findByMemberIdAndProductIdAndCategory(winnerMemberId, productId, PaymentCategory.BID)
+                .orElseThrow(() -> new EntityNotFoundException("Winner payment not found for product ID: " + productId));
+        winnerPayment.setStatus(PaymentStatus.OUTSTANDING);
+        paymentRepository.save(winnerPayment);
+
+        // 3. 판매자에게 낙찰 금액의 70% 입금
+        Account sellerAccount = accountService.findByMemberId(product.getMemberId());
+        if (sellerAccount == null) {
+            throw new EntityNotFoundException("Seller's account not found for product ID: " + productId);
+        }
+        accountService.deposit(sellerAccount.getId(), (int) Math.floor(winnerPayment.getPayAmount() * 0.7));
+
     }
 }

@@ -357,7 +357,7 @@
                                             document.querySelectorAll(".chat_read").forEach((c) => c.textContent = '');
                                             $.ajax({
                                                 url: `[[@{/chat/message/${$chatRoomId}/read}]]`,
-                                                method: 'post',
+                                                method: 'patch',
                                                 dataType: 'json',
                                                 data: { anotherMemberId: senderId },
                                                 success: function(response) {

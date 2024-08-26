@@ -38,7 +38,7 @@
             <div class="col-lg-12 text-center">
                 <h1 class="breadcrumb-title">통계 관리</h1>
                 <ul class="d-flex justify-content-center breadcrumb-items">
-                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">메인화면으로</a></li>
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a></li>
                     <li class="breadcrumb-item active">통계 관리</li>
                 </ul>
             </div>
@@ -59,10 +59,14 @@
                                 <li class="dropdown-header text-start">
                                     <h6>Filter</h6>
                                 </li>
-                                <li><a class="dropdown-item" href="#" onclick="loadTransactionCount('today')">오늘</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="loadTransactionCount('week')">1주 이내</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="loadTransactionCount('month')">1달 이내</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="loadTransactionCount('year')">1년 이내</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadTransactionCount('today')">오늘</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#" onclick="loadTransactionCount('week')">1주 이내</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#" onclick="loadTransactionCount('month')">1달 이내</a>
+                                </li>
+                                <li><a class="dropdown-item" href="#" onclick="loadTransactionCount('year')">1년 이내</a>
+                                </li>
                             </ul>
                         </div>
 
@@ -84,13 +88,13 @@
                     function loadTransactionCount(period) {
                         let url;
                         if (period === 'today') {
-                            url = '/app/api/statistics/transactions/count/today';
+                            url = '[[@{/api/statistics/transactions/count/today}]]';
                         } else if (period === 'week') {
-                            url = '/app/api/statistics/transactions/count/week';
+                            url = '[[@{/api/statistics/transactions/count/week}]]';
                         } else if (period === 'month') {
-                            url = '/app/api/statistics/transactions/count/month';
+                            url = '[[@{/api/statistics/transactions/count/month}]]';
                         } else if (period === 'year') {
-                            url = '/app/api/statistics/transactions/count/year';
+                            url = '[[@{/api/statistics/transactions/count/year}]]';
                         }
 
                         fetch(url)
@@ -141,13 +145,13 @@
                     function loadRevenue(period) {
                         let url;
                         if (period === 'today') {
-                            url = '/app/api/statistics/transactions/amount/today';
+                            url = '[[@{/api/statistics/transactions/amount/today}]]';
                         } else if (period === 'week') {
-                            url = '/app/api/statistics/transactions/amount/week';
+                            url = '[[@{/api/statistics/transactions/amount/week}]]';
                         } else if (period === 'month') {
-                            url = '/app/api/statistics/transactions/amount/month';
+                            url = '[[@{/api/statistics/transactions/amount/month}]]';
                         } else if (period === 'year') {
-                            url = '/app/api/statistics/transactions/amount/year';
+                            url = '[[@{/api/statistics/transactions/amount/year}]]';
                         }
 
                         fetch(url)
@@ -193,11 +197,12 @@
                     </div>
                 </div>
 
-                <script>
-                    function loadMembers(status) {
-                        const url = `/app/api/statistics/members?status=${status}`; // API 호출 시 상태를 파라미터로 전달
 
-                        fetch(url)
+                <script th:inline="javascript">
+                    function loadMembers(status) {
+                        let url = /*[[ @{/api/statistics/members} ]]*/;
+
+                        fetch(url + `?status=${status}`)
                             .then(response => {
                                 if (!response.ok) {
                                     throw new Error('Network response was not ok');
@@ -225,23 +230,26 @@
                                 <li class="dropdown-header text-start">
                                     <h6>Filter</h6>
                                 </li>
-                                <li><a class="dropdown-item" href="#" onclick="loadReports('today')">Today</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="loadReports('week')">This Week</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="loadReports('month')">This Month</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="loadReports('year')">This Year</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadReports('today')">오늘</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadReports('week')">1주 이내</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadReports('month')">1달 이내</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="loadReports('year')">1년 이내</a></li>
                             </ul>
                         </div>
 
                         <div class="card-body">
-                            <h5 class="card-title">구매확정 통계 그래프 <span id="reportsPeriod">| This Week</span></h5>
+                            <h5 class="card-title">구매확정 통계 그래프 <span id="reportsPeriod">| 1주 이내</span></h5>
                             <div id="reportsChart" style="max-width: 100%;"></div>
                         </div>
                     </div>
                 </div>
 
-                <script>
+                <script th:inline="javascript">
                     function loadReports(period) {
-                        fetch(`/app/api/statistics/transactions/statistics?period=${period}`)
+                        // 타임리프 표현식으로 URL 생성
+                        let url = /*[[ @{/api/statistics/transactions/statistics} ]]*/;
+
+                        fetch(url + `?period=${period}`)
                             .then(response => response.json())
                             .then(data => {
                                 const options = {
@@ -261,7 +269,7 @@
                                         height: 400,
                                         type: 'line',
                                         stacked: false,
-                                        toolbar: { show: false }
+                                        toolbar: {show: false}
                                     },
                                     stroke: {
                                         width: [4, 0],
@@ -275,7 +283,7 @@
                                     },
                                     xaxis: {
                                         categories: data.periods,
-                                        title: { text: 'Date' }
+                                        title: {text: 'Date'}
                                     },
                                     yaxis: [
                                         {
@@ -329,63 +337,116 @@
                 </script>
                 <!-- 구매확정 거래량/금액 구현 -->
 
-                <!-- Recent Sales -->
-                <div class="col-12">
-                    <div class="card recent-sales overflow-auto">
+                <!-- 경매 내역 시작 -->
+                <div class="card recent-sales overflow-auto">
+                    <div class="filter">
+                        <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                            <li class="dropdown-header text-start"><h6>Filter</h6></li>
+                            <li><a class="dropdown-item" href="#" onclick="loadAuctionBids('START', '입찰 시작')">경매 시작</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="loadAuctionBids('PROGRESS', '입찰 진행중')">경매 입찰중</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="loadAuctionBids('END', '경매 마감')">경매 마감</a></li>
+                        </ul>
+                    </div>
 
-                        <div class="filter">
-                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                                <li class="dropdown-header text-start">
-                                    <h6>Filter</h6>
-                                </li>
+                    <div class="card-body">
+                        <h5 class="card-title">전체 경매 내역 <span id="auctionFilterLabel">| 입찰 시작</span></h5>
 
-                                <li><a class="dropdown-item" href="#" onclick="loadRecentSales('today')">Today</a></li>
-                                <li><a class="dropdown-item" href="#" onclick="loadRecentSales('month')">This Month</a>
-                                </li>
-                                <li><a class="dropdown-item" href="#" onclick="loadRecentSales('year')">This Year</a>
-                                </li>
-                            </ul>
-                        </div>
+                        <table class="table table-borderless datatable">
+                            <thead>
+                            <tr>
+                                <th scope="col">상품ID</th>
+                                <th scope="col">상품명</th>
+                                <th scope="col">판매자ID</th>
+                                <th scope="col">현재 가격</th>
+                                <th scope="col" id="bidOrWinnerHeader">입(낙)찰자 ID</th>
+                                <th scope="col" id="bidOrWinnerPriceHeader">입(낙)찰 가격</th>
+                                <th scope="col" id="purchaseStatusHeader">결제 상태</th>
+                            </tr>
+                            </thead>
+                            <tbody id="auctionBidsTableBody">
 
-                        <div class="card-body">
-                            <h5 class="card-title">Recent Sales <span id="recentSalesPeriod">| Today</span></h5>
-
-                            <table class="table table-borderless datatable">
-                                <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Customer</th>
-                                    <th scope="col">Product</th>
-                                    <th scope="col">Price</th>
-                                    <th scope="col">Status</th>
-                                </tr>
-                                </thead>
-                                <tbody id="recentSalesTableBody">
-                                <!-- 하드코딩된 데이터 -->
-                                <tr>
-                                    <th scope="row"><a href="#">#1234</a></th>
-                                    <td>John Doe</td>
-                                    <td><a href="#" class="text-primary">Product A</a></td>
-                                    <td>$100</td>
-                                    <td><span class="badge bg-success">Approved</span></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row"><a href="#">#1235</a></th>
-                                    <td>Jane Smith</td>
-                                    <td><a href="#" class="text-primary">Product B</a></td>
-                                    <td>$150</td>
-                                    <td><span class="badge bg-warning">Pending</span></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <!-- End Recent Sales -->
+
+                <script>
+                    function loadAuctionBids(status, labelText) {
+                        fetch(`/app/api/statistics/auctions/bids?status=${status}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                const tableBody = document.getElementById('auctionBidsTableBody');
+                                const purchaseStatusHeader = document.getElementById('purchaseStatusHeader');
+                                const bidOrWinnerHeader = document.getElementById('bidOrWinnerHeader');
+                                const bidOrWinnerPriceHeader = document.getElementById('bidOrWinnerPriceHeader');
+                                const auctionFilterLabel = document.getElementById('auctionFilterLabel');
+
+                                tableBody.innerHTML = ''; // Clear previous data
+
+                                // 결제 상태 헤더 숨기기 (START 또는 PROGRESS일 때)
+                                if (status === 'START' || status === 'PROGRESS') {
+                                    purchaseStatusHeader.style.display = 'none';
+                                    bidOrWinnerHeader.textContent = '입찰자 ID'; // 헤더 텍스트 변경
+                                    bidOrWinnerPriceHeader.textContent = '입찰 가격'; // 헤더 텍스트 변경
+                                } else if (status === 'END') {
+                                    purchaseStatusHeader.style.display = 'table-cell';
+                                    bidOrWinnerHeader.textContent = '낙찰자 ID'; // 헤더 텍스트 변경
+                                    bidOrWinnerPriceHeader.textContent = '낙찰 가격'; // 헤더 텍스트 변경
+                                }
+
+                                // Update the filter label text
+                                auctionFilterLabel.textContent = `| ${labelText}`;
+
+                                if (data.length === 0) {
+                                    tableBody.innerHTML = `<tr><td colspan="7" class="text-center">No auction bids found for the selected status.</td></tr>`;
+                                    return;
+                                }
+
+                                data.forEach(bid => {
+                                    // 한글로 결제 상태 변환
+                                    let purchaseStatusText = '';
+                                    if (status === 'END') {
+                                        switch (bid.purchaseStatus) {
+                                            case 'ACCEPTED':
+                                                purchaseStatusText = '구매 확정';
+                                                break;
+                                            case 'IN_PROGRESS':
+                                                purchaseStatusText = '결제 완료';
+                                                break;
+                                            case 'CONFIRMED':
+                                                purchaseStatusText = '결제 전';
+                                                break;
+                                            default:
+                                                purchaseStatusText = '.';
+                                        }
+                                    }
+
+                                    const row = `
+                        <tr>
+                            <td>${bid.productId}</td>
+                            <td><a href="/app/auction/product/${bid.productId}">${bid.productName}</a></td>
+                            <td>${bid.sellerId}</td>
+                            <td>₩${bid.currentPrice.toLocaleString()}</td>
+                            <td>${bid.winnerOrBidderMemberId || '.'}</td>
+                            <td>₩${bid.bidOrWinnerPrice ? bid.bidOrWinnerPrice.toLocaleString() : '.'}</td>
+                            ${status === 'END' ? `<td>${purchaseStatusText}</td>` : ''}
+                        </tr>
+                    `;
+                                    tableBody.innerHTML += row;
+                                });
+                            })
+                            .catch(error => console.error('Error fetching auction bid data:', error));
+                    }
+
+                    document.addEventListener("DOMContentLoaded", () => loadAuctionBids('START', '입찰 시작'));
+                </script>
+
+                <!-- 경매 내역 끝-->
 
             </div>
         </div>
+
         <!-- 왼쪽 영역 컬럼들 끝 -->
 
         <!-- 오른쪽 영역 컬럼들 -->
@@ -400,7 +461,7 @@
                     <script>
                         $(document).ready(function () {
                             // 성별 데이터를 서버에서 받아옴
-                            fetch('/app/api/statistics/members?status=active')
+                            fetch('[[@{/api/statistics/members?status=active}]]')
                                 .then(response => response.json())
                                 .then(data => {
                                     const genderCounts = {
@@ -446,7 +507,7 @@
                     <div id="ageGenderBarChart"></div>
                     <script>
                         $(document).ready(function () {
-                            fetch('/app/api/statistics/members?status=active')
+                            fetch('[[@{/api/statistics/members?status=active}]]')
                                 .then(response => response.json())
                                 .then(data => {
                                     const ageGroups = [
