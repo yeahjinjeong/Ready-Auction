@@ -1,6 +1,6 @@
-package com.readyauction.app.admin.service;
+package com.readyauction.app.admin.userManagement.service;
 
-import com.readyauction.app.admin.dto.UserManagementDto;
+import com.readyauction.app.admin.userManagement.dto.UserManagementDto;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.entity.UserStatus;
 import com.readyauction.app.user.repository.MemberRepository;
@@ -8,9 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.sql.Timestamp;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

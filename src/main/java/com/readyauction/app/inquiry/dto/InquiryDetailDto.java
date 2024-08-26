@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -20,7 +21,7 @@ public class InquiryDetailDto {
     private InquiryCategory category; // 카테고리
     private String title; // 문의 제목
     private String nickname; // 문의자
-    private Timestamp createdAt; // 작성일시
+    private LocalDateTime createdAt; // 작성일시
     private InquiryStatus status; // 문의 처리 상태
     private String content; // 문의 내용
     private List<Answer> answers;

@@ -142,4 +142,9 @@ public class ChatService {
         });
         return chatImageDtos;
     }
+
+    public Long findOppositeMemberIdByChatRoomId(Long chatRoomId, Long id) {
+        Long memberId = chatRoomRepository.findOppositeMemberIdByChatRoomId(chatRoomId, id);
+        return memberId;
+    }
 }

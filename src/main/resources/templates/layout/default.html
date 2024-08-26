@@ -19,14 +19,15 @@
 <body>
 <!-- ======= Header ======= -->
 
-<div class="preloader">
-    <div class="loader">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
-</div>
+<!-- 로딩 창 -->
+<!--<div class="preloader">-->
+<!--    <div class="loader">-->
+<!--        <span></span>-->
+<!--        <span></span>-->
+<!--        <span></span>-->
+<!--        <span></span>-->
+<!--    </div>-->
+<!--</div>-->
 
 <!-- 검색 창을 조건부로 렌더링 -->
 <div class="mobile-search">
@@ -55,7 +56,7 @@
             <div class="row">
                 <div class="col-xl-2 align-items-center d-xl-flex d-lg-block">
                     <div class="nav-logo d-flex justify-content-between align-items-center">
-                        <a th:href="@{/auction/auction}"><img th:src="@{/assets/images/logo.png}" alt="logo" width="50"
+                        <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" alt="logo" width="50"
                                                height="50"></a>
                         <div class="d-flex align-items-center gap-4">
                             <span style="font-size: 16px; font-weight: bold; color: white; margin-left: 10px;">READY? AUCTION!</span>
@@ -84,7 +85,7 @@
                                 <a href="javascript:void(0)">경매</a>
                                 <i class="fl flaticon-plus">+</i>
                                 <ul class="sub-menu">
-                                    <li><a th:href="@{/auction/auction}">경매 목록 확인</a></li>
+                                    <li><a th:href="@{/auction}">경매 목록 확인</a></li>
                                     <li><a th:href="@{/auction/productUpload}">경매 물품 등록</a></li>
                                 </ul>
                             </li>
@@ -96,8 +97,8 @@
                                 <i class="fl flaticon-plus">+</i>
                                 <ul class="sub-menu">
                                     <li><a th:href="@{/inquiry/admin-faq}">문의관리</a></li>
-                                    <li><a th:href="@{/admin/userManagement}">회원관리</a></li>
-                                    <li><a th:href="@{/dashboard/dashboard}">통계관리</a></li>
+                                    <li><a th:href="@{/admin/user-management}">회원관리</a></li>
+                                    <li><a th:href="@{/admin/dashboard}">통계관리</a></li>
                                 </ul>
                             </li>
                             <li sec:authorize="isAuthenticated()" class="has-child-menu">
@@ -210,5 +211,6 @@
         window.location.href = '?prodName=' + query;
     }
 </script>
+<script layout:fragment="script"></script>
 </body>
 </html>

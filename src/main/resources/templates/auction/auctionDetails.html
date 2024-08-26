@@ -5,6 +5,56 @@
 <link href="https://unpkg.com/swiper/swiper-bundle.min.css" rel="stylesheet">
 <head>
     <style>
+        /* 커스텀 알림창 스타일 */
+        .custom-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .custom-alert-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .custom-alert-box h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .custom-alert-box p {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .custom-alert-box p.warning {
+            color: red;
+            font-weight: bold;
+        }
+
+        .custom-alert-close-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
         /* 추가 스타일을 원한다면 여기에 작성하세요 */
         /* 신고하기 버튼과 드롭다운 스타일 */
         .report-dropdown {
@@ -159,6 +209,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
 
+
         document.addEventListener('DOMContentLoaded', function () {
             const bidForm = document.getElementById('bidForm');
             const buyForm = document.getElementById('buyForm');
@@ -183,7 +234,17 @@
 
             // 서버로부터 받은 메시지를 화면에 표시
             function showMessage(bidRes) {
-                document.getElementById('currentPrice').value = bidRes.bidCurrentPrice;
+                var currentPriceField = document.getElementById('currentPrice');
+                currentPriceField.value = bidRes.bidCurrentPrice;
+
+                // 시각적 효과 추가 (배경색을 잠깐 변경)
+                currentPriceField.style.transition = "background-color 0.5s ease"; // 애니메이션 시간 설정
+                currentPriceField.style.backgroundColor = "#dff0d8"; // 초록색 배경 (성공을 나타냄)
+
+                // 일정 시간 후에 원래 배경색으로 복원
+                setTimeout(function() {
+                    currentPriceField.style.backgroundColor = ""; // 원래 배경색으로 복원
+                }, 1000); // 1초 후에 복원
             }
             // 페이지 로드 시 WebSocket 연결
 
@@ -214,8 +275,19 @@
                         console.log('Bid successful:', bidRes);
                         alert('Bid placed successfully!');
                         // Update the current price on the page
+                        // Update the current price on the page
+                        var currentPriceField = document.getElementById('currentPrice');
+                        currentPriceField.value = bidRes.bidCurrentPrice;
 
-                        document.getElementById('currentPrice').value = bidRes.bidCurrentPrice;
+                        // 시각적 효과 추가 (배경색을 잠깐 변경)
+                        currentPriceField.style.transition = "background-color 0.5s ease"; // 애니메이션 시간 설정
+                        currentPriceField.style.backgroundColor = "#dff0d8"; // 초록색 배경 (성공을 나타냄)
+
+                        // 일정 시간 후에 원래 배경색으로 복원
+                        setTimeout(function() {
+                            currentPriceField.style.backgroundColor = ""; // 원래 배경색으로 복원
+                        }, 1000); // 1초 후에 복원
+
                         if(bidRes.bidStatus === "ACCEPTED") {
                             if (productId) {
                                 // Redirect to the payment page using the product ID
@@ -236,6 +308,30 @@
 
             buyForm.addEventListener('submit', function (event) {
                 event.preventDefault(); // 기본 폼 제출 방지
+
+                // 페이지 클릭 방지를 위한 오버레이 추가
+                const overlay = document.createElement('div');
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                overlay.style.zIndex = '1000';
+                overlay.style.display = 'flex';
+                overlay.style.justifyContent = 'center';
+                overlay.style.alignItems = 'center';
+                document.body.appendChild(overlay);
+
+                // 로딩 스피너 추가
+                const spinner = document.createElement('div');
+                spinner.style.border = '16px solid #f3f3f3'; /* Light grey */
+                spinner.style.borderTop = '16px solid #3498db'; /* Blue */
+                spinner.style.borderRadius = '50%';
+                spinner.style.width = '120px';
+                spinner.style.height = '120px';
+                spinner.style.animation = 'spin 2s linear infinite';
+                overlay.appendChild(spinner);
 
                 const immediatePrice = document.getElementById('immediatePrice').value;
                 console.log("즉시 구매 가격: " + immediatePrice);
@@ -259,6 +355,9 @@
                         alert('Immediate buy placed successfully!');
                         var productId = data.id;
 
+                        // 오버레이 및 스피너 제거
+                        document.body.removeChild(overlay);
+
                         if (productId) {
                             // Redirect to the payment page using the product ID
                             window.location.href = '/app/cash/payment/' + productId;
@@ -270,14 +369,57 @@
                     error: function (xhr, status, error) {
                         console.error('Error placing immediate buy:', error);
                         alert('Failed to place immediate buy. Please try again.');
+
+                        // 오버레이 및 스피너 제거
+                        document.body.removeChild(overlay);
                     }
                 });
             });
+
+// 로딩 스피너 애니메이션을 위한 CSS
+            const style = document.createElement('style');
+            style.innerHTML = `
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+`;
+            document.head.appendChild(style);
+
         });
     </script>
 </head>
 <body>
 <div layout:fragment="content1">
+    <div class="custom-alert-overlay" id="customAlert" style="display: none;">
+        <div class="custom-alert-box">
+            <h2>알림</h2>
+            <p>첫번째 입찰 시 즉시구매가격의 10%의 선입찰금이 지불됩니다.</p>
+            <p>첫 입찰을 안 하고 즉시 구매를 진행할 시에도 선입찰금 10%가 지불됩니다.</p>
+            <p>선입찰금은 경매가 종료됐을 때 전액 환불됩니다.</p>
+            <p>즉시 구매를 누를 시, 당신이 낙찰자로 선정됩니다. 3일 이내로 결제를 진행해야 합니다.</p>
+            <p class="warning">경고: 낙찰자로 선정되고 3일 이내로 결제를 진행하지 않을 시, 선입찰금은 패널티 금액으로 전액 플랫폼에 3%, 판매자에게 7%가 귀속됩니다.</p>
+            <button class="custom-alert-close-btn" onclick="closeCustomAlert()">확인</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 로컬 스토리지에서 'visited' 키가 있는지 확인
+            const visited = localStorage.getItem('visited');
+
+            // 'visited' 키가 없으면 즉, 첫 방문이면 알림창을 띄우고 'visited' 키를 저장
+            if (!visited) {
+                document.getElementById('customAlert').style.display = 'flex';
+                // 'visited' 키를 로컬 스토리지에 저장
+                localStorage.setItem('visited', 'true');
+            }
+        });
+
+        function closeCustomAlert() {
+            document.getElementById('customAlert').style.display = 'none';
+        }
+    </script>
     <div class="breadcrumb breadcrumb-style-one mb-0">
         <div class="container">
             <div class="col-lg-12 text-center">

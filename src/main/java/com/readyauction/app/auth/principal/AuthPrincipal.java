@@ -1,6 +1,7 @@
 package com.readyauction.app.auth.principal;
 
 import com.readyauction.app.user.entity.Member;
+import com.readyauction.app.user.entity.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,7 +22,7 @@ import java.util.Collection;
  */
 @Data
 public class AuthPrincipal implements UserDetails, Serializable {
-    private final Member member;
+    private final User member;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
