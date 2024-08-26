@@ -204,6 +204,8 @@
                 if (badge) {
                     console.log(unread.count);
                     badge.textContent = unread.count; // 메시지 개수 삽입
+
+                    $('.chat_list').first().find('.badge').text('');
                 }
             });
         })
