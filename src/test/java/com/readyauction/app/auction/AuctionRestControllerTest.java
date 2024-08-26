@@ -142,4 +142,27 @@ public class AuctionRestControllerTest {
         log.info("Auction process with penalty applied completed successfully.");
     }
 
+    @Test
+    void testAuctionProcessWithWinnerCreation() throws InterruptedException {
+        // 3명의 구매자가 입찰 진행
+        for (int i = 1; i < 4; i++) {
+            BidResDto bidResDto = bidService.bidLock(emails[i], bidDtos[i-1]);
+            assertNotNull(bidResDto);
+            log.info("Bid successful for: " + emails[i] + " with bidPrice: " + bidDtos[i-1].getBidPrice());
+        }
+
+        // 1명의 구매자가 즉시 구매로 낙찰자로 선정
+        ProductDto productDto = bidService.winnerLock(emails[4], winnerReqDto);
+        assertNotNull(productDto);
+        log.info("Winner selected: " + emails[4] + " with immediate purchase.");
+//
+//        // 낙찰자가 결제를 안 했다고 가정하고 패널티 함수 실행
+//        paymentService.paymentPanalty(productId);
+
+
+        log.info("Auction process with penalty applied completed successfully.");
+    }
+
+
+
 }

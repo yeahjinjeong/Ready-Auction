@@ -201,6 +201,7 @@
                                                 // 성공적으로 응답을 받은 경우 실행됩니다.
                                                 console.log('Payment created successfully:', response);
                                                 alert('결제가 성공적으로 처리되었습니다!');
+                                                window.location.href = '/app/auction';
                                                 // 필요에 따라 페이지 리다이렉션, 메시지 표시 등을 수행할 수 있습니다.
                                             },
                                             error: function(xhr, status, error) {

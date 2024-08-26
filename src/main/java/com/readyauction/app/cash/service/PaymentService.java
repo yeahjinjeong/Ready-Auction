@@ -356,9 +356,8 @@ public class PaymentService {
         // 4. 비낙찰자들의 선입금액을 롤백
          paymentRepository.updateStatusToRollbackByProductIdAndCategory(productId,PaymentCategory.BID,PaymentStatus.PROCESSING);
          rollbackMoney(paymentRepository.findByProductIdAndStatus(productId, PaymentStatus.ROLLBACK).orElseThrow());
-
-
     }
+
     @Transactional
     public void sendToSellerPanalty(Long productId){
         // 1. 프로덕트의 낙찰자 정보를 검색
@@ -377,6 +376,7 @@ public class PaymentService {
         if (sellerAccount == null) {
             throw new EntityNotFoundException("Seller's account not found for product ID: " + productId);
         }
+        // 70퍼 계산 공식
         accountService.deposit(sellerAccount.getId(), (int) Math.floor(winnerPayment.getPayAmount() * 0.7));
 
     }
