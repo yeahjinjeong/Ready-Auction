@@ -53,7 +53,7 @@ public class InquiryService {
         Answer answer = Answer.builder()
                 .authorId(authorId)
                 .content(inquiryAnswerDto.getContent())
-                .answeredAt(LocalDateTime.now().withSecond(0).withNano(0))
+                .answeredAt(LocalDateTime.now().withNano(0))
                 .build();
         inquiry.addAnswer(answer);
         inquiry.changeStatus(InquiryStatus.COMPLETE);
@@ -78,5 +78,8 @@ public class InquiryService {
             }
         }
         inquiry.deleteAnswer(answers);
+        if (answers.isEmpty()) {
+            inquiry.changeStatus(InquiryStatus.PENDING);
+        }
     }
 }
