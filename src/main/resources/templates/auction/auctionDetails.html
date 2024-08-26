@@ -309,6 +309,30 @@
             buyForm.addEventListener('submit', function (event) {
                 event.preventDefault(); // 기본 폼 제출 방지
 
+                // 페이지 클릭 방지를 위한 오버레이 추가
+                const overlay = document.createElement('div');
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                overlay.style.zIndex = '1000';
+                overlay.style.display = 'flex';
+                overlay.style.justifyContent = 'center';
+                overlay.style.alignItems = 'center';
+                document.body.appendChild(overlay);
+
+                // 로딩 스피너 추가
+                const spinner = document.createElement('div');
+                spinner.style.border = '16px solid #f3f3f3'; /* Light grey */
+                spinner.style.borderTop = '16px solid #3498db'; /* Blue */
+                spinner.style.borderRadius = '50%';
+                spinner.style.width = '120px';
+                spinner.style.height = '120px';
+                spinner.style.animation = 'spin 2s linear infinite';
+                overlay.appendChild(spinner);
+
                 const immediatePrice = document.getElementById('immediatePrice').value;
                 console.log("즉시 구매 가격: " + immediatePrice);
                 const productId = document.getElementById('productId2').value;
@@ -331,6 +355,9 @@
                         alert('Immediate buy placed successfully!');
                         var productId = data.id;
 
+                        // 오버레이 및 스피너 제거
+                        document.body.removeChild(overlay);
+
                         if (productId) {
                             // Redirect to the payment page using the product ID
                             window.location.href = '/app/cash/payment/' + productId;
@@ -342,9 +369,23 @@
                     error: function (xhr, status, error) {
                         console.error('Error placing immediate buy:', error);
                         alert('Failed to place immediate buy. Please try again.');
+
+                        // 오버레이 및 스피너 제거
+                        document.body.removeChild(overlay);
                     }
                 });
             });
+
+// 로딩 스피너 애니메이션을 위한 CSS
+            const style = document.createElement('style');
+            style.innerHTML = `
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+`;
+            document.head.appendChild(style);
+
         });
     </script>
 </head>

@@ -83,6 +83,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     where p.id = :productId
     """)
     Optional<List<String>> findImagesById(Long productId);
+
+    // 특정 이미지가 포함된 제품을 찾아 그 이미지를 반환하는 메서드
+    @Query("SELECT img FROM Product p JOIN p.images img WHERE img = :imageUrl")
+    Optional<String> findImageByProductImage(@Param("imageUrl") String imageUrl);
     // 예진 작업 끝
 
     List<Product> findByAuctionStatus(AuctionStatus auctionStatus); // 필터링을 위한 메서드

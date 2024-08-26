@@ -436,6 +436,10 @@ public class ProductService {
     }
 
     @Transactional
+    public String findByProductImage(String imageUrl) {
+        return productRepository.findImageByProductImage(imageUrl).orElse(null);
+    }
+    @Transactional
     public void save(Product product) {
         productRepository.save(product);
     }
