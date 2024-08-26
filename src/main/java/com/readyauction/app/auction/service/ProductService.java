@@ -410,4 +410,9 @@ public class ProductService {
                 product.getWinner().getMemberId().equals(memberId) &&
                 product.getWinner().getStatus() == PurchaseStatus.ACCEPTED;
     }
+
+    @Transactional
+    public String findByProductImage(String imageUrl) {
+        return productRepository.findImageByProductImage(imageUrl).orElse(null);
+    }
 }
