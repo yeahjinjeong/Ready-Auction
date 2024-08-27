@@ -6,11 +6,8 @@ import com.readyauction.app.inquiry.dto.InquiryDetailDto;
 import com.readyauction.app.inquiry.dto.InquiryDto;
 import com.readyauction.app.inquiry.dto.InquiryReqDto;
 import com.readyauction.app.inquiry.service.InquiryService;
-import com.readyauction.app.report.entity.ProductReport;
-import com.readyauction.app.report.service.ProductReportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -25,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InquiryController {
     private final InquiryService inquiryService;
+
     @GetMapping("/faq")
     public void inquiry() {
 
@@ -96,6 +94,15 @@ public class InquiryController {
         log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
         inquiryService.deleteAnswer(principal.getMember().getId(), inquiryAnswerDto);
         return ResponseEntity.ok("ok");
+    }
+
+    // 문의 게시글 조회
+    @GetMapping("/{id}")
+    public String getInquiryDetail(@PathVariable("id") Long id, Model model) {
+        InquiryDetailDto inquiryDetailDto = inquiryService.findAndNicknameById(id);
+        log.debug("inquiryDetailDto : {}", inquiryDetailDto);
+        model.addAttribute("inquiry", inquiryDetailDto);
+        return "inquiry/inquiry-detail";
     }
 
 }

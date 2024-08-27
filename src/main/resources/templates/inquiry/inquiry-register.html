@@ -80,7 +80,6 @@
                 const selectedText = this.textContent;
                 const selectedValue = this.getAttribute('data-value');
 
-                document.getElementById('selectedCategory').textContent = selectedText;
                 document.querySelector('select[name=category]').value = selectedValue;
                 document.getElementById('dropdownMenuButton').textContent = selectedText;
             });
