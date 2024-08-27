@@ -25,8 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InquiryController {
     private final InquiryService inquiryService;
-    @Autowired
-    ProductReportService productReportService;
     @GetMapping("/faq")
     public void inquiry() {
 
@@ -38,12 +36,14 @@ public class InquiryController {
         return "inquiry/inquiry-register";
     }
 
+    // 문의 등록하기
     @PostMapping("/register")
     public String registerInquiry(@ModelAttribute InquiryReqDto inquiryReqDto) {
         inquiryService.registerInquiry(inquiryReqDto);
         return "redirect:/mypage";
     }
 
+    // 관리자 문의 조회
     @GetMapping("/admin-faq")
     public String adminInquiry(Model model) {
         List<InquiryDto> inquiryDtos = inquiryService.findAll();
@@ -52,6 +52,7 @@ public class InquiryController {
         return "inquiry/admin-faq";
     }
 
+    // 관리자 문의 상세 조회하기
     @GetMapping("/detail/{id}")
     public String adminInquiryDetail(
             Long id,
@@ -62,6 +63,7 @@ public class InquiryController {
         return "inquiry/admin-faq-detail";
     }
 
+    // 관리자 댓글 추가하기
     @PostMapping("/detail/answer")
     public String createInquiryDetailAnswer(
             @ModelAttribute InquiryAnswerDto inquiryAnswerDto,
@@ -72,6 +74,7 @@ public class InquiryController {
         return "redirect:/inquiry/detail/" + inquiryAnswerDto.getInquiryId();
     }
 
+    // 관리자 댓글 수정하기
     @ResponseBody
     @PatchMapping("/detail/answer")
     public ResponseEntity<?> updateInquiryDetailAnswer(
@@ -83,6 +86,7 @@ public class InquiryController {
         return ResponseEntity.ok("ok");
     }
 
+    // 댓글 삭제하기 -> 문의 엔티티 수정이라서 patch 사용
     @ResponseBody
     @PatchMapping("/detail/delete/answer")
     public ResponseEntity<?> deleteInquiryDetailAnswer(
@@ -93,23 +97,5 @@ public class InquiryController {
         inquiryService.deleteAnswer(principal.getMember().getId(), inquiryAnswerDto);
         return ResponseEntity.ok("ok");
     }
-    @GetMapping("/admin-report")
-    public String adminReport(Model model) {
-
-        List<ProductReport> list = productReportService.getAllProduct();
-
-        model.addAttribute("productList", list);
-
-        return "inquiry/admin-report";
-
-    }
-
-//    @GetMapping("/{id}")
-//    public String getInquiryDetail(@PathVariable("id") Long id, Model model) {
-//        Inquiry inquiry = inquiryService.findById(id);
-//        log.debug("inquiry : {}", inquiry);
-//        model.addAttribute("inquiry", inquiry);
-//        return "inquiry/inquiry-detail";
-//    }
 
 }
