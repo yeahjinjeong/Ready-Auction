@@ -6,7 +6,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatReportDto {
+public class ChatReportReqDto {
     private Long reporterId;
     private Long reportedMemberId;
     private Long productId;

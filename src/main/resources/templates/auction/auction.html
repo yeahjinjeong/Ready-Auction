@@ -149,7 +149,7 @@
                 </li>
 
                 <li th:each="pageNum : ${#numbers.sequence(1, products.totalPages)}"
-                    th:classappend="${pageNum == products.number + 1} ? 'active'">
+                    th:classappend="${pageNum == products.number + 1} ? 'page-item active' : 'page-item'">
                     <a class="page-link" th:href="@{/auction(page=${pageNum - 1})}">[[${pageNum}]]</a>
                 </li>
 

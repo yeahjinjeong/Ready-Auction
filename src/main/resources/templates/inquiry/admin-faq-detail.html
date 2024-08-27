@@ -68,7 +68,7 @@
               </li>
             </ul>
             <h4>Leave A Comment</h4>
-            <form class="comment-form" th:action="@{/inquiry/detail/answer}" method="post" enctype="multipart/form-data">
+            <form class="comment-form" th:action="@{/admin/inquiry/detail/answer}" method="post" enctype="multipart/form-data">
               <div class="row">
                 <div class="col-md-12">
                   <div class="form-inner">
@@ -86,7 +86,7 @@
           </div>
 
           <div>
-            <a th:href="@{/inquiry/admin-faq}" class="alpha-btn-md-dark">List</a>
+            <a th:href="@{/admin/inquiry/list}" class="alpha-btn-md-dark">List</a>
           </div>
         </div>
       </div>
@@ -141,7 +141,7 @@
           answeredAt : answeredAt
         }
 
-        fetch('[[@{/inquiry/detail/answer}]]', {
+        fetch('[[@{/admin/inquiry/detail/answer}]]', {
           method: 'PATCH', // HTTP 메서드
           headers: {
             'Content-Type': 'application/json', // 요청의 내용 타입
@@ -182,7 +182,7 @@
         answeredAt : answeredAt
       }
 
-      fetch('[[@{/inquiry/detail/delete/answer}]]', {
+      fetch('[[@{/admin/inquiry/detail/delete/answer}]]', {
         method: 'PATCH', // HTTP 메서드
         headers: {
           'Content-Type': 'application/json', // 요청의 내용 타입

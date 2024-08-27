@@ -7,7 +7,7 @@ import lombok.Setter;
 @Data
 @Setter
 @Getter
-public class ProductReportDto {
+public class ProductReportReqDto {
     private String reportReason; // 신고 유형
     private Long productId; // 상품 ID
     private Long userId;

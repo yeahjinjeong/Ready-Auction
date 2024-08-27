@@ -2,7 +2,9 @@ package com.readyauction.app.auth.service;
 
 import com.readyauction.app.auth.principal.AuthPrincipal;
 import com.readyauction.app.user.entity.Member;
+import com.readyauction.app.user.entity.User;
 import com.readyauction.app.user.repository.MemberRepository;
+import com.readyauction.app.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,7 +20,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService implements UserDetailsService {
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
     /**
      * 사용자 아이디로 db에서 사용자객체를 조회해 UserDetails구현타입(AuthPrincipal)으로 반환한다.
@@ -31,7 +33,7 @@ public class AuthService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         log.info("loadUserByUsername({})", email);
         // orElseThrow()는 NoSuchElementException예외를 던진다.
-        Member member = memberRepository.findMemberByEmail(email)
+        User member = userRepository.findMemberByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
         log.info("member = {}", member);
         return new AuthPrincipal(member);
@@ -42,7 +44,7 @@ public class AuthService implements UserDetailsService {
      * @param email
      */
     public void updateAuthentication(String email) {
-        Member newMember = memberRepository.findMemberByEmail(email)
+        User newMember = userRepository.findMemberByEmail(email)
                                 .orElseThrow();
         AuthPrincipal authPrincipal = new AuthPrincipal(newMember);
         Authentication newAuthentication = new UsernamePasswordAuthenticationToken(

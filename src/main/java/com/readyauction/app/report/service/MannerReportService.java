@@ -1,15 +1,15 @@
 package com.readyauction.app.report.service;
 
 //import com.readyauction.app.report.dto.ChatReportDto;
-import com.readyauction.app.report.dto.ChatReportDto;
-import com.readyauction.app.report.dto.MannerReportDto;
+import com.readyauction.app.report.dto.ChatReportReqDto;
+import com.readyauction.app.report.dto.MannerReportReqDto;
 //import com.readyauction.app.report.entity.ChatReport;
 import com.readyauction.app.report.entity.ChatReport;
 import com.readyauction.app.report.entity.ChatReportStatus;
 import com.readyauction.app.report.entity.MannerReport;
 //import com.readyauction.app.report.repository.ChatReportRepository;
 import com.readyauction.app.report.repository.ChatReportRepository;
-import com.readyauction.app.report.repository.ReportRepository;
+import com.readyauction.app.report.repository.MannerReportRepository;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,31 +21,31 @@ import java.time.LocalDateTime;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ReportService {
-    public final ReportRepository reportRepository;
+public class MannerReportService {
+    public final MannerReportRepository mannerReportRepository;
     public final MemberRepository memberRepository;
     private final ChatReportRepository chatReportRepository;
 
 
-    public void applyMannerScore(Long id, MannerReportDto mannerReportDto) {
-        MannerReport mannerReport = mannerReportDto.toMannerReportEntity(id);
-        reportRepository.save(mannerReport);
-        Member member = memberRepository.findById(mannerReportDto.getMemberId()).get();
-        if (mannerReportDto.getIsLiked().equals("true")) {
+    public void applyMannerScore(Long id, MannerReportReqDto mannerReportReqDto) {
+        MannerReport mannerReport = mannerReportReqDto.toMannerReportEntity(id);
+        mannerReportRepository.save(mannerReport);
+        Member member = memberRepository.findById(mannerReportReqDto.getMemberId()).get();
+        if (mannerReportReqDto.getIsLiked().equals("true")) {
             member.increaseMannerScore();
         } else {
             member.decreaseMannerScore();
         }
     }
 
-    public void reportChat(ChatReportDto chatReportDto) {
+    public void reportChat(ChatReportReqDto chatReportReqDto) {
         ChatReport chatReport = ChatReport.builder()
-                .reporterId(chatReportDto.getReporterId())
-                .reportedMemberId(chatReportDto.getReportedMemberId())
-                .reason(chatReportDto.getReason())
-                .productId(chatReportDto.getProductId())
+                .reporterId(chatReportReqDto.getReporterId())
+                .reportedMemberId(chatReportReqDto.getReportedMemberId())
+                .reason(chatReportReqDto.getReason())
+                .productId(chatReportReqDto.getProductId())
                 .createdAt(LocalDateTime.now())
-                .detail(chatReportDto.getDetail())
+                .detail(chatReportReqDto.getDetail())
                 .status(ChatReportStatus.PENDING)
                 .build();
 

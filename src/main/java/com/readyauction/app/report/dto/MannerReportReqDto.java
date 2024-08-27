@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MannerReportDto {
+public class MannerReportReqDto {
     private Long memberId;
     private String isLiked;
     private List<Like> likes;
