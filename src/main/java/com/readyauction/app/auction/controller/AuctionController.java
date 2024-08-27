@@ -38,7 +38,7 @@ public class AuctionController {
         // 상품 등록 로직
     }
 
-    @GetMapping("/auction") // 상품 조회
+    @GetMapping("") // 상품 조회
     public String searchAuction(@RequestParam(required = false) String prodName,
                                 @RequestParam(defaultValue = "0") int page, Model model) {
         // 한 페이지에 9개의 아이템을 표시하고, 경매 마감 시간 적은 순으로 정렬하는 Pageable 객체 생성
@@ -56,7 +56,6 @@ public class AuctionController {
         model.addAttribute("currentPageNumber", products.getNumber());
         model.addAttribute("totalPages", products.getTotalPages());
         model.addAttribute("prodName", prodName);
-
 
 //        if (page < 0 || page >= products.getTotalPages()) {
 //            return "redirect:/auction"; // 유효하지 않은 페이지 번호인 경우 첫 페이지로 리다이렉션

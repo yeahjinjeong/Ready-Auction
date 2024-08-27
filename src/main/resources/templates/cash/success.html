@@ -14,6 +14,7 @@
             border-radius: 5px;
             overflow: hidden;
         }
+
         /* 썸네일 이미지 박스 스타일 */
         .nav-item div {
             width: 80px; /* 썸네일 이미지와 동일한 너비 */
@@ -73,7 +74,7 @@
             <div class="col-lg-12 text-center">
                 <h1 class="breadcrumb-title">구매확정</h1>
                 <ul class="d-flex justify-content-center breadcrumb-items">
-                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/static}">Home</a></li>
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a>
                     <li class="breadcrumb-item active">Payment</li>
                 </ul>
             </div>
@@ -86,7 +87,7 @@
                     <div class="item-bid-timer">
                         <div class="auction-bid">
                             <p>낙찰가</p>
-                            <h5 th:text="'₩' + ${#numbers.formatDecimal(productDetail.immediatePrice, 0, 'COMMA', 0, 'POINT')}"></h5>
+                            <h5 th:text="'₩' + ${#numbers.formatDecimal(productDetail.currentPrice, 0, 'COMMA', 0, 'POINT')}"></h5>
                         </div>
                     </div>
 
@@ -95,7 +96,8 @@
                         <div class="swiper-wrapper">
                             <!-- 이미지 리스트를 반복하여 표시 -->
                             <div class="swiper-slide" th:each="imgUrl : ${productDetail.imgUrl}">
-                                <img alt="상품 이미지" class="product-image" th:src="${imgUrl}" onclick="openFullscreen(this)">
+                                <img alt="상품 이미지" class="product-image" th:src="${imgUrl}"
+                                     onclick="openFullscreen(this)">
                             </div>
                         </div>
                         <!-- 내비게이션 버튼 -->
@@ -159,35 +161,41 @@
                             document.body.appendChild(fullScreenDiv);
                         }
                     </script>
-            </div>
+                </div>
                 <div class="col-lg-6">
                     <div class="widget-right-area">
                         <div class="single-widget">
                             <h5 class="widget-title">Product Overview</h5>
                             <ul class="widget-list">
                                 <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
-                                <li><span>판매자 ID :</span><span th:text="${productDetail.memberId}">판매자</span></li>
+                                <li><span>판매자 :</span>
+                                    <a th:href="@{/member/profile/{memberId}(memberId=${productDetail.memberId})}">
+                                        <span th:text="${productDetail.nickName}">판매자</span>
+                                    </a>
+                                </li>
                                 <li><span>카테고리 :</span><span th:text="${productDetail.category}">카테고리</span></li>
+                                <li><span>경매 시작 시간 :</span><span th:text="${productDetail.startTime}">경매 시작 시간</span></li>
                                 <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
-                                <li><span>즉시 구매가 :</span><span th:text="'₩' + ${productDetail.immediatePrice}">즉시 구매가</span></li>
+                                <li><span>즉시 구매가 :</span><span
+                                        th:text="'₩' + ${productDetail.immediatePrice}">즉시 구매가</span></li>
                                 <li><span>상품 설명 :</span><span th:text="${productDetail.description}">상품 설명</span></li>
                             </ul>
                         </div>
 
                         <div class="single-widget">
-                            <form class="widget-form" id="PaymentForm" >
+                            <form class="widget-form" id="PaymentForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
-                                      <button type="submit" class="widget-btn">구매 확정</button>
+                                    <button type="submit" class="widget-btn">구매 확정</button>
                                 </div>
                             </form>
                             <script>
-                                $(document).ready(function() {
-                                    $('#PaymentForm').on('submit', function(event) {
+                                $(document).ready(function () {
+                                    $('#PaymentForm').on('submit', function (event) {
                                         event.preventDefault(); // 폼의 기본 제출 동작을 막습니다.
                                         // 요청에 보낼 데이터 (PaymentReqDto에 해당하는 데이터 구성)
                                         var paymentData = {
                                             productId: [[${productDetail.id}]],  // 상품 ID
-                                            amount: [[${productDetail.immediatePrice}]],  // 즉시 구매가
+                                            amount: [[${productDetail.currentPrice}]],  // 현재가
                                             payTime: new Date().toISOString()  // 현재 시간을 ISO 8601 형식으로 설정
                                         };
 
@@ -197,13 +205,14 @@
                                             contentType: 'application/json',
                                             dataType: 'json',
                                             data: JSON.stringify(paymentData),
-                                            success: function(response) {
+                                            success: function (response) {
                                                 // 성공적으로 응답을 받은 경우 실행됩니다.
                                                 console.log('Payment created successfully:', response);
                                                 alert('결제가 성공적으로 처리되었습니다!');
+                                                window.location.href = '/app/auction';
                                                 // 필요에 따라 페이지 리다이렉션, 메시지 표시 등을 수행할 수 있습니다.
                                             },
-                                            error: function(xhr, status, error) {
+                                            error: function (xhr, status, error) {
                                                 // 요청이 실패한 경우 실행됩니다.
                                                 console.error('Error occurred while creating payment:', error);
                                                 alert('결제 중 오류가 발생했습니다. 다시 시도해주세요.');
@@ -218,7 +227,7 @@
                 </div>
             </div>
         </div>
-        </section>
+    </section>
 
 </div>
 </body>

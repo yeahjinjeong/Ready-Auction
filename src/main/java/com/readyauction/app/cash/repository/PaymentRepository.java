@@ -20,7 +20,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     @Query("UPDATE Payment p SET p.status = 'ROLLBACK' WHERE p.productId = :productId AND p.category = :category AND p.status = :status")
     int updateStatusToRollbackByProductIdAndCategory(@Param("productId") Long productId, @Param("category") PaymentCategory category, @Param("status") PaymentStatus status);
 
-    Optional<List<Payment>> findByProductIdAndMemberIdAndCategoryAndStatusOrStatus(Long productId,Long memberId,PaymentCategory category, PaymentStatus status, PaymentStatus status2);
+    Optional<Payment> findByProductIdAndMemberIdAndCategory(Long productId,Long memberId,PaymentCategory category);
     Optional<List<Payment>> findByProductIdAndMemberIdAndCategoryNotAndStatusOrStatus(Long productId,Long memberId,PaymentCategory category, PaymentStatus status, PaymentStatus status2);
     Optional<List<Payment>> findByProductIdAndStatus(Long productId, PaymentStatus status);
 
@@ -32,6 +32,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findAllByReceiverAccountId(@Param("accountId") Long accountId);
 
     /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
+
+    // 거래 완료 (payment의 status가 COMPLETED인 경우)
     @Query("SELECT p.productId FROM Payment p WHERE p.status = :status AND p.memberId = :memberId")
     List<Long> findCompletedProductIdsByMemberId(Long memberId, PaymentStatus status);
 
@@ -40,4 +42,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     List<Payment> findConfirmedPaymentsInTimeRange(@Param("start") LocalDateTime start,
                                                    @Param("end") LocalDateTime end,
                                                    @Param("status") PaymentStatus status);
+
+    Optional<Payment> findByProductIdAndMemberIdAndStatus(Long id, Long memberId, PaymentCategory paymentCategory);
 }

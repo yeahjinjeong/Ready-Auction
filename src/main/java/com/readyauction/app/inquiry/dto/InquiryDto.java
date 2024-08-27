@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class InquiryDto {
     private InquiryCategory category;
     private String title;
     private String author;
-    private Timestamp date;
+    private LocalDateTime date;
     private InquiryStatus status;
 
     public static InquiryDto toInquiryDto(Inquiry inquiry, String nickname) {

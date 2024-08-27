@@ -4,7 +4,10 @@ import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.ncp.dto.FileDto;
 import com.readyauction.app.ncp.service.NcpObjectStorageService;
+import com.readyauction.app.report.entity.Dislike;
+import com.readyauction.app.report.entity.Like;
 import com.readyauction.app.report.entity.MannerReport;
+import com.readyauction.app.report.repository.ReportRepository;
 import com.readyauction.app.user.dto.MemberDto;
 import com.readyauction.app.user.dto.MemberRegisterRequestDto;
 import com.readyauction.app.user.dto.MemberUpdateRequestDto;
@@ -20,9 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -32,6 +34,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final AccountService accountService;
+    private final ReportRepository reportRepository;
     @Value("${spring.s3.bucket}")
     private String bucketName;
 
@@ -71,6 +74,7 @@ public class MemberService {
     public Member findById(Long id){
         return memberRepository.findById(id).get();
     }
+
     /** 프로필 **/
 
     public MemberDto findMemberDtoByEmail(String email) {
@@ -81,13 +85,32 @@ public class MemberService {
         return new MemberDto(member);
     }
 
-    // Member 엔티티 -> ProfileDto
-    public ProfileDto toProfileDto(String email) {
-        Member member = memberRepository.findMemberByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(email));
+    public ProfileDto findProfileDtoById(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id: " + memberId));
 
-        // Member 엔티티의 toProfileDto 메소드를 호출하여 ProfileDto로 변환
-        return member.toProfileDto();
+        // memberId로 모든 MannerReport 가져오기
+        List<MannerReport> mannerReports = reportRepository.findByMemberId(memberId);
+
+        // Like와 Dislike 항목을 합산
+        Map<Like, Long> likeCounts = new EnumMap<>(Like.class);
+        Map<Dislike, Long> dislikeCounts = new EnumMap<>(Dislike.class);
+
+        for (MannerReport report : mannerReports) {
+            report.getLikes().forEach(like ->
+                    likeCounts.merge(like, 1L, Long::sum));
+            report.getDislikes().forEach(dislike ->
+                    dislikeCounts.merge(dislike, 1L, Long::sum));
+        }
+
+        return ProfileDto.builder()
+                .nickname(member.getNickname())
+                .address(member.getAddress())
+                .mannerScore(member.getMannerScore())
+                .profilePicture(member.getProfilePicture())
+                .likeCounts(likeCounts)
+                .dislikeCounts(dislikeCounts)
+                .build();
     }
 
     // Profile 수정을 위한 저장

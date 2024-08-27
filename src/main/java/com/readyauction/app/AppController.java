@@ -10,41 +10,6 @@ public class AppController {
 
     @GetMapping("/")
     public String index() {
-        return "redirect:/auction/auction";
+        return "redirect:/auction";
     }
-
-//    @GetMapping("/about")
-//    public String about() {
-//        return "/about";
-//    }
-//
-//    @GetMapping("/auction-details")
-//    public String auctionDetails() {
-//        return "/auction-details";
-//    }
-//
-//    @GetMapping("/blog")
-//    public String blog() {
-//        return "/blog";
-//    }
-//
-//    @GetMapping("/blog-details")
-//    public String blogDetails() {
-//        return "/blog-details";
-//    }
-//
-//    @GetMapping("/blog-standard")
-//    public String blogStandard() {
-//        return "/blog-standard";
-//    }
-//
-//    @GetMapping("/privacy")
-//    public String privacy() {
-//        return "/privacy";
-//    }
-//
-//    @GetMapping("/winner")
-//    public String winner() {
-//        return "/winner";
-//    }
 }
