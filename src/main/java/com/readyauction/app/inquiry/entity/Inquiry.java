@@ -42,6 +42,7 @@ public class Inquiry {
     public void deleteAnswer(List<Answer> answers) {
         this.answers = answers;
     }
+
     public void changeStatus(InquiryStatus inquiryStatus) {
         this.status = inquiryStatus;
     }

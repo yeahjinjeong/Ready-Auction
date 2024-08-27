@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+
+<body>
+
+<div layout:fragment="content1">
+    <div class="breadcrumb breadcrumb-style-one mb-0 ">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">1:1 문의</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a>
+                    <li class="breadcrumb-item active">1:1 문의</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="single-widget">
+        <h5 class="wdget-title">1:1 문의 등록</h5>
+        <form th:action="@{/inquiry/register}" method="post" class="comment-form">
+            <div class="row">
+                <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                    <div class="container-fluid">
+                        <span class="navbar-brand">카테고리</span>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+                            <ul class="navbar-nav">
+                                <li class="nav-item dropdown">
+                                    <button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false"></button>
+                                    <ul class="dropdown-menu dropdown-menu-dark">
+                                        <li><span class="dropdown-item dropdown-option" data-value="CASH">결제 관련 문의</span></li>
+                                        <li><span class="dropdown-item dropdown-option" data-value="AUCTION">경매 관련 문의</span></li>
+                                        <li><span class="dropdown-item dropdown-option" data-value="SYSTEM">시스템 오류 제보</span></li>
+                                    </ul>
+
+                                    <!-- 드롭다운 메뉴의 값이 저장될 <select> 요소 -->
+                                    <select name="category" class="d-none">
+                                        <option value="CASH">결제 관련 문의</option>
+                                        <option value="AUCTION">경매 관련 문의</option>
+                                        <option value="SYSTEM">시스템 오류 제보</option>
+                                    </select>
+                                </li>
+
+                                <!-- 선택된 카테고리를 표시할 <span> -->
+                                <li class="nav-item">
+                                    <span id="selectedCategory" class="text-light ms-3"></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+                <div class="col-md-6" style="padding-top: 30px">
+                    <div class="form-inner">
+                        <label for="title">Title</label>
+                        <input type="text" name="title" id="title" required>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-inner">
+                        <label for="content">Content</label>
+                        <textarea name="content" id="content" rows="5" required></textarea>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button type="submit" class="submit-button">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.querySelectorAll('.dropdown-option').forEach(item => {
+            item.addEventListener('click', function() {
+                const selectedText = this.textContent;
+                const selectedValue = this.getAttribute('data-value');
+
+                document.getElementById('selectedCategory').textContent = selectedText;
+                document.querySelector('select[name=category]').value = selectedValue;
+                document.getElementById('dropdownMenuButton').textContent = selectedText;
+            });
+        });
+    </script>
+
+
+</div>
+</body>
+</html>

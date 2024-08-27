@@ -107,6 +107,7 @@ public class MemberService {
                 .nickname(member.getNickname())
                 .address(member.getAddress())
                 .mannerScore(member.getMannerScore())
+                .profilePicture(member.getProfilePicture())
                 .likeCounts(likeCounts)
                 .dislikeCounts(dislikeCounts)
                 .build();

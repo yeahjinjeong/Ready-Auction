@@ -125,7 +125,7 @@
                                             <span th:text="${product.winner.status == 'CONFIRMED' ? '결제완료' : '구매확정'}"></span>
                                         </td>
                                         <td>
-                                            <a th:href="@{/auction/product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
+                                            <a th:href="@{/auction/bid-product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
                                         </td>
                                         <td class="price" th:text="${product.startPrice}"></td>
                                         <td class="price" th:text="${product.currentPrice}"></td>
