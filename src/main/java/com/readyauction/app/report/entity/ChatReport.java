@@ -39,5 +39,9 @@ public class ChatReport {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private ChatReportStatus status;
+    private ReportStatus status;
+
+    public void changeStatus(ReportStatus reportStatus) {
+        this.status = reportStatus;
+    }
 }

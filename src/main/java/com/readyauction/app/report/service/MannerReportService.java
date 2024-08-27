@@ -5,7 +5,7 @@ import com.readyauction.app.report.dto.ChatReportReqDto;
 import com.readyauction.app.report.dto.MannerReportReqDto;
 //import com.readyauction.app.report.entity.ChatReport;
 import com.readyauction.app.report.entity.ChatReport;
-import com.readyauction.app.report.entity.ChatReportStatus;
+import com.readyauction.app.report.entity.ReportStatus;
 import com.readyauction.app.report.entity.MannerReport;
 //import com.readyauction.app.report.repository.ChatReportRepository;
 import com.readyauction.app.report.repository.ChatReportRepository;
@@ -46,7 +46,7 @@ public class MannerReportService {
                 .productId(chatReportReqDto.getProductId())
                 .createdAt(LocalDateTime.now())
                 .detail(chatReportReqDto.getDetail())
-                .status(ChatReportStatus.PENDING)
+                .status(ReportStatus.PENDING)
                 .build();
 
         chatReportRepository.save(chatReport);
