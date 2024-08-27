@@ -1,9 +1,6 @@
 package com.readyauction.app.report.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -25,6 +22,8 @@ public class ProductReport {
     private String reportReason;
     @CreationTimestamp
     private LocalDateTime reportDate;
-
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private ReportStatus status;
     // 추가 필드 예: 신고 대상 상품 ID, 신고자 ID 등
 }

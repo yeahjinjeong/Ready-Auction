@@ -1,13 +1,11 @@
 package com.readyauction.app.report.dto;
 
 import com.readyauction.app.report.entity.ChatReport;
-import com.readyauction.app.report.entity.ChatReportStatus;
+import com.readyauction.app.report.entity.ReportStatus;
 import com.readyauction.app.report.entity.ReportReason;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -22,7 +20,7 @@ public class ChatReportResDto {
     private ReportReason reason;
     private String detail;
     private LocalDateTime createdAt;
-    private ChatReportStatus status;
+    private ReportStatus status;
 
     public static ChatReportResDto toChatReportResDto(ChatReport chatReport) {
         return new ChatReportResDto(

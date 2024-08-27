@@ -1,6 +1,7 @@
 package com.readyauction.app.report.dto;
 
 import com.readyauction.app.report.entity.ProductReport;
+import com.readyauction.app.report.entity.ReportStatus;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class ProductReportReqDto {
                 .userId(this.userId)
                 .productId(this.productId)
                 .reportReason(this.reportReason)
+                .status(ReportStatus.PENDING)
                 .build();
     }
 }

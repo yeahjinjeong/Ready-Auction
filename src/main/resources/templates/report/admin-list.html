@@ -62,8 +62,9 @@
                         <th scope="col">신고번호</th>
                         <th scope="col">신고유저ID</th>
                         <th scope="col">신고게시글번호</th>
-                        <th scope="col">접수시간</th>
                         <th scope="col">신고사유</th>
+                        <th scope="col">접수일자</th>
+                        <th scope="col">처리상태</th>
                         <th scope="col">신고처리</th>
                       </tr>
                       </thead>
@@ -74,8 +75,9 @@
                           <td th:text="${productReport.getProductId()}"></td>
                           <td th:text="${productReport.getReportDate()}">
                           <td th:text="${productReport.getReportReason()}">
+                          <td th:text="${productReport.getStatus()}">
                           <td>
-                            <button class="delete_Btn" th:attr="data-product-id=${productReport.getId()}">Delete</button>
+                            <a class="btn btn-primary" th:href="@{/admin/report/product/{productId}(productId=${productReport.getProductId()})}">처리완료</a>
                           </td>
                         </tr>
                       </tbody>
@@ -111,7 +113,12 @@
                         <td th:text="${chatReport.createdAt}"></td>
                         <td th:text="${chatReport.status}"></td>
                         <td>
-                          <a th:href="@{/}" class="btn btn-primary">활동 정지</a>
+                          <a th:if="${chatReport.status.name() == 'PENDING'}"
+                             th:href="@{/admin/report/chat/{reportId}(reportId=${chatReport.id})}"
+                             class="btn btn-primary">
+                            활동 정지
+                          </a>
+                          <span th:unless="${chatReport.status.name() == 'PENDING'}" class="btn btn-secondary">처리 완료</span>
                         </td>
                       </tr>
                       </tbody>
@@ -126,5 +133,9 @@
       </div>
     </div>
   </div>
+<script layout:fragment="script">
+  const message = `[[${message}]]`;
+  message && alert(message);
+</script>
 </body>
 </html>
