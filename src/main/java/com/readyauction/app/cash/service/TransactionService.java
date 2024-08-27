@@ -51,6 +51,8 @@ public class TransactionService {
             } else if (payment.getCategory() == PaymentCategory.BID && payment.getStatus() == PaymentStatus.PROCESSING) {
                 // 선입금 지불 (출금)
                 transactions.add(new TransactionDto(payment.getDate(), "선입금", -payment.getPayAmount(), "지불", productName, productId));
+            } else if (payment.getStatus() == PaymentStatus.OUTSTANDING) {
+                transactions.add(new TransactionDto(payment.getDate(), "패널티", -payment.getPayAmount(), "거래 취소", productName, productId));
             } else if (payment.getCategory() == PaymentCategory.BID_COMPLETE) {
                 // 구매 완료 (출금)
                 transactions.add(new TransactionDto(payment.getDate(), "구매", -payment.getPayAmount(), "완료", productName, productId));
@@ -65,7 +67,11 @@ public class TransactionService {
             productId = payment.getProductId();
 
             if (payment.getStatus() == PaymentStatus.COMPLETED) {
+                // 판매자 판매 완료 (입금)
                 transactions.add(new TransactionDto(payment.getDate(), "판매", payment.getPayAmount(), "완료", productName, productId));
+            } else if (payment.getStatus() == PaymentStatus.OUTSTANDING) {
+                // 판매자 거래 취소 위로금 (입금) - 미결제인 경우 구매자 선입금의 70% 돌려받기
+                transactions.add(new TransactionDto(payment.getDate(), "위로금", (int) Math.floor(payment.getPayAmount() * 0.7), "거래 취소", productName, productId));
             }
         }
 

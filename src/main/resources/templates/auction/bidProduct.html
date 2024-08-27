@@ -71,9 +71,9 @@
     <div class="breadcrumb breadcrumb-style-one mb-0">
         <div class="container">
             <div class="col-lg-12 text-center">
-                <h1 class="breadcrumb-title">내 입찰</h1>
+                <h1 class="breadcrumb-title">상품 상세정보</h1>
                 <ul class="d-flex justify-content-center breadcrumb-items">
-                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/static}">Home</a></li>
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a></li>
                     <li class="breadcrumb-item active">Payment</li>
                 </ul>
             </div>
@@ -166,8 +166,13 @@
                             <h5 class="widget-title">Product Overview</h5>
       ㄿ                      <ul class="widget-list">
                                 <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
-                                <li><span>판매자 ID :</span><span th:text="${productDetail.memberId}">판매자</span></li>
+                                <li><span>판매자 :</span>
+                                    <a th:href="@{/member/profile/{memberId}(memberId=${productDetail.memberId})}">
+                                        <span th:text="${productDetail.nickName}">판매자</span>
+                                    </a>
+                                </li>
                                 <li><span>카테고리 :</span><span th:text="${productDetail.category}">카테고리</span></li>
+                                <li><span>경매 시작 시간 :</span><span th:text="${productDetail.startTime}">경매 마감 시간</span></li>
                                 <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
                                 <li><span>즉시 구매가 :</span><span th:text="'₩' + ${productDetail.immediatePrice}">즉시 구매가</span></li>
                                 <li><span>상품 설명 :</span><span th:text="${productDetail.description}">상품 설명</span></li>

@@ -5,11 +5,6 @@
 
 <body>
 
-
-
-
-
-
 <div layout:fragment="content1">
     <div class="breadcrumb breadcrumb-style-one mb-0 ">
         <div class="container">
@@ -45,17 +40,8 @@
                             </ul>
                         </div>
                         <div class="qsn-area">
-                            <h5>HAVE ANY QUESTIONS?</h5>
-                            <form class="qsn-form">
-                                <div class="form-inner">
-                                    <label>Your Name</label>
-                                    <input type="text" name="name" placeholder="Type your name ">
-                                </div>
-                                <div class="form-inner">
-                                    <textarea name="message" rows="5" placeholder="Type your question"></textarea>
-                                </div>
-                                <button class="qsn-send-btn">Submit Now</button>
-                            </form>
+                            <h5>더 궁금한 사항이 있나요?</h5>
+                            <a th:href="@{/inquiry/register}" class="qsn-send-btn">문의하기</a>
                         </div>
                     </div>
                 </div>

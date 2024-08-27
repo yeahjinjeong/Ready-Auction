@@ -145,7 +145,7 @@
                <td th:text="${transaction.type}"></td>
                <td th:text="${transaction.status}"></td>
                <td>
-                <a th:href="@{/auction/product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
+                <a th:href="@{/auction/bid-product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
                </td>
                <td>
                 <span th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
@@ -153,7 +153,7 @@
                       class="amount">
                 </span>
                </td>
-               <td th:text="${#dates.format(transaction.date, 'yyyy년 M월 d일 HH:mm')}"></td>
+               <td th:text="${#dates.format(transaction.date, 'yy년 M월 d일 HH:mm')}"></td>
               </tr>
               </tbody>
              </table>
@@ -178,7 +178,7 @@
                <td th:text="${transaction.type}"></td>
                <td th:text="${transaction.status}"></td>
                <td>
-                <a th:href="@{/auction/product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
+                <a th:href="@{/auction/bid-product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
                </td>
                <td>
                 <span th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
@@ -186,7 +186,7 @@
                       class="amount">
                 </span>
                </td>
-               <td th:text="${#dates.format(transaction.date, 'yyyy년 M월 d일 HH:mm')}"></td>
+               <td th:text="${#dates.format(transaction.date, 'yy년 M월 d일 HH:mm')}"></td>
               </tr>
               </tbody>
              </table>
@@ -211,7 +211,7 @@
                <td th:text="${transaction.type}"></td>
                <td th:text="${transaction.status}"></td>
                <td>
-                <a th:href="@{/auction/product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
+                <a th:href="@{/auction/bid-product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
                </td>
                <td>
                 <span th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
@@ -219,7 +219,7 @@
                       class="amount">
                 </span>
                </td>
-               <td th:text="${#dates.format(transaction.date, 'yyyy년 M월 d일 HH:mm')}"></td>
+               <td th:text="${#dates.format(transaction.date, 'yy년 M월 d일 HH:mm')}"></td>
               </tr>
               </tbody>
              </table>
@@ -276,7 +276,7 @@
       <!-- 경매 참여 내역 -->
       <div class="tab-pane fade" id="v-pills-pp4" role="tabpanel" aria-labelledby="v-btn-pp4">
        <div class="tab-inner-contentbox mt-0">
-        <h5 class="pp-title pt-0">경매 참여 내역</h5>
+        <h5 class="wdget-title">경매 참여 내역</h5>
 
         <!-- 경매 참여 내역 조회 -->
         <div class="item-describe-area">
@@ -337,7 +337,7 @@
              <tbody>
              <tr th:each="product : ${winningBids}">
               <td>
-               <a th:href="@{/auction/product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
+               <a th:href="@{/auction/bid-product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
               </td>
               <td class="price" th:text="${product.winner.price}"></td>
               <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일')}"></td>
@@ -374,7 +374,7 @@
              <tbody>
              <tr th:each="bid : ${losingBids}">
               <td>
-               <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
+               <a th:href="@{/auction/bid-product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
               </td>
               <td class="price" th:text="${bid.myPrice}"></td>
               <td class="price" th:text="${bid.product.currentPrice}"></td>
@@ -394,7 +394,7 @@
       <!-- 경매 등록 내역 -->
       <div class="tab-pane fade" id="v-pills-pp5" role="tabpanel" aria-labelledby="v-btn-pp5">
        <div class="tab-inner-contentbox mt-0">
-        <h5 class="pp-title pt-0">경매 등록 내역</h5>
+        <h5 class="wdget-title">경매 등록 내역</h5>
 
         <!-- 경매 등록 내역 조회 -->
         <div class="item-describe-area">
@@ -428,7 +428,7 @@
              <tbody>
              <tr th:each="product : ${activeProducts}">
               <td>
-               <a th:href="@{/auction/product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
+               <a th:href="@{/auction/bid-product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
               </td>
               <td class="price" th:text="${product.startPrice}"></td>
               <td class="price" th:text="${product.currentPrice}"></td>
@@ -463,7 +463,7 @@
                <span th:text="${product.winner.status == 'CONFIRMED' ? '결제완료' : '구매확정'}"></span>
               </td>
               <td>
-               <a th:href="@{/auction/product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
+               <a th:href="@{/auction/bid-product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
               </td>
               <td class="price" th:text="${product.startPrice}"></td>
               <td class="price" th:text="${product.currentPrice}"></td>
@@ -493,7 +493,7 @@
              <tbody>
              <tr th:each="product : ${failedProducts}">
               <td>
-               <a th:href="@{/auction/product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
+               <a th:href="@{/auction/bid-product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
               </td>
               <td class="price" th:text="${product.startPrice}"></td>
               <td class="price" th:text="${product.currentPrice}"></td>
@@ -514,12 +514,32 @@
       <!-- 1:1 문의 내역 -->
       <div class="tab-pane fade" id="v-pills-pp6" role="tabpanel" aria-labelledby="v-btn-pp6">
        <div class="tab-inner-contentbox mt-0">
-        <h5 class="pp-title pt-0">1:1 문의 내역</h5>
-       </div>
+        <h5 class="wdget-title" style="padding-bottom: 30px;">1:1 문의 내역</h5>
+        <table class="table table-striped">
+         <thead class="table-dark">
+         <tr>
+          <th scope="col">카테고리</th>
+          <th scope="col">제목</th>
+          <th scope="col">작성 일자</th>
+          <th scope="col">상태</th>
+         </tr>
+         </thead>
+         <tbody>
+         <tr th:each="inquiry : ${inquiries}">
+          <td th:text="${inquiry.category}"></td>
+          <td th:text="${inquiry.title}"></td>
+<!--          <td>-->
+<!--           <a th:href="@{/inquiry/{id}(id=${inquiry.id})}" th:text="${inquiry.title}"></a>-->
+<!--          </td>-->
+          <td th:text="${inquiry.createdAt}"></td>
+          <td th:text="${inquiry.status}"></td>
+         </tr>
+         </tbody>
+        </table>
       </div>
-
      </div>
     </div>
+   </div>
    </div>
   </div>
  </div>

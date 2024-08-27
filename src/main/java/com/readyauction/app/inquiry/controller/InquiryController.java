@@ -4,9 +4,13 @@ import com.readyauction.app.auth.principal.AuthPrincipal;
 import com.readyauction.app.inquiry.dto.InquiryAnswerDto;
 import com.readyauction.app.inquiry.dto.InquiryDetailDto;
 import com.readyauction.app.inquiry.dto.InquiryDto;
+import com.readyauction.app.inquiry.dto.InquiryReqDto;
 import com.readyauction.app.inquiry.service.InquiryService;
+import com.readyauction.app.report.entity.ProductReport;
+import com.readyauction.app.report.service.ProductReportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -21,9 +25,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InquiryController {
     private final InquiryService inquiryService;
+    @Autowired
+    ProductReportService productReportService;
     @GetMapping("/faq")
-    public String inquiry() {
-        return "inquiry/faq";
+    public void inquiry() {
+
+    }
+
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        model.addAttribute("inquiryReqDto", new InquiryReqDto());
+        return "inquiry/inquiry-register";
+    }
+
+    @PostMapping("/register")
+    public String registerInquiry(@ModelAttribute InquiryReqDto inquiryReqDto) {
+        inquiryService.registerInquiry(inquiryReqDto);
+        return "redirect:/mypage";
     }
 
     @GetMapping("/admin-faq")
@@ -36,7 +54,7 @@ public class InquiryController {
 
     @GetMapping("/detail/{id}")
     public String adminInquiryDetail(
-            @PathVariable Long id,
+            Long id,
             Model model) {
         InquiryDetailDto inquiryDetailDto = inquiryService.findAndNicknameById(id);
         model.addAttribute("inquiry", inquiryDetailDto);
@@ -60,9 +78,38 @@ public class InquiryController {
             @RequestBody InquiryAnswerDto inquiryAnswerDto,
             @AuthenticationPrincipal AuthPrincipal principal
     ){
-        // 한번밖에 못단다고 가정하기
         log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
         inquiryService.changeAnswer(principal.getMember().getId(), inquiryAnswerDto);
         return ResponseEntity.ok("ok");
     }
+
+    @ResponseBody
+    @PatchMapping("/detail/delete/answer")
+    public ResponseEntity<?> deleteInquiryDetailAnswer(
+            @RequestBody InquiryAnswerDto inquiryAnswerDto,
+            @AuthenticationPrincipal AuthPrincipal principal
+    ){
+        log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
+        inquiryService.deleteAnswer(principal.getMember().getId(), inquiryAnswerDto);
+        return ResponseEntity.ok("ok");
+    }
+    @GetMapping("/admin-report")
+    public String adminReport(Model model) {
+
+        List<ProductReport> list = productReportService.getAllProduct();
+
+        model.addAttribute("productList", list);
+
+        return "inquiry/admin-report";
+
+    }
+
+//    @GetMapping("/{id}")
+//    public String getInquiryDetail(@PathVariable("id") Long id, Model model) {
+//        Inquiry inquiry = inquiryService.findById(id);
+//        log.debug("inquiry : {}", inquiry);
+//        model.addAttribute("inquiry", inquiry);
+//        return "inquiry/inquiry-detail";
+//    }
+
 }
