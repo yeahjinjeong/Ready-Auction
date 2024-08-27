@@ -1,6 +1,6 @@
 package com.readyauction.app.report.entity;
 
-public enum ChatReportStatus {
+public enum ReportStatus {
     PENDING,
-    COMPLETE
+    COMPLETED
 }

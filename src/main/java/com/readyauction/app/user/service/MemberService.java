@@ -13,6 +13,7 @@ import com.readyauction.app.user.dto.MemberRegisterRequestDto;
 import com.readyauction.app.user.dto.MemberUpdateRequestDto;
 import com.readyauction.app.user.dto.ProfileDto;
 import com.readyauction.app.user.entity.Member;
+import com.readyauction.app.user.entity.UserStatus;
 import com.readyauction.app.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -185,5 +186,10 @@ public class MemberService {
             // 조회결과가 없다 -> 사용할 수 있다.
             return "ok";
         }
+    }
+
+    public void changeStatus(Long reportedMemberId, UserStatus userStatus) {
+        Member member = memberRepository.findById(reportedMemberId).get();
+        member.setUserStatus(userStatus);
     }
 }
