@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+  <style>
+    .image {
+      text-align: center;
+    }
+    .image img {
+      width: 220px;
+      height: 220px;
+      border-radius:50%;
+      margin-bottom: 5%;
+    }
+    .blue {
+      color: blue;
+    }
+    .red {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+<div layout:fragment="content1">
+  <div class="breadcrumb breadcrumb-style-one mb-0 ">
+    <div class="container">
+      <div class="col-lg-12 text-center">
+        <h1 class="breadcrumb-title">Report</h1>
+        <ul class="d-flex justify-content-center breadcrumb-items">
+          <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a></li>
+          <li class="breadcrumb-item active">Report</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="auction-winner-wrapper pt-110">
+    <div class="container">
+        <div class="single-widget">
+          <!-- 신고 내역 -->
+          <div class="tab-inner-contentbox">
+            <h5 class="wdget-title">신고 내역</h5>
+
+            <div class="item-describe-area">
+              <ul class="nav nav-pills d-flex justify-content-center gap-sm-4 gap-1" id="pills-tab2" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active describe-btn" id="pills-home-tab2" data-bs-toggle="pill" data-bs-target="#pills-home2" type="button" role="tab" aria-controls="pills-home2" aria-selected="true">입찰 중</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link describe-btn" id="pills-profile-tab2" data-bs-toggle="pill" data-bs-target="#pills-profile2" type="button" role="tab" aria-controls="pills-profile2" aria-selected="false">낙찰</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link describe-btn" id="pills-contact-tab2" data-bs-toggle="pill" data-bs-target="#pills-contact2" type="button" role="tab" aria-controls="pills-contact2" aria-selected="false">패찰</button>
+                </li>
+              </ul>
+
+              <!-- 입찰 중인 내역 -->
+              <div class="tab-content" id="pills-tabContent2">
+                <div class="tab-pane fade show active" id="pills-home2" role="tabpanel" aria-labelledby="pills-home-tab2">
+                  <div class="describe-content">
+                    <table class="table table-striped">
+                      <thead class="table-dark">
+                      <tr>
+                        <th scope="col">상품명</th>
+                        <th scope="col">나의 입찰가</th>
+                        <th scope="col">현재 입찰가</th>
+                        <th scope="col">시작일</th>
+                        <th scope="col">마감일</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr th:each="bid : ${biddingBids}">
+                        <td>
+                          <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
+                        </td>
+                        <td class="price" th:text="${bid.myPrice}"></td>
+                        <td class="price" th:text="${bid.product.currentPrice}"></td>
+                        <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
+                        <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일')}"></td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- 낙찰 내역 -->
+                <div class="tab-pane fade" id="pills-profile2" role="tabpanel" aria-labelledby="pills-profile-tab2">
+                  <div class="describe-content">
+                    <table class="table table-striped">
+                      <thead class="table-dark">
+                      <tr>
+                        <th scope="col">상품명</th>
+                        <th scope="col">나의 입찰가</th>
+                        <th scope="col">시작일</th>
+                        <th scope="col">마감일</th>
+                        <th scope="col">결제</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr th:each="product : ${winningBids}">
+                        <td>
+                          <a th:href="@{/auction/bid-product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
+                        </td>
+                        <td class="price" th:text="${product.winner.price}"></td>
+                        <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일')}"></td>
+                        <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일')}"></td>
+                        <td>
+                          <a th:if="${isWinnerConfirmedMap[product.id]}"
+                             th:href="@{/cash/payment/{productId}(productId=${product.id})}"
+                             class="btn btn-primary">
+                            결제
+                          </a>
+                          <span th:unless="${isWinnerConfirmedMap[product.id]}" class="btn btn-secondary">
+                        결제 완료
+                       </span>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- 패찰 내역 -->
+                <div class="tab-pane fade" id="pills-contact2" role="tabpanel" aria-labelledby="pills-contact-tab2">
+                  <div class="describe-content">
+                    <table class="table table-striped">
+                      <thead class="table-dark">
+                      <tr>
+                        <th scope="col">상품명</th>
+                        <th scope="col">나의 입찰가</th>
+                        <th scope="col">현재 입찰가</th>
+                        <th scope="col">시작일</th>
+                        <th scope="col">마감일</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr th:each="bid : ${losingBids}">
+                        <td>
+                          <a th:href="@{/auction/bid-product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
+                        </td>
+                        <td class="price" th:text="${bid.myPrice}"></td>
+                        <td class="price" th:text="${bid.product.currentPrice}"></td>
+                        <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
+                        <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일')}"></td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
