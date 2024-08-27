@@ -1,38 +1,31 @@
 package com.readyauction.app.report.controller;
 
-import com.readyauction.app.report.dto.ProductReportDto;
+import com.readyauction.app.report.dto.ProductReportReqDto;
 import com.readyauction.app.report.entity.ProductReport;
-import com.readyauction.app.report.repository.ProductReportRepository;
 import com.readyauction.app.report.service.ProductReportService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/report")
 @Slf4j
+@RequiredArgsConstructor
 public class ProductReportController {
 
-    @Autowired
-    private ProductReportService productReportService;
+    private final ProductReportService productReportService;
 
     @PostMapping("/save")
-    public ResponseEntity<?> report(@RequestBody ProductReportDto productReportDto) {
-        log.info("productReportDto: {}", productReportDto);
+    public ResponseEntity<?> report(@RequestBody ProductReportReqDto productReportReqDto) {
+        log.info("productReportDto: {}", productReportReqDto);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
         // 신고 데이터를 데이터베이스에 저장
-        ProductReport savedReport = productReportService.saveReport(email,productReportDto);
+        ProductReport savedReport = productReportService.saveReport(email, productReportReqDto);
 
         return ResponseEntity.ok().body("신고가 성공적으로 접수되었습니다. ID: " + savedReport.getId());
     }

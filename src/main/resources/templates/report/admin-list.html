@@ -45,75 +45,73 @@
             <div class="item-describe-area">
               <ul class="nav nav-pills d-flex justify-content-center gap-sm-4 gap-1" id="pills-tab2" role="tablist">
                 <li class="nav-item" role="presentation">
-                  <button class="nav-link active describe-btn" id="pills-home-tab2" data-bs-toggle="pill" data-bs-target="#pills-home2" type="button" role="tab" aria-controls="pills-home2" aria-selected="true">입찰 중</button>
+                  <button class="nav-link active describe-btn" id="pills-home-tab2" data-bs-toggle="pill" data-bs-target="#pills-home2" type="button" role="tab" aria-controls="pills-home2" aria-selected="true">경매 게시글 신고</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                  <button class="nav-link describe-btn" id="pills-profile-tab2" data-bs-toggle="pill" data-bs-target="#pills-profile2" type="button" role="tab" aria-controls="pills-profile2" aria-selected="false">낙찰</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link describe-btn" id="pills-contact-tab2" data-bs-toggle="pill" data-bs-target="#pills-contact2" type="button" role="tab" aria-controls="pills-contact2" aria-selected="false">패찰</button>
+                  <button class="nav-link describe-btn" id="pills-profile-tab2" data-bs-toggle="pill" data-bs-target="#pills-profile2" type="button" role="tab" aria-controls="pills-profile2" aria-selected="false">채팅 신고</button>
                 </li>
               </ul>
 
-              <!-- 입찰 중인 내역 -->
+              <!-- 경매 게시글 신고 내역 -->
               <div class="tab-content" id="pills-tabContent2">
                 <div class="tab-pane fade show active" id="pills-home2" role="tabpanel" aria-labelledby="pills-home-tab2">
                   <div class="describe-content">
                     <table class="table table-striped">
                       <thead class="table-dark">
                       <tr>
-                        <th scope="col">상품명</th>
-                        <th scope="col">나의 입찰가</th>
-                        <th scope="col">현재 입찰가</th>
-                        <th scope="col">시작일</th>
-                        <th scope="col">마감일</th>
+                        <th scope="col">신고번호</th>
+                        <th scope="col">신고유저ID</th>
+                        <th scope="col">신고게시글번호</th>
+                        <th scope="col">접수시간</th>
+                        <th scope="col">신고사유</th>
+                        <th scope="col">신고처리</th>
                       </tr>
                       </thead>
                       <tbody>
-                      <tr th:each="bid : ${biddingBids}">
-                        <td>
-                          <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
-                        </td>
-                        <td class="price" th:text="${bid.myPrice}"></td>
-                        <td class="price" th:text="${bid.product.currentPrice}"></td>
-                        <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
-                        <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일')}"></td>
-                      </tr>
+                        <tr th:each="productReport : ${productReports}">
+                          <td th:text="${productReport.getId()}"></td>
+                          <td th:text="${productReport.getUserId()}"></td>
+                          <td th:text="${productReport.getProductId()}"></td>
+                          <td th:text="${productReport.getReportDate()}">
+                          <td th:text="${productReport.getReportReason()}">
+                          <td>
+                            <button class="delete_Btn" th:attr="data-product-id=${productReport.getId()}">Delete</button>
+                          </td>
+                        </tr>
                       </tbody>
                     </table>
                   </div>
                 </div>
 
-                <!-- 낙찰 내역 -->
+                <!-- 채팅 신고 내역 -->
                 <div class="tab-pane fade" id="pills-profile2" role="tabpanel" aria-labelledby="pills-profile-tab2">
                   <div class="describe-content">
                     <table class="table table-striped">
                       <thead class="table-dark">
                       <tr>
-                        <th scope="col">상품명</th>
-                        <th scope="col">나의 입찰가</th>
-                        <th scope="col">시작일</th>
-                        <th scope="col">마감일</th>
-                        <th scope="col">결제</th>
+                        <th scope="col">신고자</th>
+                        <th scope="col">신고대상</th>
+                        <th scope="col">상품</th>
+                        <th scope="col">신고 이유</th>
+                        <th scope="col">기타 설명</th>
+                        <th scope="col">작성일자</th>
+                        <th scope="col">처리상태</th>
+                        <th scope="col">신고처리</th>
                       </tr>
                       </thead>
                       <tbody>
-                      <tr th:each="product : ${winningBids}">
+                      <tr th:each="chatReport : ${chatReports}">
+                        <td th:text="${chatReport.reporterId}"></td>
                         <td>
-                          <a th:href="@{/auction/bid-product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
+                         <a th:href="@{/member/profile/{memberId}(memberId=${chatReport.reportedMemberId})}" th:text="${chatReport.reportedMemberId}"></a>
                         </td>
-                        <td class="price" th:text="${product.winner.price}"></td>
-                        <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일')}"></td>
-                        <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일')}"></td>
+                        <td th:text="${chatReport.productId}"></td>
+                        <td th:text="${chatReport.reason}"></td>
+                        <td th:text="${chatReport.detail}"></td>
+                        <td th:text="${chatReport.createdAt}"></td>
+                        <td th:text="${chatReport.status}"></td>
                         <td>
-                          <a th:if="${isWinnerConfirmedMap[product.id]}"
-                             th:href="@{/cash/payment/{productId}(productId=${product.id})}"
-                             class="btn btn-primary">
-                            결제
-                          </a>
-                          <span th:unless="${isWinnerConfirmedMap[product.id]}" class="btn btn-secondary">
-                        결제 완료
-                       </span>
+                          <a th:href="@{/}" class="btn btn-primary">활동 정지</a>
                         </td>
                       </tr>
                       </tbody>
@@ -121,33 +119,6 @@
                   </div>
                 </div>
 
-                <!-- 패찰 내역 -->
-                <div class="tab-pane fade" id="pills-contact2" role="tabpanel" aria-labelledby="pills-contact-tab2">
-                  <div class="describe-content">
-                    <table class="table table-striped">
-                      <thead class="table-dark">
-                      <tr>
-                        <th scope="col">상품명</th>
-                        <th scope="col">나의 입찰가</th>
-                        <th scope="col">현재 입찰가</th>
-                        <th scope="col">시작일</th>
-                        <th scope="col">마감일</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      <tr th:each="bid : ${losingBids}">
-                        <td>
-                          <a th:href="@{/auction/bid-product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
-                        </td>
-                        <td class="price" th:text="${bid.myPrice}"></td>
-                        <td class="price" th:text="${bid.product.currentPrice}"></td>
-                        <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
-                        <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일')}"></td>
-                      </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

@@ -1,9 +1,9 @@
 package com.readyauction.app.report.controller;
 
 import com.readyauction.app.auth.principal.AuthPrincipal;
-import com.readyauction.app.report.dto.ChatReportDto;
+import com.readyauction.app.report.dto.ChatReportReqDto;
 import com.readyauction.app.report.entity.ReportReason;
-import com.readyauction.app.report.service.ReportService;
+import com.readyauction.app.report.service.MannerReportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequestMapping("/report/chat")
 public class ChatReportController {
-    private final ReportService reportService;
+    private final MannerReportService mannerReportService;
 
     @GetMapping("/{productId}/{reportedMemberId}")
     public String chatReportForm(
@@ -32,26 +32,17 @@ public class ChatReportController {
         // 디버그용 로그 출력
         log.info("Report Reasons: {}", (Object) ReportReason.values());
 
-        return "report/chat-report-form";
+        return "report/chat-form";
     }
 
     @PostMapping("/submit")
     public String submitChatReport(
-            @ModelAttribute ChatReportDto chatReportDto,
+            @ModelAttribute ChatReportReqDto chatReportReqDto,
             @AuthenticationPrincipal AuthPrincipal principal
     ) {
-        log.info("chatReportDto : {}", chatReportDto);
-        chatReportDto.setReporterId(principal.getMember().getId());
-        reportService.reportChat(chatReportDto);
+        log.info("chatReportDto : {}", chatReportReqDto);
+        chatReportReqDto.setReporterId(principal.getMember().getId());
+        mannerReportService.reportChat(chatReportReqDto);
         return "redirect:/chat/list";
     }
 }
-
-//    @GetMapping("/report/chat/{reportedMemberId}/{chatRoomId}")
-//    public String reportForm(@AuthenticationPrincipal AuthPrincipal principal, @PathVariable Long reportedMemberId, @PathVariable Long chatRoomId, Model model) {
-//        model.addAttribute("reportedMemberId", reportedMemberId);
-//        model.addAttribute("chatRoomId", chatRoomId);
-//        model.addAttribute("reporterId", principal.getMember().getId()); // 로그인한 사용자의 ID 추가
-//        model.addAttribute("chatReportDto", new ChatReportDto());  // 빈 DTO 객체 추가
-//        return "report/report-form";
-//    }
