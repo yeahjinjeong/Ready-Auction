@@ -3,8 +3,11 @@ package com.readyauction.app.inquiry.controller;
 import com.readyauction.app.inquiry.dto.InquiryDetailDto;
 import com.readyauction.app.inquiry.dto.InquiryDto;
 import com.readyauction.app.inquiry.service.InquiryService;
+import com.readyauction.app.report.entity.ProductReport;
+import com.readyauction.app.report.service.ProductReportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +22,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InquiryController {
     private final InquiryService inquiryService;
+
+    @Autowired
+    ProductReportService productReportService;
+
     @GetMapping("/faq")
     public String inquiry() {
         return "inquiry/faq";
@@ -40,5 +47,16 @@ public class InquiryController {
         model.addAttribute("inquiry", inquiryDetailDto);
         log.info("inquiryDetailDto : {}", inquiryDetailDto);
         return "inquiry/admin-faq-detail";
+    }
+
+    @GetMapping("/admin-report")
+    public String adminReport(Model model) {
+
+        List<ProductReport> list = productReportService.getAllProduct();
+
+        model.addAttribute("productList", list);
+
+        return "inquiry/admin-report";
+
     }
 }

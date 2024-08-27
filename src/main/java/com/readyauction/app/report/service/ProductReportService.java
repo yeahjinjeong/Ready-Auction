@@ -27,4 +27,11 @@ public class ProductReportService {
     public List<ProductReport> getAllReports() {
         return productReportRepository.findAll();
     }
+
+    public List<ProductReport> getAllProduct(){
+
+        List<ProductReport> list = productReportRepository.findAll();
+
+        return list;
+    }
 }

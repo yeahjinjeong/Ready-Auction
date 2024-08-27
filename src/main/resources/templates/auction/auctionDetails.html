@@ -2,10 +2,30 @@
 <html lang="en" layout:decorate="~{layout/default}"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:th="http://www.thymeleaf.org">
-<link href="https://unpkg.com/swiper/swiper-bundle.min.css" rel="stylesheet">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/swiper/swiper-bundle.min.css" rel="stylesheet">
     <style>
         /* 추가 스타일을 원한다면 여기에 작성하세요 */
+        .wishlist-btn {
+            background-color: transparent;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #ff6666;
+        }
+
+        .wishlist-btn:focus {
+            outline: none;
+        }
+
+        .wishlist-btn .fa-heart {
+            color: #ff6666;
+        }
+
+        .wishlist-btn.active .fa-heart {
+            color: #ff3333;
+        }
         /* 신고하기 버튼과 드롭다운 스타일 */
         .report-dropdown {
             position: relative;
@@ -147,6 +167,19 @@
             .swiper-button-next {
                 right: 10px; /* 오른쪽 버튼 위치 */
             }
+
+
+        .report-btn:focus {
+            outline: none;
+        }
+
+        .report-btn i {
+            color: red; /* 경찰차 사이렌 색상 */
+        }
+
+        .report-btn:hover i {
+            color: darkred; /* 호버 시 색상 */
+        }
 
 
     </style>
@@ -345,15 +378,11 @@
                                             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                                             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                                             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                                            console.log(productId); //2
                                             // Update DOM elements
-                                            console.log(`days-${productId}`);
-                                            console.log(`Countdown for product ID ${productId}: ${days}d ${hours}h ${minutes}m ${seconds}s`);
-                                            const daysElem = document.getElementById(`days-${productId}`);
+                                           const daysElem = document.getElementById(`days-${productId}`);
                                             const hoursElem = document.getElementById(`hours-${productId}`);
                                             const minutesElem = document.getElementById(`minutes-${productId}`);
                                             const secondsElem = document.getElementById(`seconds-${productId}`);
-                                            console.log(daysElem + " " + hoursElem + "" + minutesElem + "" + secondsElem + "ffffffff");
                                             if (daysElem && hoursElem && minutesElem && secondsElem) {
                                                 daysElem.textContent = days;
                                                 hoursElem.textContent = hours;
@@ -463,14 +492,22 @@
                     <div class="widget-right-area">
                         <div class="single-widget">
                             <h5 class="widget-title">상품 상세정보</h5>
+                            <div class="wishlist">
+                                <button class="wishlist-btn">
+                                    <i class="fa-regular fa-heart" aria-hidden="true"></i>
+                                </button>
+                            </div>
                             <div class="report-dropdown" style="position: relative; text-align: right; margin-bottom: 5px;">
-                                <button class="report-btn">신고하기</button>
+                                <button class="report-btn" style="background-color: transparent; border: none; cursor: pointer;">
+                                    <i class="fa-solid fa-flag" style="color: red;"></i> <!-- 경찰차 사이렌 대체 아이콘 -->
+                                </button>
                                 <div class="report-dropdown-content" style="position: absolute; right: 0; display: none; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1;">
                                     <a href="#" class="report-option" data-value="부적절한 내용">부적절한 내용</a>
                                     <a href="#" class="report-option" data-value="허위 정보">허위 정보</a>
                                     <a href="#" class="report-option" data-value="기타">기타</a>
                                 </div>
                             </div>
+
                             <ul class="widget-list">
                                 <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
                                 <li>
@@ -489,7 +526,24 @@
                                     <span class="description" th:text="${productDetail.description}">상품 설명</span></li>
                             </ul>
                         </div>
+
                         <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const wishlistBtn = document.querySelector('.wishlist-btn');
+
+                                wishlistBtn.addEventListener('click', function() {
+                                    // 아이콘을 채우거나 비우는 로직
+                                    this.classList.toggle('active');
+
+                                    if (this.classList.contains('active')) {
+                                        this.querySelector('i').classList.remove('fa-regular');
+                                        this.querySelector('i').classList.add('fa-solid');
+                                    } else {
+                                        this.querySelector('i').classList.remove('fa-solid');
+                                        this.querySelector('i').classList.add('fa-regular');
+                                    }
+                                });
+                            });
                             // Dropdown toggle
                             document.querySelector('.report-btn').addEventListener('click', function() {
                                 const dropdown = document.querySelector('.report-dropdown-content');
