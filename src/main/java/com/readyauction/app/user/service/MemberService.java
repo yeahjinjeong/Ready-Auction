@@ -7,7 +7,7 @@ import com.readyauction.app.ncp.service.NcpObjectStorageService;
 import com.readyauction.app.report.entity.Dislike;
 import com.readyauction.app.report.entity.Like;
 import com.readyauction.app.report.entity.MannerReport;
-import com.readyauction.app.report.repository.ReportRepository;
+import com.readyauction.app.report.repository.MannerReportRepository;
 import com.readyauction.app.user.dto.MemberDto;
 import com.readyauction.app.user.dto.MemberRegisterRequestDto;
 import com.readyauction.app.user.dto.MemberUpdateRequestDto;
@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -34,7 +33,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final NcpObjectStorageService ncpObjectStorageService;
     private final AccountService accountService;
-    private final ReportRepository reportRepository;
+    private final MannerReportRepository mannerReportRepository;
     @Value("${spring.s3.bucket}")
     private String bucketName;
 
@@ -90,7 +89,7 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user Id: " + memberId));
 
         // memberId로 모든 MannerReport 가져오기
-        List<MannerReport> mannerReports = reportRepository.findByMemberId(memberId);
+        List<MannerReport> mannerReports = mannerReportRepository.findByMemberId(memberId);
 
         // Like와 Dislike 항목을 합산
         Map<Like, Long> likeCounts = new EnumMap<>(Like.class);
@@ -107,6 +106,7 @@ public class MemberService {
                 .nickname(member.getNickname())
                 .address(member.getAddress())
                 .mannerScore(member.getMannerScore())
+                .profilePicture(member.getProfilePicture())
                 .likeCounts(likeCounts)
                 .dislikeCounts(dislikeCounts)
                 .build();

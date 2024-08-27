@@ -9,6 +9,8 @@ import com.readyauction.app.cash.dto.TransactionDto;
 import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.cash.service.TransactionService;
 import com.readyauction.app.common.handler.UserNotFoundException;
+import com.readyauction.app.inquiry.entity.Inquiry;
+import com.readyauction.app.inquiry.service.InquiryService;
 import com.readyauction.app.user.dto.MemberDto;
 import com.readyauction.app.user.dto.ProfileDto;
 import com.readyauction.app.user.service.MemberService;
@@ -37,6 +39,7 @@ public class MypageController {
     private final TransactionService transactionService;
     private final BidService bidService;
     private final ProductService productService;
+    private final InquiryService inquiryService;
 
     // 마이페이지
     @GetMapping("")
@@ -104,6 +107,10 @@ public class MypageController {
             // 유찰 내역
             List<Product> failedProducts = productService.getFailedProducts(memberId);
             model.addAttribute("failedProducts", failedProducts);
+
+            // 1:1 문의 내역
+            List<Inquiry> inquiries = inquiryService.getInquiriesByUserId(memberId);
+            model.addAttribute("inquiries", inquiries);
 
         } catch (UserNotFoundException e) {
             log.error("Member not found: {}", e.getMessage());

@@ -81,7 +81,7 @@ public class ProductService {
     @Transactional
     public String uploadFile(String email, MultipartFile multipartFile) {
         validateMultipartFile(multipartFile);
-        List<FileDto> s3Files = ncpObjectStorageService.uploadFiles(Collections.singletonList(multipartFile), "productIMG/"+ email);
+        List<FileDto> s3Files = ncpObjectStorageService.uploadAuctionFiles(Collections.singletonList(multipartFile), "productIMG/"+ email);
 
         return s3Files.stream()
                 .findFirst()
