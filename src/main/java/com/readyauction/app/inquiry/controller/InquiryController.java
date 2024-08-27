@@ -5,11 +5,12 @@ import com.readyauction.app.inquiry.dto.InquiryAnswerDto;
 import com.readyauction.app.inquiry.dto.InquiryDetailDto;
 import com.readyauction.app.inquiry.dto.InquiryDto;
 import com.readyauction.app.inquiry.dto.InquiryReqDto;
-import com.readyauction.app.inquiry.entity.Inquiry;
 import com.readyauction.app.inquiry.service.InquiryService;
-import com.readyauction.app.user.service.MemberService;
+import com.readyauction.app.report.entity.ProductReport;
+import com.readyauction.app.report.service.ProductReportService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -24,8 +25,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InquiryController {
     private final InquiryService inquiryService;
-    private final MemberService memberService;
-
+    @Autowired
+    ProductReportService productReportService;
     @GetMapping("/faq")
     public void inquiry() {
 
@@ -53,7 +54,7 @@ public class InquiryController {
 
     @GetMapping("/detail/{id}")
     public String adminInquiryDetail(
-            @PathVariable Long id,
+            Long id,
             Model model) {
         InquiryDetailDto inquiryDetailDto = inquiryService.findAndNicknameById(id);
         model.addAttribute("inquiry", inquiryDetailDto);
@@ -91,6 +92,16 @@ public class InquiryController {
         log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
         inquiryService.deleteAnswer(principal.getMember().getId(), inquiryAnswerDto);
         return ResponseEntity.ok("ok");
+    }
+    @GetMapping("/admin-report")
+    public String adminReport(Model model) {
+
+        List<ProductReport> list = productReportService.getAllProduct();
+
+        model.addAttribute("productList", list);
+
+        return "inquiry/admin-report";
+
     }
 
 //    @GetMapping("/{id}")
