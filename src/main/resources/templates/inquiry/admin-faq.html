@@ -44,7 +44,7 @@
                                     <tr th:each="inquiry : ${inquiryList}">
                                         <td th:text="${inquiry.category}"></td>
                                         <td>
-                                            <a th:href="@{|/inquiry/detail/${inquiry.id}|}">[[${inquiry.title}]]</a>
+                                            <a th:href="@{|/admin/inquiry/detail/${inquiry.id}|}">[[${inquiry.title}]]</a>
                                         </td>
                                         <td th:text="${inquiry.author}"></td>
                                         <td th:text="${inquiry.date}">
