@@ -364,7 +364,7 @@ public class PaymentService {
             throw new EntityNotFoundException("Seller's account not found for product ID: " + productId);
         }
         // 70퍼 계산 공식
-        accountService.deposit(sellerAccount.getId(), (int) Math.floor(winnerPayment.getPayAmount() * 0.7));
+        accountService.deposit(sellerAccount.getId(), (int) Math.floor((winnerPayment.getPayAmount()/10) * 0.7));
 
     }
 }
