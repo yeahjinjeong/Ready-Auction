@@ -133,7 +133,7 @@ public class NcpObjectStorageService {
 
             String key =  "Auction:ImageId:" + uploadFileUrl;
             redisTemplate.opsForValue().set(key,pid);
-            redisTemplate.expire(key,5, TimeUnit.SECONDS);
+            redisTemplate.expire(key,5, TimeUnit.MINUTES);
 
             log.info("Auction for Image ID: " + uploadFileUrl);
 

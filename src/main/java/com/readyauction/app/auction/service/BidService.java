@@ -107,7 +107,7 @@ public class BidService {
                 ProductDto productDto = productService.startWinnerProcess(email, winnerReqDto);
 
                 // 3일(72시간)을 초 단위로 변환
-                long durationInSeconds = 60;
+                long durationInDays =  3;
 
                 // 프로세스 ID 가져오기
                 String pid = ManagementFactory.getRuntimeMXBean().getName();
@@ -117,7 +117,7 @@ public class BidService {
 
                 // Redis에 값 설정 및 TTL(3일) 설정
                 redisTemplate.opsForValue().set(key, pid);
-                redisTemplate.expire(key, durationInSeconds, TimeUnit.SECONDS);
+                redisTemplate.expire(key, durationInDays, TimeUnit.DAYS);
 
                 log.info("Auction started for product ID: " + productDto.getId());
                 //레디스 추가 코드
