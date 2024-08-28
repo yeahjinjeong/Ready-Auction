@@ -358,7 +358,7 @@
                                 <th scope="col">상품ID</th>
                                 <th scope="col">상품명</th>
                                 <th scope="col">판매자ID</th>
-                                <th scope="col">다음 입찰 가격</th>
+                                <th scope="col">현재 가격</th>
                                 <th scope="col" id="bidOrWinnerHeader">입(낙)찰자 ID</th>
                                 <th scope="col" id="bidOrWinnerPriceHeader">입(낙)찰 가격</th>
                                 <th scope="col" id="purchaseStatusHeader">결제 상태</th>
@@ -428,7 +428,7 @@
                                     const row = `
                         <tr>
                             <td>${bid.productId}</td>
-                            <td><a href="/app/auction/product/${bid.productId}">${bid.productName}</a></td>
+                            <td><a href="/auction/product/${bid.productId}">${bid.productName}</a></td>
                             <td>${bid.sellerId}</td>
                             <td>₩${bid.currentPrice.toLocaleString()}</td>
                             <td>${bid.winnerOrBidderMemberId || '.'}</td>

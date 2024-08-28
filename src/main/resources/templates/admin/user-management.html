@@ -264,7 +264,7 @@
         }
 
         function fetchUsers() {
-            const url = `/app/api/admin/users/management?status=${currentStatus}&page=${currentPage}&size=${pageSize}`;
+            const url = `/api/admin/users/management?status=${currentStatus}&page=${currentPage}&size=${pageSize}`;
 
             fetch(url)
                 .then(response => response.json())
@@ -309,7 +309,7 @@
         }
 
         function openUserDetailsModal(userId) {
-            const url = `/app/api/admin/users/${userId}`;
+            const url = `/api/admin/users/${userId}`;
 
             fetch(url)
                 .then(response => response.json())
