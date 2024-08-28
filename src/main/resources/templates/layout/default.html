@@ -102,7 +102,8 @@
                                     <li><a th:href="@{/admin/dashboard}">통계관리</a></li>
                                 </ul>
                             </li>
-                            <li sec:authorize="isAuthenticated()" class="has-child-menu">
+                            <!-- 마이페이지 - 관리자만 볼 수 없게 하기 -->
+                            <li sec:authorize="isAuthenticated() and !hasAuthority('ROLE_ADMIN')" class="has-child-menu">
                                 <a th:href="@{/mypage}" method="post">마이페이지</a>
                             </li>
                             <!-- 로그인하지 않은 경우 anonymous -->

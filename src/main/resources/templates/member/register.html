@@ -33,7 +33,6 @@
 
             <div class="right-form-area">
                 <h3>Register Your Account</h3>
-<!--                        action="[[@{/member/save}]]"-->
                 <form class="w-100" th:action="@{/member/register}" method="post" name="memberRegisterFrm">
                     <!-- 이름 -->
                     <div class="form-inner">
@@ -87,39 +86,6 @@
                         <label for="birth">생년월일</label>
                         <input type="date" id="birth" name="birth">
                     </div>
-<!--                            &lt;!&ndash; 좋아하는 스포츠 종목 &ndash;&gt;-->
-<!--                            &lt;!&ndash; 배구는 인기가 없는 종목이라서 따로 분류해서 다루지는 않기로 했었나? &ndash;&gt;-->
-<!--                            <div class="form-inner">-->
-<!--                            <label>좋아하는 스포츠 종목</label>-->
-<!--                            <select name="sports" id="sports">-->
-<!--                                <option value="select">좋아하는 스포츠 종목을 선택하세요</option>-->
-<!--                                <option value="soccer">축구</option>-->
-<!--                                <option value="baseball">야구</option>-->
-<!--                                <option value="basketball">농구</option>-->
-<!--&lt;!&ndash;                                <option value="volleyball">배구</option>&ndash;&gt;-->
-<!--                                <option value="etc">기타</option>-->
-<!--                            </select>-->
-<!--                            </div>-->
-                    <!-- 좋아하는 스포츠 팀 -->
-                    <!-- 무슨 팀이 있는지 전혀 모르겠어서 일단은 내비둠-->
-<!--                            <div class="form-inner">-->
-<!--                            <label>좋아하는 스포츠 팀</label>-->
-<!--                            <select name="team" id="team">-->
-<!--                                <option value="select">좋아하는 스포츠 팀을 선택하세요</option>-->
-<!--                                <option value="soccer">축구</option>-->
-<!--                                <option value="baseball">야구</option>-->
-<!--                                <option value="basketball">농구</option>-->
-<!--                                <option value="etc">기타</option>-->
-<!--                            </select>-->
-<!--                            </div>-->
-
-<!--                            <div class="form-inner d-flex justify-content-between flex-wrap">-->
-<!--                                <div class="form-group">-->
-<!--                                    <input type="checkbox" id="html">-->
-<!--                                    <label for="html">I agree to the Terms & Policy</label>-->
-<!--                                </div>-->
-<!--                                <a href="#" class="forgot-pass">Forgotten Password</a>-->
-<!--                            </div>-->
                     <input type="submit" value = "회원가입" class="account-btn">
                 </form>
 

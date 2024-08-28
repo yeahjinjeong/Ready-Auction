@@ -85,7 +85,7 @@
                 <div class="col-lg-6">
                     <div class="item-bid-timer">
                         <div class="auction-bid">
-                            <p>낙찰 가</p>
+                            <p>낙찰가</p>
                             <h5 th:text="'₩' + ${#numbers.formatDecimal(productDetail.immediatePrice, 0, 'COMMA', 0, 'POINT')}"></h5>
                         </div>
                     </div>
@@ -164,7 +164,7 @@
                     <div class="widget-right-area">
                         <div class="single-widget">
                             <h5 class="widget-title">Product Overview</h5>
-      ㄿ                      <ul class="widget-list">
+                            <ul class="widget-list">
                                 <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
                                 <li><span>판매자 :</span>
                                     <a th:href="@{/member/profile/{memberId}(memberId=${productDetail.memberId})}">
