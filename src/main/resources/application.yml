@@ -44,10 +44,6 @@ logging:
     root: info
     com.readyauction.app: debug
 
-server:
-  servlet:
-    context-path: /app
-
   redis:
     host: ${REDIS_HOST}
     port: ${REDIS_PORT}

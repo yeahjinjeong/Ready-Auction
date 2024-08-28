@@ -324,7 +324,7 @@
                         if(bidRes.bidStatus === "ACCEPTED") {
                             if (productId) {
                                 // Redirect to the payment page using the product ID
-                                window.location.href = '/app/cash/payment/' + productId;
+                                window.location.href = `[[@{/cash/payment/${productId}}]]`;
                             } else {
                                 alert('Product ID not found. Unable to proceed to payment.');
                             }
@@ -393,7 +393,7 @@
 
                         if (productId) {
                             // Redirect to the payment page using the product ID
-                            window.location.href = '/app/cash/payment/' + productId;
+                            window.location.href = `[[@{/cash/payment/${productId}}]]`;
                         } else {
                             alert('Product ID not found. Unable to proceed to payment.');
                         }
@@ -623,15 +623,6 @@
                         }
                     </script>
 
-                    <div class="report-dropdown" style="position: relative; text-align: right; margin-bottom: 5px;">
-                        <button class="report-btn">신고하기</button>
-                        <div class="report-dropdown-content" style="position: absolute; right: 0; display: none; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1;">
-                            <a href="#" class="report-option" data-value="부적절한 내용">부적절한 내용</a>
-                            <a href="#" class="report-option" data-value="허위 정보">허위 정보</a>
-                            <a href="#" class="report-option" data-value="기타">기타</a>
-                        </div>
-                    </div>
-
                     <!-- 이미지 리스트 아래 작은 이미지 표시 부분 -->
 <!--                    <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">-->
 <!--                        <li class="nav-item">-->
@@ -643,22 +634,6 @@
                     <div class="widget-right-area">
                         <div class="single-widget">
                             <h5 class="widget-title">상품 상세정보</h5>
-                            <div class="wishlist">
-                                <button class="wishlist-btn">
-                                    <i class="fa-regular fa-heart" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                            <div class="report-dropdown" style="position: relative; text-align: right; margin-bottom: 5px;">
-                                <button class="report-btn" style="background-color: transparent; border: none; cursor: pointer;">
-                                    <i class="fa-solid fa-flag" style="color: red;"></i> <!-- 경찰차 사이렌 대체 아이콘 -->
-                                </button>
-                                <div class="report-dropdown-content" style="position: absolute; right: 0; display: none; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1;">
-                                    <a href="#" class="report-option" data-value="부적절한 내용">부적절한 내용</a>
-                                    <a href="#" class="report-option" data-value="허위 정보">허위 정보</a>
-                                    <a href="#" class="report-option" data-value="기타">기타</a>
-                                </div>
-                            </div>
-
                             <ul class="widget-list">
                                 <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
                                 <li>
@@ -676,6 +651,24 @@
                                 <li><span>상품 설명 :</span>
                                     <span class="description" th:text="${productDetail.description}">상품 설명</span></li>
                             </ul>
+
+                            <!-- 신고하기 -->
+                            <div class="report-dropdown" style="position: relative; text-align: right; margin-bottom: 5px;">
+                                <button class="report-btn" style="background-color: transparent; border: none; cursor: pointer;">
+                                    <i class="fa-solid fa-flag" style="color: red;"></i> <!-- 경찰차 사이렌 대체 아이콘 -->
+                                </button>
+                                <div class="report-dropdown-content" style="position: absolute; right: 0; display: none; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1;">
+                                    <a href="#" class="report-option" data-value="부적절한 내용">부적절한 내용</a>
+                                    <a href="#" class="report-option" data-value="허위 정보">허위 정보</a>
+                                    <a href="#" class="report-option" data-value="기타">기타</a>
+                                </div>
+                                <!-- 찜하기 -->
+<!--                            <div class="wishlist">-->
+<!--                                <button class="wishlist-btn">-->
+<!--                                    <i class="fa-regular fa-heart" aria-hidden="true"></i>-->
+<!--                                </button>-->
+<!--                            </div>-->
+                            </div>
                         </div>
 
                         <script>
