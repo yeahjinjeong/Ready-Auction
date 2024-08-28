@@ -65,7 +65,46 @@
 <!--                </div>-->
             </div>
         </div>
+
     </section>
+    <!-- 알림 메시지 -->
+    <div id="alert-box" style="display:none; position:fixed; top:20px; right:20px; z-index:1000; padding:10px; background-color:#f0ad4e; color:white; border-radius:5px;">
+        <span id="alert-message"></span>
+    </div>
+
+    <script>
+        // 로그인 결과에 따른 알림 메시지 표시
+        window.onload = function() {
+            /* 서버에서 로그인 성공 또는 실패 여부에 대한 정보를 받기 위한 Thymeleaf 코드 */
+            /* 예: 서버에서 model.addAttribute("loginSuccess", true 또는 false); 를 사용하여 결과 전달 */
+            /* 아래 코드에서 loginSuccess 및 loginFailure는 서버에서 전달받는 속성이라고 가정 */
+
+            /* 로그인 성공 알림 */
+            var loginSuccess = /*[[${loginSuccess}]]*/ false;  // 서버에서 제공하는 값
+            if (loginSuccess) {
+                showAlert("로그인 성공!");
+            }
+
+            /* 로그인 실패 알림 */
+            var loginFailure = /*[[${loginFailure}]]*/ false;  // 서버에서 제공하는 값
+            if (loginFailure) {
+                showAlert("로그인 실패. 다시 시도해주세요.");
+            }
+        }
+
+        // 알림 메시지 표시 함수
+        function showAlert(message) {
+            var alertBox = document.getElementById("alert-box");
+            var alertMessage = document.getElementById("alert-message");
+            alertMessage.textContent = message;
+            alertBox.style.display = "block";
+
+            // 3초 후 알림 메시지 자동 닫기
+            setTimeout(function() {
+                alertBox.style.display = "none";
+            }, 3000);
+        }
+    </script>
 
 
 </div>
