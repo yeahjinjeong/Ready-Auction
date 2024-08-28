@@ -48,7 +48,8 @@ public class RedisExpirationListener implements MessageListener {
 
     }
     public void deleteImage(String imageUrl) {
-        if (imageUrl != null && !imageUrl.isEmpty() && productService.findByProductImage(imageUrl).isEmpty()) {
+        String url = productService.findByProductImage(imageUrl);
+        if (imageUrl != null && !imageUrl.isEmpty() &&  url == null){
             String key = imageUrl.substring(imageUrl.indexOf(bucketName) + bucketName.length() + 1);
             ncpObjectStorageService.deleteFile(key);
         }
