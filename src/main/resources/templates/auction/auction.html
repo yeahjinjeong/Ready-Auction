@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/default}">
+      layout:decorate="~{layout/default}" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>경매 목록</title>
     <script th:inline="javascript">
 
         function setCategory(category) {
@@ -24,6 +23,11 @@
                     products[i].style.display = "none";
                 }
             }
+        }
+
+        function goToProductPage(productId) {
+            var url = '/auction/product/' + productId;
+            window.location.href = url;
         }
     </script>
 </head>
@@ -60,10 +64,12 @@
         <div class="container">
             <div class="row g-4" id="productList">
                 <div class="col-lg-4 col-md-6" th:each="product : ${products}"
-                     th:attr="data-category=${product.category}">
+                     th:attr="data-category=${product.category}"
+                     th:onclick="goToProductPage([[${product.id}]])"
+                     style="cursor: pointer">
                     <div class="product-card product-beta-md" style="min-width: 300px; max-width: 350px;">
                         <div class="product-header">
-                            <h5 class="product-title"><a th:href="@{/auctionDetails}">[[${product.name}]]</a></h5>
+                            <h5 class="product-title">[[${product.name}]]</h5>
                             <h4 class="price">₩[[${product.immediatePrice}]]</h4>
                         </div>
                         <div class="product">
@@ -136,7 +142,7 @@
                                     </script>
                                 </div>
                             </div>
-                            <a th:href="@{/auction/product/{id}(id=${product.id})}" class="bid-btn">입찰하기</a>
+                            <a sec:authorize="!hasAuthority('ROLE_ADMIN')" th:href="@{/auction/product/{id}(id=${product.id})}" class="bid-btn">입찰하기</a>
 
                         </div>
                     </div>

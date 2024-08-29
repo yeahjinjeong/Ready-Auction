@@ -9,13 +9,14 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
+@Table(name = "tbl_product")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @SecondaryTable(
-        name = "winner",
+        name = "tbl_winner",
         pkJoinColumns = @PrimaryKeyJoinColumn(name = "product_id",referencedColumnName = "id")
 )
 public class Product {
@@ -51,7 +52,7 @@ public class Product {
 
     @NotEmpty(message = "최소 하나의 이미지는 필수 항목입니다.")
     @ElementCollection
-    @CollectionTable(name = "product_images", joinColumns = @JoinColumn(name = "product_id"))
+    @CollectionTable(name = "tbl_product_images", joinColumns = @JoinColumn(name = "product_id"))
     @Column(name = "image_url")
     private List<String> images;
     @Enumerated(EnumType.STRING)

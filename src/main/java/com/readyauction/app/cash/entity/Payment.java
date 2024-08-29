@@ -6,6 +6,7 @@ import lombok.*;
 import java.sql.Timestamp;
 
 @Entity
+@Table(name = "tbl_payment")
 @Getter
 @Setter
 @NoArgsConstructor
