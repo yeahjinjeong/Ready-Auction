@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "user")
+@Table(name = "tbl_user")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type") // 자식클래스 타입을 결정하는 컬럼명
 @Data
@@ -69,7 +69,7 @@ public abstract class User {
     private UserStatus userStatus;
 
     @ElementCollection(targetClass = Authority.class, fetch = FetchType.EAGER)
-//    @CollectionTable(name = "user", joinColumns = @JoinColumn(name = "id"))
+    @CollectionTable(name = "tbl_user_authorities")
     @Column(name = "authority")
     @Enumerated(EnumType.STRING)
     private Set<Authority> authorities;

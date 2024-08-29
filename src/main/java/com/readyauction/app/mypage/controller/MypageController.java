@@ -16,6 +16,8 @@ import com.readyauction.app.user.dto.ProfileDto;
 import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -58,15 +60,6 @@ public class MypageController {
             // ProfileDto 가져오기
             ProfileDto profileDto = memberService.findProfileDtoById(memberId);
             model.addAttribute("profileDto", profileDto);
-
-            // AccountDto 가져오기
-            AccountDto accountDto = accountService.findAccountDtoByMemberId(memberId);
-            model.addAttribute("accountDto", accountDto);
-
-            // 캐시와 결제 내역 조회
-            List<TransactionDto> transactionHistory = transactionService.getTransactionHistory(memberId, accountDto.getId());
-            log.debug("transactionHistory: {}", transactionHistory);
-            model.addAttribute("transactionHistory", transactionHistory);
 
             // 경매 참여 내역 조회
             // 입찰 중 내역
@@ -152,6 +145,17 @@ public class MypageController {
 
         return "redirect:/mypage";
     }
+
+//    @GetMapping("/data")
+//    public @ResponseBody PageResponse getPageData(@RequestParam("page") int pageNum) {
+//        Pageable pageable = PageRequest.of(pageNum - 1, 10); // 페이지 번호는 0부터 시작하므로 -1합니다.
+//        Page<MyEntity> page = myService.getEntities(pageable);
+//
+//        PageResponse response = new PageResponse();
+//        response.setPageNum(pageNum);
+//        response.setContent(page.getContent());
+//        return response;
+//    }
 
     // 회원정보 수정
     @GetMapping("/userInfo/edit")

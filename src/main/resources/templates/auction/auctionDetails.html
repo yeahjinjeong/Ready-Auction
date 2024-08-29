@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en" layout:decorate="~{layout/default}"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://unpkg.com/swiper/swiper-bundle.min.css" rel="stylesheet">
@@ -653,7 +653,7 @@
                             </ul>
 
                             <!-- 신고하기 -->
-                            <div class="report-dropdown" style="position: relative; text-align: right; margin-bottom: 5px;">
+                            <div sec:authorize="!hasAuthority('ROLE_ADMIN')" class="report-dropdown" style="position: relative; text-align: right; margin-bottom: 5px;">
                                 <button class="report-btn" style="background-color: transparent; border: none; cursor: pointer;">
                                     <i class="fa-solid fa-flag" style="color: red;"></i> <!-- 경찰차 사이렌 대체 아이콘 -->
                                 </button>
@@ -741,7 +741,7 @@
                             });
                         </script>
 
-                        <div class="single-widget">
+                        <div sec:authorize="!hasAuthority('ROLE_ADMIN')" class="single-widget">
                             <form class="widget-form" id="bidForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
@@ -755,7 +755,7 @@
                             </form>
                         </div>
 
-                        <div class="single-widget">
+                        <div sec:authorize="!hasAuthority('ROLE_ADMIN')" class="single-widget">
                             <form class="widget-form" id="buyForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
