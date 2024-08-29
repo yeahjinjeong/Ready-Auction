@@ -81,31 +81,46 @@
                             <a th:href="@{/}"><img th:src="@{/assets/images/logo.png}" width="50" height="50" alt=""></a>
                         </div>
                         <ul>
+
+                            <!-- 경매 -->
                             <li class="has-child-menu">
                                 <a href="javascript:void(0)">경매</a>
                                 <i class="fl flaticon-plus">+</i>
                                 <ul class="sub-menu">
                                     <li><a th:href="@{/auction}">경매 목록 확인</a></li>
-                                    <li><a th:href="@{/auction/productUpload}">경매 물품 등록</a></li>
+                                    <li sec:authorize="!hasAuthority('ROLE_ADMIN')"><a th:href="@{/auction/productUpload}">경매 물품 등록</a></li>
                                 </ul>
                             </li>
-                            <li class="has-child-menu">
-                                <a th:href="@{/inquiry/faq}" method="post">FAQ</a>
+
+                            <!-- 관리자 - 관리자만 볼 수 있게 -->
+                            <li sec:authorize="hasRole('ROLE_ADMIN')">
+                                <a th:href="@{/admin/inquiry/list}">문의관리</a>
                             </li>
-                            <li  sec:authorize="hasRole('ROLE_ADMIN')" class="has-child-menu">
-                                <a href="javascript:void(0)">관리자</a>
-                                <i class="fl flaticon-plus">+</i>
-                                <ul class="sub-menu">
-                                    <li><a th:href="@{/admin/inquiry/list}">문의관리</a></li>
-                                    <li><a th:href="@{/admin/report/list}">신고관리</a></li>
-                                    <li><a th:href="@{/admin/userManagement}">회원관리</a></li>
-                                    <li><a th:href="@{/admin/dashboard}">통계관리</a></li>
-                                </ul>
+                            <li sec:authorize="hasRole('ROLE_ADMIN')">
+                                <a th:href="@{/admin/report/list}">신고관리</a>
                             </li>
-                            <!-- 마이페이지 - 관리자만 볼 수 없게 하기 -->
-                            <li sec:authorize="isAuthenticated() and !hasAuthority('ROLE_ADMIN')" class="has-child-menu">
+                            <li sec:authorize="hasRole('ROLE_ADMIN')">
+                                <a th:href="@{/admin/user-management}">회원관리</a>
+                            </li>
+                            <li sec:authorize="hasRole('ROLE_ADMIN')">
+                                <a th:href="@{/admin/dashboard}">통계관리</a>
+                            </li>
+
+                            <!-- 캐시 - 관리자만 볼 수 없게 -->
+                            <li sec:authorize="!hasAuthority('ROLE_ADMIN')" class="has-child-menu">
+                                <a th:href="@{/cash}" method="post">캐시</a>
+                            </li>
+
+                            <!-- 마이페이지 - 관리자만 볼 수 없게 -->
+                            <li sec:authorize="!hasAuthority('ROLE_ADMIN')" class="has-child-menu">
                                 <a th:href="@{/mypage}" method="post">마이페이지</a>
                             </li>
+
+                            <!-- FAQ - 관리자만 볼 수 없게 -->
+                            <li sec:authorize="!hasAuthority('ROLE_ADMIN')" class="has-child-menu">
+                                <a th:href="@{/inquiry/faq}" method="post">FAQ</a>
+                            </li>
+
                             <!-- 로그인하지 않은 경우 anonymous -->
                             <li sec:authorize="isAnonymous()" class="has-child-menu">
                                 <a href="javascript:void(0)">로그인</a>
@@ -115,16 +130,12 @@
                                     <li><a th:href="@{/member/register}">회원가입</a></li>
                                 </ul>
                             </li>
+
                             <!-- 로그인한 경우 authenticated -->
                             <li sec:authorize="isAuthenticated()" class="has-child-menu">
                                 <a th:href="@{/auth/logout}" method="post">로그아웃</a>
                             </li>
                         </ul>
-                        <div class="contact-mail inner-contact-mail mt-5 d-block d-xl-none">
-                            <span>메시지 보내기</span>
-                            <a href="/cdn-cgi/l/email-protection#53202623233c212713362b323e233f367d303c3e"><span
-                                    class="__cf_email__" data-cfemail="9ae9efeaeaf5e8eedaffe2fbf7eaf6ffb4f9f5f7">[email&#160;protected]</span></a>
-                        </div>
                     </nav>
                 </div>
                 <div class="col-xl-3 d-xl-flex align-items-center justify-content-end d-none">
@@ -146,7 +157,7 @@
     <!-- 검색 결과가 표시될 곳 -->
     <div id="search-results"></div>
 
-    <div class="chat-button" onclick="location.href='/chat/list'">
+    <div sec:authorize="!hasAuthority('ROLE_ADMIN')" class="chat-button" onclick="location.href='/chat/list'">
         💬
     </div>
 </main>

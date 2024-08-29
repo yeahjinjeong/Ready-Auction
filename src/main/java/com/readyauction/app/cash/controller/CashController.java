@@ -1,11 +1,19 @@
 package com.readyauction.app.cash.controller;
 
 import com.readyauction.app.auction.dto.ProductRepDto;
+import com.readyauction.app.auction.entity.Bid;
+import com.readyauction.app.auction.entity.Product;
 import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.cash.dto.AccountDto;
+import com.readyauction.app.cash.dto.TransactionDto;
 import com.readyauction.app.cash.entity.Cash;
 import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.cash.service.CashService;
+import com.readyauction.app.cash.service.TransactionService;
+import com.readyauction.app.common.handler.UserNotFoundException;
+import com.readyauction.app.inquiry.entity.Inquiry;
+import com.readyauction.app.user.dto.MemberDto;
+import com.readyauction.app.user.dto.ProfileDto;
 import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +23,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @Slf4j
@@ -26,6 +38,31 @@ public class CashController {
     private final CashService cashService;
     private final ProductService productService;
     private final AccountService accountService;
+    private final TransactionService transactionService;
+
+    @GetMapping("")
+    public String getCash(Model model) {
+        // 로그인된 사용자의 정보를 가져오기 위해 SecurityContextHolder 사용
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName(); // 로그인한 이메일
+        Long memberId = memberService.findMemberDtoByEmail(currentUserName).getId();
+
+        try {
+            // AccountDto 가져오기
+            AccountDto accountDto = accountService.findAccountDtoByMemberId(memberId);
+            model.addAttribute("accountDto", accountDto);
+
+            // 캐시와 결제 내역 조회
+            List<TransactionDto> transactionHistory = transactionService.getTransactionHistory(memberId, accountDto.getId());
+            model.addAttribute("transactionHistory", transactionHistory);
+
+        } catch (UserNotFoundException e) {
+            log.error("Member not found: {}", e.getMessage());
+            return "error/404";
+        }
+
+        return "cash/cash";
+    }
 
     @GetMapping("/payment/{id}")
     public String getProductDetail(@PathVariable("id") Long id, Model model) {
@@ -100,7 +137,7 @@ public class CashController {
             redirectAttributes.addFlashAttribute("errorMessage", "충전 중 문제가 발생했습니다.");
         }
 
-        return "redirect:/mypage";
+        return "redirect:/cash";
     }
 
     // 캐시 환불
@@ -138,6 +175,6 @@ public class CashController {
             return "redirect:/cash/cash-withdrawal";
         }
 
-        return "redirect:/mypage";
+        return "redirect:/cash";
     }
 }

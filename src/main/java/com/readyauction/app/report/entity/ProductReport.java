@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
+@Table(name = "tbl_product_report")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

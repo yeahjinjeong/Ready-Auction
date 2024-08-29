@@ -7,6 +7,7 @@ import lombok.*;
 import java.sql.Timestamp;
 
 @Entity
+@Table(name = "tbl_bid")
 @Getter
 @Setter
 @NoArgsConstructor

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/default}">
+      layout:decorate="~{layout/default}" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <!-- Google Fonts: Poppins and Noto Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -160,7 +160,7 @@
 
 
                         </div>
-                        <div class="qsn-area">
+                        <div class="qsn-area" sec:authorize="!hasAuthority('ROLE_ADMIN')">
                             <h5>더 궁금한 사항이 있나요?</h5>
                             <a th:href="@{/inquiry/register}" class="qsn-send-btn">문의하기</a>
                         </div>
@@ -171,17 +171,27 @@
                     <div class="faq-wrap">
                         <div class="faq-item">
                             <h5 class="accordion-button" id="heading01" data-bs-toggle="collapse" data-bs-target="#collapse01" aria-controls="collapse01">
-                                <span class="faq-serial">01</span> 경매에 참여하려면 선입금을 지불해야 하나요?
+                                <span class="faq-serial">01</span> 입찰하려면 선입금을 지불해야 하나요?
                             </h5>
                             <div id="collapse01" class="accordion-collapse collapse show">
                                 <div class="faq-body">
-                                    네, 경매에 처음 참여할 때 즉시구매가의 10%를 선입금으로 지불해야 합니다. 이 선입금은 실제 구매 의사를 증명하는 역할을 합니다. 낙찰되지 않은 경우에는 선입금이 전액 자동 환불됩니다.
+                                    네, 경매에 처음 입찰할 때 즉시구매가의 10%를 선입금으로 지불해야 합니다. 이 선입금은 실제 구매 의사를 증명하는 역할을 합니다. 낙찰되지 않은 경우에는 선입금이 전액 자동 환불됩니다.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="faq-item">
+                            <h5 id="heading06" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse06" aria-controls="collapse06">
+                                <span class="faq-serial">02</span> 낙찰된 이후에는 어떤 절차가 진행되나요?
+                            </h5>
+                            <div id="collapse06" class="accordion-collapse collapse">
+                                <div class="faq-body">
+                                    경매 기간이 끝나면 최고 낙찰자에게 메일 알림이 발송됩니다. 낙찰자는 3일 이내에 결제를 완료해야 판매자와 채팅방이 생성되며, 판매자와 배송 방식을 상의한 후 판매자가 물품을 배송합니다. 구매자가 물품을 수령하고 구매 확정을 누르면 플랫폼이 판매자에게 대금을 이체합니다.
                                 </div>
                             </div>
                         </div>
                         <div class="faq-item">
                             <h5 id="heading02" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse02" aria-controls="collapse02">
-                                <span class="faq-serial">02</span> 낙찰자로 선정된 후 결제를 완료하지 않으면 어떻게 되나요?
+                                <span class="faq-serial">03</span> 낙찰자로 선정된 후 결제를 완료하지 않으면 어떻게 되나요?
                             </h5>
                             <div id="collapse02" class="accordion-collapse collapse">
                                 <div class="faq-body">
@@ -191,7 +201,7 @@
                         </div>
                         <div class="faq-item">
                             <h5 id="heading03" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse03" aria-controls="collapse03">
-                                <span class="faq-serial">03</span> 선입금의 일부가 플랫폼과 판매자에게 배분되는 이유는 무엇인가요?
+                                <span class="faq-serial">04</span> 선입금의 일부가 플랫폼과 판매자에게 배분되는 이유는 무엇인가요?
                             </h5>
                             <div id="collapse03" class="accordion-collapse collapse">
                                 <div class="faq-body">
@@ -201,7 +211,7 @@
                         </div>
                         <div class="faq-item">
                             <h5 id="heading04" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse04" aria-controls="collapse04">
-                                <span class="faq-serial">04</span> 경매에서 낙찰에 실패한 경우 선입금은 어떻게 처리되나요?
+                                <span class="faq-serial">05</span> 경매에서 낙찰에 실패한 경우 선입금은 어떻게 처리되나요?
                             </h5>
                             <div id="collapse04" class="accordion-collapse collapse">
                                 <div class="faq-body">
@@ -211,21 +221,11 @@
                         </div>
                         <div class="faq-item">
                             <h5 id="heading05" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse05" aria-controls="collapse05">
-                                <span class="faq-serial">05</span> 입찰에 여러 번 참여할 경우 선입금은 어떻게 되나요?
+                                <span class="faq-serial">06</span> 입찰에 여러 번 참여할 경우 선입금은 어떻게 되나요?
                             </h5>
                             <div id="collapse05" class="accordion-collapse collapse">
                                 <div class="faq-body">
                                     동일한 경매에서 여러 번 입찰해도 선입금은 한 번만 지불됩니다. 낙찰에 실패한 경우, 선입금은 자동으로 환불됩니다.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="faq-item">
-                            <h5 id="heading06" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse06" aria-controls="collapse06">
-                                <span class="faq-serial">06</span> 결제가 완료된 이후에는 어떤 절차가 진행되나요?
-                            </h5>
-                            <div id="collapse06" class="accordion-collapse collapse">
-                                <div class="faq-body">
-                                    낙찰자가 결제를 완료하면 경매가 최종 종료되며, 낙찰자는 판매자와 배송 방식을 채팅을 통해 상의한 후 물품이 배송됩니다. 구매자가 물품을 수령하고 구매 확정을 누르면 플랫폼이 판매자에게 대금을 이체합니다.
                                 </div>
                             </div>
                         </div>
