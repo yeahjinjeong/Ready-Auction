@@ -290,7 +290,7 @@
                 const currentPrice = document.getElementById('currentPrice').value;
                 console.log("현재 가격: " + currentPrice);
                 const productId = document.getElementById('productId').value;
-                const currentTime = new Date().toISOString(); // 현재 시각 ISO 형식
+                const currentTime = new Date(); // 현재 시각 ISO 형식
                 const bidDto = {
                     bidPrice: currentPrice,
                     productId: productId,
@@ -369,7 +369,7 @@
                 const immediatePrice = document.getElementById('immediatePrice').value;
                 console.log("즉시 구매 가격: " + immediatePrice);
                 const productId = document.getElementById('productId2').value;
-                const currentTime = new Date().toISOString(); // 현재 시각 ISO 형식
+                const currentTime = new Date(); // 현재 시각 ISO 형식
                 const winnerReqDto = {
                     buyPrice: immediatePrice,
                     productId: productId,
@@ -494,7 +494,7 @@
 
 // Ensure product has the necessary properties
                                     if (product && product.endTime && product.id) {
-                                        const endTime = new Date(product.endTime).toISOString(); // Ensure valid date
+                                        const endTime = new Date(product.endTime); // Ensure valid date
                                         const productId = product.id;
 
                                         console.log(`Starting countdown for product ID: ${productId}`);
