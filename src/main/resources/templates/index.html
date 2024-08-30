@@ -1,977 +1,365 @@
-<!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/default}">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>READY? AUCTION! - 빈티지 유니폼 경매</title>
+ <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Russo+One&display=swap" rel="stylesheet">
+ <!-- Bootstrap CSS -->
+ <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+ <style>
+  :root {
+   --primary-color: #1E2A38; /* 어두운 네이비 */
+   --secondary-color: #FFB800; /* 밝은 노랑 */
+   --accent-color: #FF4F4F; /* 밝은 빨강 */
+   --background-color: #F0F2F5; /* 밝은 회색 */
+   --text-color: #FFFFFF; /* 흰색 */
+   --btn-custom-color: #005ec3;
+  }
 
+  body {
+   font-family: 'Montserrat', sans-serif;
+   background-color: var(--background-color);
+   color: var(--primary-color);
+   overflow-x: hidden;
+  }
+
+  .navbar {
+   background-color: var(--primary-color);
+   padding: 1rem;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   transition: background-color 0.3s ease;
+  }
+
+  .navbar.scrolled {
+   background-color: rgba(30, 42, 56, 0.9);
+  }
+
+  .navbar-brand {
+   font-family: 'Russo One', sans-serif;
+   font-size: 1.8rem;
+   color: var(--secondary-color) !important;
+  }
+
+  .nav-link {
+   color: var(--text-color) !important;
+   font-weight: 600; /* 글씨 두께 조정 */
+   font-size: 0.95rem; /* 글씨 크기 조정 */
+  }
+
+  .nav-link:hover {
+   color: var(--secondary-color) !important;
+  }
+
+  .hero {
+   background-color: var(--primary-color);
+   background-image: url('https://upload.wikimedia.org/wikipedia/commons/8/84/Soccer_ball_icon.svg'),
+   url('https://upload.wikimedia.org/wikipedia/commons/a/a8/Basketball.svg'),
+   url('https://upload.wikimedia.org/wikipedia/commons/8/8e/Baseball.svg'),
+   url('https://upload.wikimedia.org/wikipedia/commons/1/1b/Esports_Icon.svg');
+   background-repeat: repeat;
+   background-position: 10% 10%, 20% 80%, 80% 20%, 90% 90%;
+   background-size: 50px, 50px, 50px, 50px;
+   height: 70vh;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   text-align: center;
+   position: relative;
+   padding: 0 1rem;
+  }
+
+  .hero::before {
+   content: "";
+   position: absolute;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+   background: rgba(30, 42, 56, 0.7);
+   z-index: 1;
+  }
+
+  .hero-content {
+   color: var(--text-color);
+   z-index: 2;
+   max-width: 700px;
+  }
+
+  .hero h1 {
+   font-family: 'Russo One', sans-serif;
+   font-size: 2.8rem; /* 글씨 크기 줄임 */
+   margin-bottom: 0.8rem;
+   color: var(--secondary-color);
+   line-height: 1.2;
+   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .hero p {
+   font-size: 1rem; /* 글씨 크기 줄임 */
+   font-weight: 500; /* 글씨 두께 조정 */
+   margin-bottom: 1.2rem;
+  }
+
+  .features {
+   padding: 3.5rem 1rem;
+   text-align: center;
+  }
+
+  .features h2 {
+   font-size: 2.2rem; /* 글씨 크기 줄임 */
+   margin-bottom: 1.5rem;
+   font-family: 'Russo One', sans-serif;
+   color: var(--primary-color);
+  }
+
+  .feature-card {
+   border: none;
+   border-radius: 20px;
+   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+   transition: transform 0.3s ease, box-shadow 0.3s ease;
+   overflow: hidden;
+  }
+
+  .feature-card:hover {
+   transform: translateY(-10px);
+   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .feature-card h3 {
+   font-size: 1.2rem; /* 글씨 크기 조정 */
+   font-weight: 600; /* 글씨 두께 조정 */
+  }
+
+  .start {
+   background-color: var(--accent-color);
+   color: var(--text-color);
+   text-align: center;
+   padding: 3.5rem 1rem;
+  }
+
+  .start h2 {
+   font-size: 2.2rem; /* 글씨 크기 조정 */
+   margin-bottom: 1rem;
+   font-family: 'Russo One', sans-serif;
+  }
+
+  .start p {
+   font-size: 0.95rem; /* 글씨 크기 조정 */
+   font-weight: 500; /* 글씨 두께 조정 */
+   max-width: 500px;
+   margin: auto;
+   margin-bottom: 1.5rem; /* 텍스트와 버튼 사이의 간격 추가 */
+  }
+
+  .btn-custom {
+   background-color: var(--btn-custom-color);
+   color: var(--text-color);
+   padding: 0.8rem 1.8rem;
+   border-radius: 30px;
+   font-weight: bold;
+   transition: all 0.3s ease;
+   font-size: 1rem; /* 버튼 텍스트 크기를 키움 */
+   margin-top: 1rem; /* 버튼과 텍스트 사이의 간격 추가 */
+  }
+
+  .btn-custom:hover {
+   background-color: var(--text-color);
+   color: var(--btn-custom-color);
+   transform: scale(1.05); /* 버튼 확대 효과 */
+  }
+
+  footer {
+   background-color: var(--primary-color);
+   color: var(--text-color);
+   text-align: center;
+   padding: 1.2rem 0;
+  }
+
+  .card-img-top:hover {
+   transform: scale(1.05);
+   transition: transform 0.3s ease;
+  }
+
+  .card-img-top {
+   width: 100%;
+   height: 300px; /* 모든 이미지 높이를 동일하게 설정 */
+   object-fit: cover; /* 이미지의 비율을 유지하며 크기에 맞게 자르기 */
+   transition: transform 0.3s ease;
+  }
+
+  .card-img-top:hover {
+   transform: scale(1.1); /* 이미지 확대 효과 */
+  }
+
+  .card-body {
+   padding: 1rem;
+   text-align: left;
+  }
+
+  .card-title {
+   font-size: 1.4rem; /* 제목 크기를 키움 */
+   font-weight: bold;
+   color: var(--primary-color);
+  }
+
+  .card-text {
+   font-size: 1rem;
+   color: var(--primary-color);
+   margin-bottom: 1rem;
+  }
+
+  /* Add a blinking animation for urgency */
+  @keyframes blink-animation {
+   from { opacity: 1; }
+   to { opacity: 0.5; }
+  }
+
+  /* Apply the blink effect to urgent elements */
+  .urgent-highlight {
+   background-color: var(--accent-color);
+   border-radius: 15px;
+   padding: 20px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   text-align: center;
+   position: relative;
+   overflow: hidden;
+   margin-top: 20px;
+   animation: blink-animation 1s infinite alternate; /* Add animation to make the section blink */
+  }
+
+  .blink-effect {
+   animation: blink-animation 1s infinite alternate;
+   color: var(--secondary-color);
+   font-weight: bold;
+  }
+
+  /* Carousel custom styling */
+  .carousel-item {
+   padding: 20px;
+   text-align: center;
+   background-color: var(--accent-color);
+   border-radius: 15px;
+   color: var(--text-color);
+   transition: all 0.5s ease;
+   box-shadow: 0 0 20px rgba(255, 75, 75, 0.5); /* Add a glowing shadow effect */
+   animation: blink-animation 1.5s infinite alternate; /* Make carousel items blink */
+  }
+
+  .carousel-item img {
+   border-radius: 10px;
+   margin-bottom: 15px;
+   transition: transform 0.3s ease;
+  }
+
+  .carousel-item h3 {
+   font-size: 1.4rem;
+   color: var(--text-color);
+   margin-top: 10px;
+   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Add text shadow for more emphasis */
+  }
+
+  .carousel-item p {
+   font-size: 1rem;
+   color: var(--text-color);
+   margin-bottom: 15px;
+   font-weight: bold;
+  }
+
+ </style>
+</head>
 <body>
 
-
-<div class="mobile-search">
-<div class="container">
-<div class="row">
-<div class="col-11">
-<label>What are you looking for?</label>
-<input type="text" placeholder="Search Products, Category, Brand">
-</div>
-<div class="col-1 d-flex justify-content-end align-items-center">
-<div class="search-cross-btn">
-
-<i class="bi bi-x"></i>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-<div class="menu-toggle-btn-full-shape">
-<div class="menu-toggle-wrap bg-white">
-<div class="sidebar-top-area d-flex justify-content-between align-items-center">
-<div class="cross-icon">
-<i class='bx bx-x'></i>
-</div>
-<div class="sidebar-logo">
-<a th:href="@{/}"><img src="assets/images/icon/sidebar-logo.png" alt=""></a>
-</div>
-</div>
-<div class="sidebar-body">
-<h5>Our Social Site</h5>
-<ul class="sidebar-social">
-<li><a href="https://www.facebook.com"><i class='bx bxl-facebook'></i><span>facebook.com/egenstheme</span></a></li>
-<li><a href="https://twitter.com"><i class='bx bxl-twitter'></i><span>twitter.com/egenstheme/</span></a></li>
-<li><a href="https://www.instagram.com"><i class='bx bxl-instagram'></i><span>instagram.com/egenstheme/</span></a></li>
-<li><a href="https://www.pinterest.com"><i class='bx bxl-pinterest-alt'></i><span>pinterest.com/egenstheme/</span></a></li>
-</ul>
-</div>
-<div class="sidebar-bottom">
-<p>Need Any Help? Please Mail Us!</p>
-<a href="/cdn-cgi/l/email-protection#365f585059767351535845425e535b531855595b"><span><i class='bx bx-envelope'></i><span class="__cf_email__" data-cfemail="f29b9c949db29795979c81869a979f97dc919d9f">[email&#160;protected]</span></span></a>
-</div>
-</div>
-<div class="sidebar-bottom-icon">
-<svg width="40" height="41" viewBox="0 0 40 41" fill="none" xmlns="http://www.w3.org/2000/svg">
-<mask id="mask0_1687_55" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="40" height="41">
-<rect width="39.8116" height="41" fill="#C4C4C4" />
-</mask>
-<g mask="url(#mask0_1687_55)">
-<path d="M30.6961 2.43256L1.93437 23.5151C0.104333 24.8566 -0.246827 27.4996 1.15152 29.4073L16.3665 50.1642C17.7648 52.0719 20.391 52.5325 22.221 51.1911L50.9828 30.1085C52.8128 28.7671 53.164 26.1241 51.7657 24.2164L36.5507 3.45945C35.1523 1.55176 32.5262 1.09113 30.6961 2.43256ZM32.3867 4.73888C32.537 4.62871 32.7038 4.55641 32.8761 4.51736L27.8759 28.7454L3.26629 26.2216C3.35545 26.0691 3.47455 25.9317 3.62484 25.8215L32.3867 4.73888ZM49.2922 27.8021L20.5304 48.8847C19.9201 49.3321 19.0453 49.1787 18.5789 48.5424L4.37018 29.1583L28.9084 31.6743C29.2548 31.7094 29.5815 31.6137 29.8397 31.4245C30.0979 31.2352 30.2876 30.9525 30.3582 30.6116L35.3445 6.45391L49.5532 25.8381C50.0195 26.4744 49.9026 27.3547 49.2922 27.8021Z" />
-</g>
-</svg>
-</div>
-</div>
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+ <a class="navbar-brand" href="#">
+  <img th:src="@{/assets/images/logo.png}" alt="Logo" style="height: 40px; width: auto; margin-right: 8px; vertical-align: middle;">
+  READY? AUCTION!
+ </a>
+</nav>
 
 
-
-<div class="hero-area hero-style-one overflow-hidden">
-<div class="swiper hero-slide-one">
-<div class="swiper-wrapper">
-<div class="swiper-slide position-relative">
-<div class="slide-background">
-<div class="row h-100 background-border-row">
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-</div>
-</div>
-<div class="slide-content-wrap">
-<div class="container">
-<div class="row align-items-center">
-<div class="col-lg-6">
-<div class="slide-content">
-<h1 class="main-title">The Xa-023
-New Products 2021</h1>
-<p>It has survived not only five centuries, but also the leap into electronic typesetting remained essentially unchanged</p>
-<a href="auction/auctionDetails.html" class="alpha-btn-xl hero-btn">Bid Now</a>
-</div>
-</div>
-<div class="col-lg-6 text-center mt-4 mt-lg-0">
-<div class="slide-image d-inline-block position-relative position-relative">
-<img src="assets/images/hero/featured-product1.png" alt="" class="img-fluid">
-<div class="slide-img-shape position-absolute position-absolute top-0 d-none d-md-block ">
-<img src="assets/images/shape/hero-shape1.png" alt="">
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<ul class="social-icon-area">
-<li><a href="https://www.facebook.com"><i class="bx bxl-facebook"></i></a></li>
-<li><a href="https://twitter.com"><i class="bx bxl-twitter"></i></a></li>
-<li><a href="https://www.pinterest.com"><i class="bx bxl-pinterest"></i></a></li>
-<li><a href="https://www.instagram.com"><i class="bx bxl-instagram"></i></a></li>
-</ul>
-</div>
-<div class="swiper-slide position-relative">
-<div class="slide-background">
-<div class="row h-100 background-border-row">
- <div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-<div class="col bg-border-right"></div>
-</div>
-</div>
-<div class="slide-content-wrap">
-<div class="container">
-<div class="row align-items-center">
-<div class="col-lg-6">
-<div class="slide-content">
-<h2 class="main-title">The Xa-023
-New Products 2021</h2>
-<p>It has survived not only five centuries, but also the leap into electronic typesetting remained essentially unchanged</p>
-<a href="auction/auctionDetails.html" class="alpha-btn-xl hero-btn">Bid Now</a>
-</div>
-</div>
-<div class="col-lg-6 text-center mt-4 mt-lg-0">
-<div class="slide-image d-inline-block position-relative position-relative">
-<img src="assets/images/hero/featured-product2.png" alt="" class="img-fluid">
-<div class="slide-img-shape position-absolute position-absolute top-0 d-none d-md-block">
-<img src="assets/images/shape/hero-shape1.png" alt="">
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<ul class="social-icon-area">
-<li><a href="https://www.facebook.com"><i class="bx bxl-facebook"></i></a></li>
-<li><a href="https://twitter.com"><i class="bx bxl-twitter"></i></a></li>
-<li><a href="https://www.pinterest.com"><i class="bx bxl-pinterest"></i></a></li>
-<li><a href="https://www.instagram.com"><i class="bx bxl-instagram"></i></a></li>
-</ul>
-</div>
-</div>
-
-<div class="slider-arrows slider1-arrows text-center d-lg-flex d-none justify-content-start gap-4">
-<div class="hero-prev1 swiper-prev-arrow" tabindex="0" role="button" aria-label="Previous slide"> <i class="bi bi-arrow-left"></i> </div>
-<div class="hero-next1 swiper-next-arrow" tabindex="0" role="button" aria-label="Next slide"><i class="bi bi-arrow-right"></i></div>
-</div>
-</div>
-</div>
-
-
-<div class="banner-area banner-style-one">
-<div class="container">
-<div class="row">
-<div class="col-lg-6 col-md-6">
-<div class="banner-style-alpha style-one d-flex align-items-end">
-<div class="text-start">
-<img src="assets/images/icon/arrow-band.png" class="arrow-band" alt="">
-<div class="banner-lavel text-center">
-$ <br> 75.00
-</div>
-<h4 class="title-fill"><a href="auction/auctionDetails.html">MI Max Pro X2</a></h4>
-<p>Best smart watch for you!</p>
-<a href="auction/auctionDetails.html" class="banner-btn">Bid Now</a>
-</div>
-</div>
-</div>
-<div class="col-lg-6 col-md-6">
-<div class="banner-style-alpha style-two d-flex align-items-center">
-<div class="text-start">
-<h4 class="title-static"><a href="#">New Trend One Apple <br> Phone & Tab</a></h4>
-<p>Best Saleing Product</p>
-<a href="auction/auctionDetails.html" class="banner-btn">Bid Now</a>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-
-<div class="top-product-area mt-110">
-<div class="container">
-<div class="row">
-<div class="col-lg-12">
-<div class="section-header">
-<span>Choose The Best</span>
-<h2>Deals of This Week</h2>
-</div>
-</div>
-</div>
-<div class="row">
-<div class="col-xl-6">
-<div class="product-card product-alpha-x">
-<div class="product-lavel">
-<span>ID 0195321</span>
-</div>
-<div class="product-image">
-<div class="product">
-<a href="auction/auctionDetails.html"><img src="assets/images/product/px-2.png" alt="" class="img-fluid"></a>
-</div>
-<a href="auction/auctionDetails.html" class="bid-btn-primary">Place A Bid</a>
-</div>
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Xiaomi A2017 Amazfit Bip U Smart Watch Black (Global Version)</a></h6>
-<h6 class="cv">Current Bid <span>$85.00</span></h6>
-<div class="product-countdown" id="timer">
-<div class="countdown-single">
-<h4 id="days">05</h4>
-<span>Days</span>
-</div>
-<div class="countdown-single">
-<h4 id="hours">25</h4>
-<span>Hours</span>
-</div>
-<div class="countdown-single">
-<h4 id="minutes">50</h4>
-<span>Mins</span>
-</div>
-<div class="countdown-single">
-<h4 id="seconds">20</h4>
-<span>Secs</span>
-</div>
-</div>
-</div>
-</div>
-<div class="row">
-<div class="col-lg-6 col-md-6">
-<div class="product-card product-alpha-y">
-<div class="product-lavel">
-<span>ID 0195322</span>
-</div>
-<div class="product-image">
- <img src="assets/images/product/py-1.png" alt="" class="img-fluid">
-</div>
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Canon Eos 4000D 18MP 2.7inch Display</a></h6>
-<h6 class="cv">Current Bid <span>$85.00</span></h6>
-<div class="product-countdown" id="timer1">
-<div class="countdown-single">
-<h4 id="days1">05</h4>
-<span>Days</span>
-</div>
-<div class="countdown-single">
-<h4 id="hours1">25</h4>
-<span>Hours</span>
-</div>
-<div class="countdown-single">
-<h4 id="minutes1">50</h4>
-<span>Mins</span>
-</div>
-<div class="countdown-single">
-<h4 id="seconds1">20</h4>
-<span>Secs</span>
-</div>
-</div>
-<a href="auction/auctionDetails.html" class="bid-btn-primary bid-btn">Place A Bid</a>
-</div>
-</div>
-</div>
-<div class="col-lg-6 col-md-6">
-<div class="product-card product-alpha-y">
-<div class="product-lavel">
-<span>ID 0195325</span>
-</div>
-<div class="product-image">
-<img src="assets/images/product/py-2.png" alt="" class="img-fluid">
-</div>
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Lenovo XT92 True Wireless Bluetooth Gaming</a></h6>
-<h6 class="cv">Current Bid <span>$80.00</span></h6>
-<div class="product-countdown" id="timer2">
-<div class="countdown-single">
-<h4 id="days2">05</h4>
-<span>Days</span>
-</div>
-<div class="countdown-single">
-<h4 id="hours2">25</h4>
-<span>Hours</span>
-</div>
-<div class="countdown-single">
-<h4 id="minutes2">50</h4>
-<span>Mins</span>
-</div>
-<div class="countdown-single">
-<h4 id="seconds2">20</h4>
-<span>Secs</span>
-</div>
-</div>
-<a href="auction/auctionDetails.html" class="bid-btn-primary bid-btn">Place A Bid</a>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="col-xl-6">
- <div class="row">
-<div class="col-lg-6 col-md-6">
-<div class="product-card product-alpha-y">
-<div class="product-lavel">
-<span>ID 0195354</span>
-</div>
-<div class="product-image">
-<img src="assets/images/product/py-3.png" alt="" class="img-fluid">
-</div>
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Canon Eos 4000D 18MP 2.7inch Display</a></h6>
-<h6 class="cv">Current Bid <span>$85.00</span></h6>
-<div class="product-countdown" id="timer3">
-<div class="countdown-single">
-<h4 id="days3">05</h4>
-<span>Days</span>
-</div>
-<div class="countdown-single">
-<h4 id="hours3">25</h4>
-<span>Hours</span>
-</div>
-<div class="countdown-single">
-<h4 id="minutes3">50</h4>
-<span>Mins</span>
-</div>
-<div class="countdown-single">
-<h4 id="seconds3">20</h4>
-<span>Secs</span>
-</div>
-</div>
-<a href="auction/auctionDetails.html" class="bid-btn-primary bid-btn">Place A Bid</a>
-</div>
-</div>
-</div>
-<div class="col-lg-6 col-md-6">
-<div class="product-card product-alpha-y">
-<div class="product-lavel">
-<span>ID 0195368</span>
-</div>
-<div class="product-image">
-<img src="assets/images/product/py-4.png" alt="" class="img-fluid">
-</div>
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Lenovo XT92 True Wireless Bluetooth Gaming</a></h6>
-<h6 class="cv">Current Bid <span>$80.00</span></h6>
-<div class="product-countdown" id="timer4">
-<div class="countdown-single">
-<h4 id="days4">05</h4>
-<span>Days</span>
-</div>
-<div class="countdown-single">
-<h4 id="hours4">25</h4>
-<span>Hours</span>
-</div>
-<div class="countdown-single">
-<h4 id="minutes4">50</h4>
-<span>Mins</span>
-</div>
-<div class="countdown-single">
-<h4 id="seconds4">20</h4>
-<span>Secs</span>
+<!-- Hero Section -->
+<section id="home" class="hero">
+ <div class="hero-content">
+  <h1>READY? AUCTION!</h1>
+  <p>빈티지 유니폼의 세계로 들어오세요. 역사가 담긴 스포츠 유니폼을 경매에서 만나보세요!</p>
+  <a th:href="@{/auction}" class="btn btn-custom">경매 참여하기</a>
  </div>
-</div>
-<a href="auction/auctionDetails.html" class="bid-btn-primary bid-btn">Place A Bid</a>
-</div>
-</div>
-</div>
-</div>
-<div class="product-card product-alpha-x">
-<div class="product-lavel">
-<span>ID 0195391</span>
-</div>
-<div class="product-image">
-<div class="product">
-<a href="auction/auctionDetails.html"><img src="assets/images/product/px-6.png" alt="" class="img-fluid"></a>
-</div>
-<a href="auction/auctionDetails.html" class="bid-btn-primary">Place A Bid</a>
-</div>
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Xiaomi A2017 Amazfit Bip U Smart Watch Black (Global Version)</a></h6>
-<h6 class="cv">Current Bid <span>$85.00</span></h6>
-<div class="product-countdown" id="timer5">
-<div class="countdown-single">
-<h4 id="days5">05</h4>
-<span>Days</span>
-</div>
-<div class="countdown-single">
-<h4 id="hours5">25</h4>
-<span>Hours</span>
-</div>
-<div class="countdown-single">
-<h4 id="minutes5">50</h4>
-<span>Mins</span>
-</div>
-<div class="countdown-single">
-<h4 id="seconds5">20</h4>
-<span>Secs</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+</section>
 
-
-<div class="up-coming-area mt-110">
-<div class="container">
-<div class="row">
-<div class="col-lg-12">
-<div class="section-header">
-<span>Up coming</span>
-<h2>Up Coming Auction</h2>
-</div>
-</div>
-</div>
-<div class="row">
-<div class="col-lg-6">
-<div class="product-card product-gamma-x">
-<div class="product">
-<img src="assets/images/product/p-gamma1.png" alt="" class="img-fluid">
-</div>
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Xiaomi Amazfit A1919D Touch Screen Display Smart Watch</a></h6>
-<p class="id">Auction ID: <span>20202025463695</span></p>
-<div class="product-auction">
-<div class="cv">
-<div class="bid-icon">
-<img src="assets/images/icon/bid-sm.svg" alt="">
-</div>
-<div class="bid-value">
-<span>Current Bid</span>
-<h6>$1000.99</h6>
-</div>
-</div>
- <div class="countdown" id="week-countdown1">
-<h6> </h6>
-<span>Waiting For Bid</span>
-</div>
-</div>
-<a href="auction/auctionDetails.html" class="bid-btn">View Product</a>
-</div>
-</div>
-<div class="product-card product-gamma-x">
-<div class="product">
-<img src="assets/images/product/p-gamma2.png" alt="" class="img-fluid">
-</div>
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Flash sale pentium Gold F5420 8th Gen Special PC</a></h6>
-<p class="id">Auction ID: <span>20202025463696</span></p>
-<div class="product-auction">
-<div class="cv">
-<div class="bid-icon">
-<img src="assets/images/icon/bid-sm.svg" alt="">
-</div>
-<div class="bid-value">
-<span>Current Bid</span>
-<h6>$1000.99</h6>
-</div>
-</div>
-<div class="countdown" id="week-countdown2">
-<h6> </h6>
-<span>Waiting For Bid</span>
-</div>
-</div>
-<a href="auction/auctionDetails.html" class="bid-btn">View Product</a>
-</div>
-</div>
-</div>
-<div class="col-lg-6">
-<div class="product-card product-gamma-x">
-<div class="product">
-<img src="assets/images/product/p-gamma3.png" alt="" class="img-fluid">
-</div>
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Flash sale pentium Gold F5420 8th Gen Special PC</a></h6>
-<p class="id">Auction ID: <span>20202025463697</span></p>
-<div class="product-auction">
-<div class="cv">
-<div class="bid-icon">
-<img src="assets/images/icon/bid-sm.svg" alt="">
-</div>
-<div class="bid-value">
-<span>Current Bid</span>
-<h6>$1000.99</h6>
-</div>
-</div>
-<div class="countdown" id="week-countdown3">
-<h6> </h6>
-<span>Waiting For Bid</span>
-</div>
-</div>
-<a href="auction/auctionDetails.html" class="bid-btn">View Product</a>
-</div>
-</div>
-<div class="product-card product-gamma-x">
-<div class="product">
-<img src="assets/images/product/p-gamma4.png" alt="" class="img-fluid">
-</div>
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">MSI Raider Core i9 10th Gen RTX 20- 70 Super Gaming Laptop</a></h6>
-<p class="id">Auction ID: <span>20202025463728</span></p>
-<div class="product-auction">
-<div class="cv">
-<div class="bid-icon">
-<img src="assets/images/icon/bid-sm.svg" alt="">
-</div>
-<div class="bid-value">
-<span>Current Bid</span>
-<h6>$1000.99</h6>
-</div>
-</div>
-<div class="countdown" id="week-countdown4">
-<h6> </h6>
-<span>Waiting For Bid</span>
-</div>
-</div>
-<a href="auction/auctionDetails.html" class="bid-btn">View Product</a>
-</div>
-</div>
-</div>
-<div class="view-btn text-center mt-50">
-<a href="auction/auction.html" class="alpha-btn-md">View All</a>
-</div>
-</div>
-</div>
-</div>
-
-
-<div class="product-categorys-area mt-110">
-<div class="container">
-<div class="row">
-<div class="col-lg-12">
-<div class="section-header">
-<span>Category</span>
-<h2 class="text-capitalize">product Auction Category</h2>
-</div>
-</div>
-</div>
-
-<div class="row gy-4">
-<div class="col-lg-4">
-<div class="single-category-wrap">
-<div class="category-header d-flex justify-content-between align-items-center">
-<h5>Computer</h5>
-<a href="auction/auction.html" class="cate-btn">View All</a>
-</div>
-<div class="product-card product-sm">
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Flash Sale Pentium Gold G5420 8th Gen Special PC</a></h6>
-<p class="cv">Current Bid <span>$85.00</span></p>
-<a href="auction/auctionDetails.html" class="bid-btn">Place A Bid</a>
-</div>
-<div class="product">
-<img src="assets/images/product/p-sm-1.png" alt="" class="img-fluid">
-</div>
-</div>
-<div class="product-card product-sm">
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">AMD Ryzen 15 10th Gen 5 3600 Gaming PC</a></h6>
-<p class="cv">Current Bid <span>$85.00</span></p>
-<a href="auction/auctionDetails.html" class="bid-btn">Place A Bid</a>
-</div>
-<div class="product">
-<img src="assets/images/product/p-sm-2.png" alt="" class="img-fluid">
-</div>
-</div>
-<div class="product-card product-sm">
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Flash Sale Pentium Gold G5420 8th Gen Special PC</a></h6>
-<p class="cv">Current Bid <span>$85.00</span></p>
-<a href="auction/auction.html" class="bid-btn">Place A Bid</a>
-</div>
-<div class="product">
-<img src="assets/images/product/p-sm-3.png" alt="" class="img-fluid">
-</div>
-</div>
-<div class="product-card product-sm">
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">AMD Ryzen 15 10th Gen 5 3600 Gaming PC</a></h6>
-<p class="cv">Current Bid <span>$85.00</span></p>
-<a href="auction/auctionDetails.html" class="bid-btn">Place A Bid</a>
-</div>
-<div class="product">
-<img src="assets/images/product/p-sm-4.png" alt="" class="img-fluid">
-</div>
-</div>
-</div>
-</div>
-<div class="col-lg-4">
-<div class="single-category-wrap">
-<div class="category-header d-flex justify-content-between align-items-center">
-<h5>Laptop</h5>
-<a href="auction/auction.html" class="cate-btn">View All</a>
-</div>
-<div class="product-card product-sm">
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">HP 15s-du14TU Celeron 15.6" HD Laptop</a></h6>
-<p class="cv">Current Bid <span>$85.00</span></p>
-<a href="auction/auctionDetails.html" class="bid-btn">Place A Bid</a>
-</div>
-<div class="product">
-<img src="assets/images/product/p-sm-5.png" alt="" class="img-fluid">
-</div>
-</div>
-<div class="product-card product-sm">
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">HP 15s-du1114TU 15.6" HD Laptop gallery</a></h6>
-<p class="cv">Current Bid <span>$85.00</span></p>
-<a href="auction/auctionDetails.html" class="bid-btn">Place A Bid</a>
-</div>
-<div class="product">
-<img src="assets/images/product/p-sm-6.png" alt="" class="img-fluid">
-</div>
-</div>
-<div class="product-card product-sm">
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Acer Extensa 15 EX215-22 15" HD Laptop</a></h6>
-<p class="cv">Current Bid <span>$85.00</span></p>
-<a href="auction/auctionDetails.html" class="bid-btn">Place A Bid</a>
-</div>
-<div class="product">
-<img src="assets/images/product/p-sm-7.png" alt="" class="img-fluid">
-</div>
-</div>
-<div class="product-card product-sm">
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Lenovo Gaming 15 10th Gen 15.6" FHD Laptop</a></h6>
-<p class="cv">Current Bid <span>$85.00</span></p>
-<a href="auction/auctionDetails.html" class="bid-btn">Place A Bid</a>
-</div>
-<div class="product">
-<img src="assets/images/product/p-sm-8.png" alt="" class="img-fluid">
-</div>
-</div>
-</div>
-</div>
-<div class="col-lg-4">
-<div class="single-category-wrap">
-<div class="category-header d-flex justify-content-between align-items-center">
-<h5>Smart Watch </h5>
-<a href="auction/auction.html" class="cate-btn">View All</a>
-</div>
-<div class="product-card product-sm">
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Xiaomi Amazfit GTR 3 Smart watch with battery</a></h6>
-<p class="cv">Current Bid <span>$85.00</span></p>
-<a href="auction/auctionDetails.html" class="bid-btn">Place A Bid</a>
-</div>
-<div class="product">
-<img src="assets/images/product/p-sm-9.png" alt="" class="img-fluid">
-</div>
-</div>
-<div class="product-card product-sm">
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Lenovo S2 Single Strap Smart Watch Gold</a></h6>
-<p class="cv">Current Bid <span>$85.00</span></p>
-<a href="auction/auctionDetails.html" class="bid-btn">Place A Bid</a>
-</div>
-<div class="product">
-<img src="assets/images/product/p-sm-10.png" alt="" class="img-fluid">
-</div>
-</div>
-<div class="product-card product-sm">
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Xiaomi Haylou Solar LS05-1 Smart Watch</a></h6>
-<p class="cv">Current Bid <span>$85.00</span></p>
-<a href="auction/auctionDetails.html" class="bid-btn">Place A Bid</a>
-</div>
-<div class="product">
-<img src="assets/images/product/p-sm-11.png" alt="" class="img-fluid">
-</div>
-</div>
-<div class="product-card product-sm">
-<div class="product-info">
-<h6 class="product-title"><a href="auction/auctionDetails.html">Xiaomi Amazfit GTS 2 Smart Watch without battery</a></h6>
-<p class="cv">Current Bid <span>$85.00</span></p>
-<a href="auction/auctionDetails.html" class="bid-btn">Place A Bid</a>
-</div>
-<div class="product">
-<img src="assets/images/product/p-sm-12.png" alt="" class="img-fluid">
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-
-<div class="blog-area blog-style-one mt-110">
-<div class="container">
-<div class="row">
-<div class="col-lg-12">
-<div class="section-header">
-<span>News & Articles</span>
-<h2>Stay Update Auction Lab</h2>
-</div>
-</div>
-</div>
-<div class="row">
-<div class="col-lg-4 col-md-6 ">
-<div class="blog-card blog-card-alpha">
- <div class="thumb">
-<a href="blog-details.html"> <img src="assets/images/blog/b-md1.png" alt=""></a>
-</div>
-<div class="blog-body">
-<span class="meta">March 9, 2021</span>
-<h5 class="blog-title">
-<a href="blog-details.html">Timelessly handsome, charis matic, & imbued</a>
-</h5>
-<a href="blog-details.html" class="readme-btn">Read more <i class="bi bi-arrow-right"></i></a>
-</div>
-</div>
-</div>
-<div class="col-lg-4 col-md-6 ">
-<div class="blog-card blog-card-alpha">
-<div class="thumb">
-<a href="blog-details.html"> <img src="assets/images/blog/b-md2.png" alt=""></a>
-</div>
-<div class="blog-body">
-<span class="meta">March 9, 2021</span>
-<h5 class="blog-title">
-<a href="blog-details.html">What comes to your mind when you think of a James</a>
-</h5>
-<a href="blog-details.html" class="readme-btn">Read more <i class="bi bi-arrow-right"></i></a>
-</div>
-</div>
-</div>
-<div class="col-lg-4 col-md-6">
-<div class="blog-card blog-card-alpha">
-<div class="thumb">
-<a href="blog-details.html"> <img src="assets/images/blog/b-md3.png" alt=""></a>
-</div>
-<div class="blog-body">
-<span class="meta">March 9, 2021</span>
-<h5 class="blog-title">
-<a href="blog-details.html">A brand for a company is like a reputation for a person.</a>
-</h5>
-<a href="blog-details.html" class="readme-btn">Read more <i class="bi bi-arrow-right"></i></a>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-
-<div class="top-winner-area top-winnner-style-one mt-110">
-<div class="container">
-<div class="row">
-<div class="col-lg-12">
-<div class="section-header">
-<span>Winner</span>
-<h2>Auction Top Winners</h2>
-</div>
-</div>
-</div>
-<div class="row">
-<div class="col-lg-3 col-md-6 col-sm-6">
-<div class="winner-card winner-alpha">
-<div class="winner-image">
-<img src="assets/images/winner/winner-1.png" alt="" class="img-fluid">
-<a href="#" class="meta"><i class="bi bi-bag-plus"></i></a>
-</div>
-<div class="winner-info">
-<h5 class="winner-name"><a href="winner.html">Brooklyn Simmons</a></h5>
-<p class="id">ID: <span>0195610</span></p>
-</div>
-</div>
-</div>
-<div class="col-lg-3 col-md-6 col-sm-6">
-<div class="winner-card winner-alpha">
-<div class="winner-image">
-<img src="assets/images/winner/winner-2.png" alt="" class="img-fluid">
-<a href="#" class="meta"><i class="bi bi-bag-plus"></i></a>
-</div>
-<div class="winner-info">
-<h5 class="winner-name"><a href="winner.html">Cameron Williamson</a></h5>
-<p class="id">ID: <span>0195654</span></p>
-</div>
-</div>
-</div>
-<div class="col-lg-3 col-md-6 col-sm-6">
-<div class="winner-card winner-alpha">
-<div class="winner-image">
-<img src="assets/images/winner/winner-3.png" alt="" class="img-fluid">
-<a href="#" class="meta"><i class="bi bi-bag-plus"></i></a>
-</div>
-<div class="winner-info">
-<h5 class="winner-name"><a href="winner.html">Marvin McKinney</a></h5>
-<p class="id">ID: <span>0195635</span></p>
-</div>
-</div>
-</div>
-<div class="col-lg-3 col-md-6 col-sm-6">
-<div class="winner-card winner-alpha">
-<div class="winner-image">
-<img src="assets/images/winner/winner-4.png" alt="" class="img-fluid">
-<a href="#" class="meta"><i class="bi bi-bag-plus"></i></a>
-</div>
-<div class="winner-info">
-<h5 class="winner-name"><a href="winner.html">Savannah Nguyen</a></h5>
-<p class="id">ID: <span>0195576</span></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-
-<div class="testimonial-area testimonial-style-one mt-110">
-<div class="container">
-<div class="row">
-<div class="col-lg-12">
-<div class="section-header">
-<span>Testimonial<span>
-<h2>Auction Winners Say</h2>
-</div>
-</div>
-</div>
-<div class="row justify-content-center">
-<div class="col-lg-12">
-<div class="testimonial-wrap">
-<div class="swiper testimonial-slider">
-<div class="swiper-wrapper">
-<div class="swiper-slide">
-<div class="single-testimonial">
-<div class="quote-icon">
-<i class='bx bxs-quote-left'></i>
-</div>
-<ul class="review-rating d-flex">
-<li><i class='bx bxs-star'></i></li>
-<li><i class='bx bxs-star'></i></li>
-<li><i class='bx bxs-star'></i></li>
-<li><i class='bx bxs-star'></i></li>
-<li><i class='bx bxs-star'></i></li>
-</ul>
-<p>We are very proud of the service we provide for our customers. In fact, we see a client relationship drastically more personal than that of most agencies in our field. Our client relationships do not start at 9AM and end at 6PM—they stay with us to continually receive the quality service they deserve.“My busy schedule leaves little, if any, time for blogging and social media. </p>
-<div class="single-reviewer">
-<div class="reviewer">
-<div class="reviewer"><img src="assets/images/testimonial/reviewer1.png" alt=""></div>
+<!-- Features Section -->
+<section id="features" class="features">
+ <div class="container">
+  <h2>READY? AUCTION!의 특징</h2>
+  <div class="row">
+   <!-- Feature 1 -->
+   <div class="col-md-4 mb-4">
+    <div class="card feature-card">
+     <img th:src="@{/assets/images/index1.png}" class="card-img-top" alt="Vintage Uniform 1">
+     <div class="card-body">
+      <h3 class="card-title">유니크한 아이템</h3>
+      <p class="card-text">희귀하고 특별한 빈티지 스포츠 유니폼 컬렉션을 제공합니다.</p>
+     </div>
+    </div>
+   </div>
+   <!-- Feature 2 -->
+   <div class="col-md-4 mb-4">
+    <div class="card feature-card">
+     <img th:src="@{/assets/images/index2.png}" class="card-img-top" alt="Vintage Uniform 2">
+     <div class="card-body">
+      <h3 class="card-title">안전 결제 시스템</h3>
+      <p class="card-text">사기 걱정은 NO! 물건을 받은 후 구매확정해야 거래가 완료됩니다.</p>
+     </div>
+    </div>
+   </div>
+   <!-- Feature 3 -->
+   <div class="col-md-4 mb-4">
+    <div class="card feature-card">
+     <img th:src="@{/assets/images/index3.png}" class="card-img-top" alt="Vintage Uniform 3">
+     <div class="card-body">
+      <h3 class="card-title">공정한 경매</h3>
+      <p class="card-text">투명하고 공정한 경매 절차를 보장합니다.</p>
+     </div>
+    </div>
+   </div>
+  </div>
  </div>
-<div class="reviewer-disc">
-<h4><a href="winner.html">Cameron Williamson</a></h4>
-<span>Co-Founder of CNF</span>
-</div>
-</div>
-</div>
-</div>
-<div class="swiper-slide">
-<div class="single-testimonial">
-<div class="quote-icon">
-<i class='bx bxs-quote-left'></i>
-</div>
-<ul class="review-rating d-flex">
-<li><i class='bx bxs-star'></i></li>
-<li><i class='bx bxs-star'></i></li>
-<li><i class='bx bxs-star'></i></li>
-<li><i class='bx bxs-star'></i></li>
-<li><i class='bx bxs-star'></i></li>
-</ul>
-<p>We are very proud of the service we provide for our customers. In fact, we see a client relationship drastically more personal than that of most agencies in our field. Our client relationships do not start at 9AM and end at 6PM—they stay with us to continually receive the quality service they deserve.“My busy schedule leaves little, if any, time for blogging and social media. </p>
-<div class="single-reviewer">
-<div class="reviewer">
-<div class="reviewer"><img src="assets/images/testimonial/reviewer2.png" alt=""></div>
-</div>
-<div class="reviewer-disc">
-<h4><a href="winner.html">Samuel Xavien</a></h4>
-<span>FB Project Manager</span>
-</div>
-</div>
-</div>
-</div>
-<div class="swiper-slide">
-<div class="single-testimonial">
-<div class="quote-icon">
-<i class='bx bxs-quote-left'></i>
-</div>
-<ul class="review-rating d-flex">
-<li><i class='bx bxs-star'></i></li>
-<li><i class='bx bxs-star'></i></li>
-<li><i class='bx bxs-star'></i></li>
-<li><i class='bx bxs-star'></i></li>
-<li><i class='bx bxs-star'></i></li>
-</ul>
-<p>We are very proud of the service we provide for our customers. In fact, we see a client relationship drastically more personal than that of most agencies in our field. Our client relationships do not start at 9AM and end at 6PM—they stay with us to continually receive the quality service they deserve.“My busy schedule leaves little, if any, time for blogging and social media. </p>
-<div class="single-reviewer">
-<div class="reviewer">
-<div class="reviewer"><img src="assets/images/testimonial/reviewer3.png" alt=""></div>
-</div>
-<div class="reviewer-disc">
-<h4><a href="winner.html">Darlene Robertson</a></h4>
-<span>CEO, SNG Accountants</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+</section>
 
-<div class="slider-arrows text-center d-lg-flex d-none  justify-content-end">
-<div class="testi-prev swiper-prev-arrow" tabindex="0" role="button" aria-label="Previous slide"> <i class="bi bi-arrow-left"></i> </div>
-<div class="testi-next swiper-next-arrow" tabindex="0" role="button" aria-label="Next slide"><i class="bi bi-arrow-right"></i></div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+<section id="start" class="start">
+ <div class="container">
+  <h2>마감 임박 경매를 놓치지 마세요!</h2>
+  <p>곧 종료되는 빈티지 유니폼 경매를 확인하고 지금 바로 입찰하세요! 한정판 아이템을 소유할 수 있는 마지막 기회를 잡으세요.</p>
+
+  <!-- Urgent Auctions Slider -->
+  <div id="urgentAuctionsCarousel" class="carousel slide urgent-highlight mb-4" data-ride="carousel">
+   <div class="carousel-inner" id="urgent-auction-carousel-items">
+    <!-- Carousel items will be dynamically injected here -->
+   </div>
+   <!-- Carousel controls -->
+   <a class="carousel-control-prev" href="#urgentAuctionsCarousel" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+   </a>
+   <a class="carousel-control-next" href="#urgentAuctionsCarousel" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+   </a>
+  </div>
+ </div>
+</section>
 
 
-<div class="sponsor-area sponsor-style-one pt-110 pb-110">
-<div class="container">
-<div class="row row-cols-xxl-6 row-cols-md-4 row-cols-sm-3 row-cols-2 g-3">
-<div class="col">
-<div class="sponsor-logo">
-<img class="gray-img" src="assets/images/collection/sp1.png" alt="">
-</div>
-</div>
-<div class="col">
-<div class="sponsor-logo">
-<img src="assets/images/collection/sp2.png
-                        " alt="">
-</div>
-</div>
-<div class="col">
-<div class="sponsor-logo">
-<img src="assets/images/collection/sp3.png
-                        " alt="">
-</div>
-</div>
-<div class="col">
-<div class="sponsor-logo">
-<img src="assets/images/collection/sp4.png
-                        " alt="">
-</div>
-</div>
-<div class="col">
-<div class="sponsor-logo">
-<img src="assets/images/collection/sp3.png
-                        " alt="">
-</div>
-</div>
-<div class="col">
-<div class="sponsor-logo">
-<img src="assets/images/collection/sp4.png
-                        " alt="">
-</div>
-</div>
-</div>
-</div>
-</div>
+<!-- Footer -->
+<footer>
+ <p>&copy; 2024 READY? AUCTION! All rights reserved.</p>
+</footer>
 
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-</div>
 </body>
 </html>
