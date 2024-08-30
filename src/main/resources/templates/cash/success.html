@@ -93,7 +93,7 @@
 
                     <!-- 상품 이미지를 하얀 박스 위에 표시 -->
                     <div class="swiper-container">
-                        <div class="swiper-wrapper">
+                        <div class="swiper-wrapper" style="text-align: center;">
                             <!-- 이미지 리스트를 반복하여 표시 -->
                             <div class="swiper-slide" th:each="imgUrl : ${productDetail.imgUrl}">
                                 <img alt="상품 이미지" class="product-image" th:src="${imgUrl}"
@@ -107,8 +107,8 @@
 
                     <!-- 외부 좌우 내비게이션 버튼 추가 -->
                     <div class="external-navigation">
-                        <button class="swiper-button-prev-outer">Prev</button>
-                        <button class="swiper-button-next-outer">Next</button>
+                        <button class="swiper-button-prev-outer btn btn-dark">이전</button>
+                        <button class="swiper-button-next-outer btn btn-dark">다음</button>
                     </div>
 
                     <!-- Initialize Swiper -->
@@ -165,7 +165,7 @@
                 <div class="col-lg-6">
                     <div class="widget-right-area">
                         <div class="single-widget">
-                            <h5 class="widget-title">Product Overview</h5>
+                            <h5 class="widget-title">상품 구매 확정</h5>
                             <ul class="widget-list">
                                 <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
                                 <li><span>판매자 :</span>
@@ -174,9 +174,9 @@
                                     </a>
                                 </li>
                                 <li><span>카테고리 :</span><span th:text="${productDetail.category}">카테고리</span></li>
-                                <li><span>경매 시작 시간 :</span><span th:text="${productDetail.startTime}">경매 시작 시간</span></li>
-                                <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
-                                <li><span>즉시 구매가 :</span><span
+                                <li><span>경매 시작 시간 :</span><span th:text="${#dates.format(productDetail.startTime, 'yy년 M월 d일 HH:mm:ss')}">경매 시작 시간</span></li>
+                                <li><span>경매 마감 시간 :</span><span th:text="${#dates.format(productDetail.endTime, 'yy년 M월 d일 HH:mm:ss')}">경매 마감 시간</span></li>
+                                <li><span>즉시 구매가 :</span><span class="price"
                                         th:text="'₩' + ${productDetail.immediatePrice}">즉시 구매가</span></li>
                                 <li><span>상품 설명 :</span><span th:text="${productDetail.description}">상품 설명</span></li>
                             </ul>
@@ -228,6 +228,20 @@
             </div>
         </div>
     </section>
+
+    <script>
+        // 금액에 쉼표 추가
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // 경매 등록, 참여 내역 금액에 쉼표 추가
+        window.onload = function() {
+            document.querySelectorAll('.price').forEach(function(element) {
+                element.innerText = formatNumber(element.innerText);
+            });
+        };
+    </script>
 
 </div>
 </body>
