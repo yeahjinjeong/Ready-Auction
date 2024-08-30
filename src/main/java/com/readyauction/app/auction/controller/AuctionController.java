@@ -4,6 +4,7 @@ import com.readyauction.app.auction.dto.ProductDto;
 import com.readyauction.app.auction.dto.ProductRepDto;
 import com.readyauction.app.auction.dto.ProductReqDto;
 import com.readyauction.app.auction.dto.WinnerReqDto;
+import com.readyauction.app.auction.entity.Category;
 import com.readyauction.app.auction.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -39,30 +40,40 @@ public class AuctionController {
     }
 
     @GetMapping("") // 상품 조회
-    public String searchAuction(@RequestParam(required = false) String prodName,
-                                @RequestParam(defaultValue = "0") int page, Model model) {
-        // 한 페이지에 9개의 아이템을 표시하고, 경매 마감 시간 적은 순으로 정렬하는 Pageable 객체 생성
-        Pageable pageable = PageRequest.of(page, 9, Sort.by("endTime").ascending());
+    public String searchAuction(
+            @RequestParam(required = false) String prodName,
+            @RequestParam(defaultValue = "ALL") String category, // Use String for category
+            @RequestParam(defaultValue = "0") int page,
+            Model model) {
 
+        Pageable pageable = PageRequest.of(page, 9, Sort.by("endTime").ascending());
         Page<ProductDto> products;
+
+        // Convert category String to Enum
+        Category categoryEnum;
+        try {
+            categoryEnum = "ALL".equalsIgnoreCase(category) ? null : Category.valueOf(category.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            // Handle invalid category by redirecting or returning an error page
+            return "error/404"; // or handle it appropriately
+        }
+
         if (prodName != null && !prodName.isEmpty()) {
-            products = productService.searchProductsByName(prodName, pageable);
+            products = productService.searchProductsByNameAndCategory(prodName, categoryEnum, pageable);
         } else {
-            products = productService.getAllProducts(pageable);
+            products = productService.getProductsByCategory(categoryEnum, pageable);
         }
 
         model.addAttribute("products", products);
-        model.addAttribute("currentPage", "auction");  // currentPage 값을 "auction"으로 설정
+        model.addAttribute("currentPage", "auction");
         model.addAttribute("currentPageNumber", products.getNumber());
         model.addAttribute("totalPages", products.getTotalPages());
         model.addAttribute("prodName", prodName);
+        model.addAttribute("selectedCategory", category);  // Pass the selected category
 
-//        if (page < 0 || page >= products.getTotalPages()) {
-//            return "redirect:/auction"; // 유효하지 않은 페이지 번호인 경우 첫 페이지로 리다이렉션
-//        }
         return "auction/auction";
-
     }
+
 
     @GetMapping("/auctionDetails")// 경매 입찰 하는 상품 상세 페이지
     public void auctionDetails() {

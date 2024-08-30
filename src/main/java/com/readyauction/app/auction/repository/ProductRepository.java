@@ -1,6 +1,7 @@
 package com.readyauction.app.auction.repository;
 
 import com.readyauction.app.auction.entity.AuctionStatus;
+import com.readyauction.app.auction.entity.Category;
 import com.readyauction.app.auction.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -90,4 +91,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // 예진 작업 끝
 
     List<Product> findByAuctionStatus(AuctionStatus auctionStatus); // 필터링을 위한 메서드
+
+    // Filter by category and status
+    @Query("SELECT p FROM Product p WHERE p.category = :category AND p.auctionStatus <> :status")
+    Page<Product> findByCategoryAndAuctionStatus(@Param("category") Category category, @Param("status") AuctionStatus status, Pageable pageable);
+
+    // Search by name, category, and status
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')) AND p.category = :category AND p.auctionStatus <> :status")
+    Page<Product> searchByNameCategoryAndStatus(@Param("name") String name, @Param("category") Category category, @Param("status") AuctionStatus status, Pageable pageable);
+
 }

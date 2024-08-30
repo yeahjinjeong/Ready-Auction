@@ -443,4 +443,28 @@ public class ProductService {
     public void save(Product product) {
         productRepository.save(product);
     }
+
+    @Transactional
+    public Page<ProductDto> getProductsByCategory(Category category, Pageable pageable) {
+        if (category == null) {
+            return productRepository.findActiveProducts(AuctionStatus.END, pageable)
+                    .map(this::convertToProductDto);
+        } else {
+            return productRepository.findByCategoryAndAuctionStatus(category, AuctionStatus.END, pageable)
+                    .map(this::convertToProductDto);
+        }
+    }
+
+    @Transactional
+    public Page<ProductDto> searchProductsByNameAndCategory(String name, Category category, Pageable pageable) {
+        if (category == null) {
+            return productRepository.searchByNameAndStatus(name, AuctionStatus.END, pageable)
+                    .map(this::convertToProductDto);
+        } else {
+            return productRepository.searchByNameCategoryAndStatus(name, category, AuctionStatus.END, pageable)
+                    .map(this::convertToProductDto);
+        }
+    }
+
+
 }
