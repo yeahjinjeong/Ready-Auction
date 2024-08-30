@@ -60,6 +60,11 @@
             font-weight: bold;
         }
 
+        .status-suspended {
+            color: orange;
+            font-weight: bold;
+        }
+
         .status-deleted {
             color: red;
             font-weight: bold;
@@ -203,6 +208,7 @@
 
         <div class="filter-buttons">
             <button onclick="loadUsers('active')">활동중인 회원</button>
+            <button onclick="loadUsers('suspended')" style="background-color: orange">정지된 회원</button>
             <button onclick="loadUsers('deleted')" style="background-color: gray">탈퇴한 회원</button>
         </div>
 
@@ -228,7 +234,7 @@
         <div class="pagination">
             <button id="prevPage" onclick="changePage('prev')">이전</button>
             <span id="currentPage">1</span>
-            <button id="nextPage" onclick="changePage('next')">다음 </button>
+            <button id="nextPage" onclick="changePage('next')">다음</button>
         </div>
 
         <div id="userDetailsModal" class="modal">
@@ -245,7 +251,7 @@
                 <p><strong>생년월일 : </strong> <span id="modalUserBirth"></span></p>
                 <p><strong>상태 : </strong> <span id="modalUserStatus"></span></p>
                 <p><strong id="statusLabel">상태별 일자 : </strong> <span id="modalStatusTimestamp"></span></p>
-                <p><strong>매너지수 : </strong> <span id="modalMannerScore"></span></p>
+                <p><strong>매너점수 : </strong> <span id="modalMannerScore"></span></p>
 
             </div>
         </div>
@@ -284,8 +290,12 @@
                     <td>${user.address}</td>
                     <td>${user.phone}</td>
                     <td>${user.birth}</td>
-                    <td class="${currentStatus === 'active' ? 'status-active' : 'status-deleted'}">${currentStatus === 'active' ? '활동중' : '탈퇴'}</td>
-                `;
+                    <td class="${
+                            user.status === 'active' ? 'status-active' :
+                                user.status === 'deleted' ? 'status-deleted' : 'status-suspended'
+                        }">
+        ${user.status === 'active' ? '활동중' : user.status === 'deleted' ? '탈퇴' : '정지됨'}</td>
+    `;
 
                         userTableBody.appendChild(row);
                     });
@@ -324,27 +334,37 @@
                     document.getElementById('modalUserBirth').innerText = formatDate(user.birth);
 
                     // 상태에 따른 텍스트 설정
-                    const statusText = user.status === 'active' ? '활동중' : '탈퇴';
+                    const statusText = user.status === 'active' ? '활동중' : user.status === 'deleted' ? '탈퇴' : '정지됨';
                     document.getElementById('modalUserStatus').innerText = statusText;
 
                     // 상태에 따른 가입일/탈퇴일 설정
-                    const statusTimestamp = user.status === 'active' ? formatDate(user.createdAt) : formatDate(user.deletedAt);
-                    document.getElementById('modalStatusTimestamp').innerText = statusTimestamp;
+                    let statusTimestamp = '';
+                    let statusLabel = '';
 
-                    // 상태에 따른 "상태별 일자" 텍스트 변경
-                    const statusLabel = user.status === 'active' ? '가입일 : ' : '탈퇴일 : ';
-                    document.querySelector('p strong#statusLabel').innerText = statusLabel; // 변경된 부분
+                    if (user.status === 'active') {
+                        statusTimestamp = formatDate(user.createdAt);
+                        statusLabel = '가입일 : ';
+                    } else if (user.status === 'deleted') {
+                        statusTimestamp = formatDate(user.deletedAt);
+                        statusLabel = '탈퇴일 : ';
+                    } else if (user.status === 'suspended') {
+                        statusTimestamp = ''; // 정지된 회원에 대해서는 별도의 날짜 표시가 없다고 가정
+                        statusLabel = '❌정지된 회원❌';
+                    }
+
+                    document.getElementById('modalStatusTimestamp').innerText = statusTimestamp;
+                    document.querySelector('p strong#statusLabel').innerText = statusLabel;
 
                     document.getElementById('modalMannerScore').innerText = user.mannerScore;
 
                     const modal = document.getElementById('userDetailsModal');
                     modal.style.display = "block";
 
-                    document.querySelector('.close').onclick = function() {
+                    document.querySelector('.close').onclick = function () {
                         modal.style.display = "none";
                     };
 
-                    window.onclick = function(event) {
+                    window.onclick = function (event) {
                         if (event.target === modal) {
                             modal.style.display = "none";
                         }
@@ -356,8 +376,9 @@
         }
 
 
+
         function formatDate(dateString) {
-            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            const options = {year: 'numeric', month: '2-digit', day: '2-digit'};
             const date = new Date(dateString);
             return date.toLocaleDateString('ko-KR', options).replace(/\./g, '').replace(/ /g, ' . ');
         }
