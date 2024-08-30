@@ -68,6 +68,6 @@ jobs:
             -e "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" \
             -e "REDIS_PORT=${{ secrets.REDIS_PORT }}" \
             --name ${{ vars.APP_NAME }} \
-            -v /usr/share/zoneinfo/Asia/Seoul:/etc/localtime:ro 
+            -v /usr/share/zoneinfo/Asia/Seoul:/etc/localtime:ro \
             ${{ secrets.DOCKER_USERNAME }}/${{ vars.APP_NAME }}
             sudo docker image prune -f
