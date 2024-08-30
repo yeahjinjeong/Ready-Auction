@@ -64,6 +64,8 @@ public class MemberController {
      * - Authentication타입으로 의존 주입 받기
      * - @AuthenticationPrincipal 어노테이션으로 Principal객체(AuthPrincipal) 주입 받기
      */
+
+
     @GetMapping("/detail")
     public void detail(
             Authentication authentication,

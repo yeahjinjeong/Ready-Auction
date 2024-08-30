@@ -91,7 +91,7 @@
                                             var product = /*[[${product}]]*/ {};
 
                                             if (product && product.endTime && product.id) {
-                                                const endTime = new Date(product.endTime).toISOString();
+                                                const endTime = new Date(product.endTime);
                                                 const productId = product.id;
 
                                                 console.log(`Starting countdown for product ID: ${productId}`);
