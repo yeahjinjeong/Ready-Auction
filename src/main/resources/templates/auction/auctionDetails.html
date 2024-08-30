@@ -241,6 +241,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js" integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        // 금액에 쉼표 추가
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // 경매 등록, 참여 내역 금액에 쉼표 추가
+        window.onload = function() {
+            document.querySelectorAll('.price').forEach(function(element) {
+                element.innerText = formatNumber(element.innerText);
+            });
+        };
 
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -476,10 +487,10 @@
                         <div class="auction-timer">
                             <div class="countdown">
                                 <h6>
-                                    <span th:id="|days-${productDetail.id}|">0</span>D :
-                                    <span th:id="|hours-${productDetail.id}|">0</span>H :
-                                    <span th:id="|minutes-${productDetail.id}|">0</span>M :
-                                    <span th:id="|seconds-${productDetail.id}|">0</span>S
+                                    <span th:id="|days-${productDetail.id}|">0</span>일
+                                    <span th:id="|hours-${productDetail.id}|">0</span>시간
+                                    <span th:id="|minutes-${productDetail.id}|">0</span>분
+                                    <span th:id="|seconds-${productDetail.id}|">0</span>초 남음
                                 </h6>
                             </div>
                             <script th:inline="javascript">
@@ -556,7 +567,7 @@
                     </div>
                     <!-- 상품 이미지를 하얀 박스 위에 표시 -->
                     <div class="swiper-container">
-                        <div class="swiper-wrapper">
+                        <div class="swiper-wrapper" style="text-align: center;">
                             <!-- 이미지 리스트를 반복하여 표시 -->
                             <div class="swiper-slide" th:each="imgUrl : ${productDetail.imgUrl}">
                                 <img alt="상품 이미지" class="product-image" th:src="${imgUrl}" onclick="openFullscreen(this)">
@@ -569,8 +580,8 @@
 
                     <!-- 외부 좌우 내비게이션 버튼 추가 -->
                     <div class="external-navigation">
-                        <button class="swiper-button-prev-outer">Prev</button>
-                        <button class="swiper-button-next-outer">Next</button>
+                        <button class="swiper-button-prev-outer btn btn-dark">이전</button>
+                        <button class="swiper-button-next-outer btn btn-dark">다음</button>
                     </div>
 
                     <!-- Initialize Swiper -->
@@ -644,9 +655,9 @@
                                 </li>
                                 <li><span>카테고리 :</span><span id="end-time"
                                                              th:text="${productDetail.category}">카테고리</span></li>
-                                <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
-                                <li><span>입찰 단위 :</span><span th:text="${productDetail.bidUnit} + '￦' "></span></li>
-                                <li><span>즉시 구매가 :</span><span th:text="${productDetail.immediatePrice}+ '￦' ">즉시 구매가</span>
+                                <li><span>경매 마감 시간 :</span><span th:text="${#dates.format(productDetail.endTime, 'yy년 M월 d일 HH:mm:ss')}">경매 마감 시간</span></li>
+                                <li><span>입찰 단위 :</span><span class="price" th:text="${productDetail.bidUnit} + '￦' "></span></li>
+                                <li><span>즉시 구매가 :</span><span class="price" th:text="${productDetail.immediatePrice}+ '￦' ">즉시 구매가</span>
                                 </li>
                                 <li><span>상품 설명 :</span>
                                     <span class="description" th:text="${productDetail.description}">상품 설명</span></li>
@@ -745,7 +756,7 @@
                             <form class="widget-form" id="bidForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
-                                    <input type="text" readonly class="form-control" placeholder="Current Price"
+                                    <input type="text" readonly class="price form-control" placeholder="Current Price"
                                            th:value="${productDetail.currentPrice}" id="currentPrice"
                                            name="currentPrice">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
@@ -759,9 +770,9 @@
                             <form class="widget-form" id="buyForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
-                                    <input type="text" readonly class="form-control" placeholder="Immediate Price"
+                                    <input type="text" readonly class="price form-control" placeholder="Immediate Price"
                                            th:value="${productDetail.immediatePrice}" id="immediatePrice"
-                                           name="immediatePrice">
+                                          name="immediatePrice">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
                                     <input type="hidden" th:value="${productDetail.id}" name="productId2"
                                            id="productId2">
