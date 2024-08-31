@@ -154,20 +154,20 @@ public class ChatService {
     }
 
     // 채팅방 상품 사진 조회
-    public List<ChatImageDto> findImagesByChatRoomList(Long memberId) {
-        // 경매 상품 리스트의 이미지 리스트 중 첫번째거를 받아서 조회해야 함
-        // 경매 테이블이랑 이미지 테이블 조인해서 멤버 아이디에 맞는 이미지들 전부 불러와서 첫번째것만 어떻게 불러오지?
-        List<ChatImageDto> chatImageDtos = new ArrayList<>();
-        List<Long> productList = chatRoomRepository.findProductIdsByMemberId(memberId).orElseThrow(() -> new ChatNotFoundException("chatroom not found for user ID: " + memberId));
-        if (!productList.isEmpty()) {
-            productList.forEach((productId) -> {
-//            Optional<List<String>> images = productRepository.findImagesById(productId);
-                List<String> images = productService.findImagesById(productId);
-                chatImageDtos.add(new ChatImageDto(productId, images.get(0)));
-            });
-        }
-        return chatImageDtos;
-    }
+//    public List<ChatImageDto> findImagesByChatRoomList(Long memberId) {
+//        // 경매 상품 리스트의 이미지 리스트 중 첫번째거를 받아서 조회해야 함
+//        // 경매 테이블이랑 이미지 테이블 조인해서 멤버 아이디에 맞는 이미지들 전부 불러와서 첫번째것만 어떻게 불러오지?
+//        List<ChatImageDto> chatImageDtos = new ArrayList<>();
+//        List<Long> productList = chatRoomRepository.findProductIdsByMemberId(memberId).orElseThrow(() -> new ChatNotFoundException("chatroom not found for user ID: " + memberId));
+//        if (!productList.isEmpty()) {
+//            productList.forEach((productId) -> {
+////            Optional<List<String>> images = productRepository.findImagesById(productId);
+//                List<String> images = productService.findImagesById(productId);
+//                chatImageDtos.add(new ChatImageDto(productId, images.get(0)));
+//            });
+//        }
+//        return chatImageDtos;
+//    }
 
     public Long findOppositeMemberIdByChatRoomId(Long chatRoomId, Long id) {
         Long memberId = chatRoomRepository.findOppositeMemberIdByChatRoomId(chatRoomId, id);

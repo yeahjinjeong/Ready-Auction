@@ -64,7 +64,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     @Query("""
         select
             new com.readyauction.app.chat.dto.ChatRoomProductDto(
-            c.id, c.productId, c.chatRoomMembers, c.lastMessage, c.lastMessageUpdatedAt, c.createdAt, p.name, p.images, p.winner.status
+            c, p
             )
         from
             ChatRoom c join c.chatRoomMembers m

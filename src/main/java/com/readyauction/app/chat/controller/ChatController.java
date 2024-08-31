@@ -62,10 +62,11 @@ public class ChatController {
             @AuthenticationPrincipal AuthPrincipal principal,
             Model model) {
         log.info("멤버아이디 : {}", principal.getMember().getId());
-//        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(principal.getMember().getId());
-        List<ChatRoomProductDto> chatRoomList  = chatService.findChatRoomAndProductByMemberId(principal.getMember().getId());
-//        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(0L);
+        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(principal.getMember().getId());
+        List<ChatRoomProductDto> chatRoomProductList  = chatService.findChatRoomAndProductByMemberId(principal.getMember().getId());
         log.info(chatRoomList.toString());
+        log.info(chatRoomProductList.toString());
         model.addAttribute("chatRoomList", chatRoomList);
+        model.addAttribute("chatRoomProductList", chatRoomProductList);
     }
 }

@@ -61,10 +61,11 @@ public class ChatMessageController {
             @RequestParam Long anotherMemberId
     ) {
         log.info("senderId : {}", anotherMemberId); // 상대방 아이디
-        // 채팅방 모든 문자 읽기
+        // 채팅방 안 읽은 문자 읽기 - 어차피 내가 보낸 문자들은 다 읽은 거임
         chatService.updateMessageStatus(chatRoomId);
         // 내가 아닌 상대 멤버 찾기
         String userName = chatService.findReceiverEmailByMemberId(anotherMemberId);
+        // 읽었다고 보낸 사람한테 알림 보내기
         simpMessagingTemplate.convertAndSendToUser(userName, "/sub", new MessageDto(null, chatRoomId, null, "enㅇtㅌrㄹy", null, null, null, null));
     }
 
@@ -104,11 +105,11 @@ public class ChatMessageController {
     }
 
     // 상품 이미지 조회
-    @GetMapping("/list/image")
-    public ResponseEntity<?> findChatRoomImages(
-            @AuthenticationPrincipal AuthPrincipal principal) {
-        List<ChatImageDto> imageList = chatService.findImagesByChatRoomList(principal.getMember().getId());
-        log.info("imageList = {}", imageList);
-        return ResponseEntity.ok(imageList);
-    }
+//    @GetMapping("/list/image")
+//    public ResponseEntity<?> findChatRoomImages(
+//            @AuthenticationPrincipal AuthPrincipal principal) {
+//        List<ChatImageDto> imageList = chatService.findImagesByChatRoomList(principal.getMember().getId());
+//        log.info("imageList = {}", imageList);
+//        return ResponseEntity.ok(imageList);
+//    }
 }
