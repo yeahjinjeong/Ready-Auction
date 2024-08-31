@@ -2,7 +2,9 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Ready? Auction!</title>
+
+    <link rel="icon" th:href="@{/assets/images/logo.png}" type="image/gif" sizes="20x20">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
@@ -67,7 +69,7 @@
             margin: 0;
             padding: 18px 16px 10px;
         }
-        .inbox_chat { height: 550px; overflow-y: scroll;}
+        .inbox_chat { height: 900px; overflow-y: scroll;}
 
         .active_chat{ background:#ebebeb;}
 
@@ -104,7 +106,7 @@
         }
 
         .sent_msg p {
-            background: #05728f none repeat scroll 0 0;
+            background: #212529 none repeat scroll 0 0;
             border-radius: 3px;
             font-size: 14px;
             margin: 0; color:#fff;
@@ -127,7 +129,7 @@
 
         .type_msg {border-top: 1px solid #c4c4c4;position: relative;}
         .msg_send_btn {
-            background: #05728f none repeat scroll 0 0;
+            background: #212529 none repeat scroll 0 0;
             border: medium none;
             border-radius: 50%;
             color: #fff;
@@ -172,6 +174,7 @@
             justify-content: center;
             align-items: center;
             height: 60px; /* 화면 전체 높이 */
+            padding-left: 60px;
         }
 
         .profile-image {
@@ -204,6 +207,8 @@
                 if (badge) {
                     console.log(unread.count);
                     badge.textContent = unread.count; // 메시지 개수 삽입
+
+                    $('.chat_list').first().find('.badge').text('');
                 }
             });
         })
@@ -272,6 +277,8 @@
 
                 // 메시지 개수 배지 없애기
                 element.querySelector('.badge').textContent = '';
+
+                console.log("뱃지 클릭");
                 // const badge = document.querySelector(`.badge[data-chat-room-id="${$chatRoomId}"]`);
                 // if (badge) {
                 //     badge.textContent = ''; // 메시지 개수 삽입
@@ -412,10 +419,11 @@
         const profileBox = document.getElementById('profile-target');
         profileBox.innerHTML = ``;
         console.log(infos);
+        console.log("상품 상태 :" + infos.product.status);
         var sellerProfileHTML =
             `<div class="card-header" style="display: grid; grid-template-columns: 90% 10%;">
                 <div class="profile-container">
-                    <img src="${infos.profile.sellerProfilePicture}" class="profile-image">
+                    <img src="${infos.profile.sellerProfilePicture != null ? infos.profile.sellerProfilePicture : '../assets/images/profile/basic-profile.png'}" class="profile-image">
                 </div>
                 <div class="dropdown">
                       <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -423,7 +431,7 @@
                       <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="[[@{/member/profile/${infos.profile.sellerId}}]]">프로필보기</a></li>
                         <li><a class="dropdown-item" href="[[@{/report/manner/${infos.profile.sellerId}}]]">매너평가</a></li>
-                        <li><a class="dropdown-item" href="#">신고하기</a></li>
+                        <li><a class="dropdown-item" href="[[@{/report/chat/${infos.product.productId}/${infos.profile.sellerId}}]]">신고하기</a></li>
                       </ul>
                 </div>
                 <div>
@@ -441,12 +449,13 @@
                 </div>
              </div>
              <div class="card-footer text-body-secondary">
-                <a href="[[@{/cash/success/${infos.product.productId}}]]" class="btn btn-primary">구매확정</a>
+                <a href="[[@{/auction/bid-product/${infos.product.productId}}]]" class="btn btn-primary" style="background: #ff0000; border: none;">경매 상품 보러가기</a>
+                <a href="[[@{/cash/success/${infos.product.productId}}]]" class="btn btn-primary" style="${infos.product.status === 'ACCEPTED' ? 'pointer-events: none; opacity: 0.5; background: #ff0000; border: none;' : 'background: #ff0000; border: none;'}">구매확정</a>
              </div>`;
         var winnerProfileHTML =
             `<div class="card-header" style="display: grid; grid-template-columns: 90% 10%;">
                 <div class="profile-container">
-                    <img src="${infos.profile.winnerProfilePicture}" class="profile-image">
+                    <img src="${infos.profile.winnerProfilePicture != null ? infos.profile.winnerProfilePicture : '../assets/images/profile/basic-profile.png'}" class="profile-image">
                 </div>
                 <div class="dropdown">
                       <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -454,7 +463,7 @@
                       <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="[[@{/member/profile/${infos.profile.winnerId}}]]">프로필보기</a></li>
                         <li><a class="dropdown-item" href="[[@{/report/manner/${infos.profile.winnerId}}]]">매너평가</a></li>
-                        <li><a class="dropdown-item" href="#">신고하기</a></li>
+                        <li><a class="dropdown-item" href="[[@{/report/chat/${infos.product.productId}/${infos.profile.winnerId}}]]">신고하기</a></li>
                       </ul>
                 </div>
                 <div>
@@ -472,7 +481,7 @@
                 </div>
              </div>
              <div class="card-footer text-body-secondary">
-                <a href="#" class="btn btn-primary">경매 상품 보러가기</a>
+                <a href="[[@{/auction/bid-product/${infos.product.productId}}]]" class="btn btn-primary" style="background: #ff0000; border: none;">경매 상품 보러가기</a>
              </div>`;
         console.log(`${infos.profile.sellerId}`);
         if (currentMemberId == Number(infos.profile.sellerId)) {

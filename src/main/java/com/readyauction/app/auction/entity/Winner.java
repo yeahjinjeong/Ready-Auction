@@ -15,19 +15,18 @@ import java.sql.Timestamp;
 @Builder
 public class Winner {
 
-
-    @Column(name = "winner_member_id", table = "winner") // 열 이름을 명시적으로 지정
+    @Column(name = "winner_member_id", table = "tbl_winner") // 열 이름을 명시적으로 지정
     private Long memberId;
-    @Column(table = "winner")
+    @Column(table = "tbl_winner")
     private Integer price;
-    @Column(table = "winner")
+    @Column(table = "tbl_winner")
     private Timestamp winnerTime;
 
-    @Column(table = "winner")
+    @Column(table = "tbl_winner")
     @Enumerated(EnumType.STRING)
     private PurchaseStatus status; // 구매 대기, 거래중, 구매확정
 
-    @Column(table = "winner")
+    @Column(table = "tbl_winner")
     @Enumerated(EnumType.STRING)
     private PurchaseCategory category;
 }

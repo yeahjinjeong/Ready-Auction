@@ -1,10 +1,14 @@
 package com.readyauction.app.user.controller;
 
+import com.readyauction.app.auction.entity.Product;
+import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.auth.principal.AuthPrincipal;
 import com.readyauction.app.auth.service.AuthService;
 import com.readyauction.app.cash.service.AccountService;
+import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.user.dto.MemberRegisterRequestDto;
 import com.readyauction.app.user.dto.MemberUpdateRequestDto;
+import com.readyauction.app.user.dto.ProfileDto;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.service.MemberService;
 import jakarta.validation.Valid;
@@ -15,9 +19,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -28,6 +34,7 @@ public class MemberController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
     private final AuthService authService;
+    private final ProductService productService;
 
     @GetMapping("/register")
     public void register() {
@@ -57,6 +64,8 @@ public class MemberController {
      * - Authentication타입으로 의존 주입 받기
      * - @AuthenticationPrincipal 어노테이션으로 Principal객체(AuthPrincipal) 주입 받기
      */
+
+
     @GetMapping("/detail")
     public void detail(
             Authentication authentication,
@@ -107,8 +116,26 @@ public class MemberController {
 
     /** 외부 프로필 **/
 
-    @GetMapping("/profile")
-    public String profile() {
+    @GetMapping("/profile/{memberId}")
+    public String getProfile(@PathVariable("memberId") Long memberId, Model model) {
+        try {
+            // 프로필
+            ProfileDto profileDto = memberService.findProfileDtoById(memberId);
+            log.debug("profileDto = {}", profileDto);
+            model.addAttribute("profile", profileDto);
+
+            // 경매 등록 내역 조회
+            // 판매 중 내역
+            List<Product> activeProducts = productService.getActiveProducts(memberId);
+            model.addAttribute("activeProducts", activeProducts);
+
+            // 거래 완료 내역 (결제 완료, 구매 확정)
+            List<Product> completedProducts = productService.getCompletedProducts(memberId);
+            model.addAttribute("completedProducts", completedProducts);
+        } catch (UserNotFoundException e) {
+            log.error("Member not found: {}", e.getMessage());
+            return "error/404";
+        }
         return "member/profile";
     }
 }

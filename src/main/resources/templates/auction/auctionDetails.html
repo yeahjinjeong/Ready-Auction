@@ -1,11 +1,81 @@
 <!doctype html>
 <html lang="en" layout:decorate="~{layout/default}"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      xmlns:th="http://www.thymeleaf.org">
-<link href="https://unpkg.com/swiper/swiper-bundle.min.css" rel="stylesheet">
+      xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/swiper/swiper-bundle.min.css" rel="stylesheet">
     <style>
+        /* 커스텀 알림창 스타일 */
+        .custom-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .custom-alert-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .custom-alert-box h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .custom-alert-box p {
+            font-size: 18px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .custom-alert-box p.warning {
+            color: red;
+            font-weight: bold;
+        }
+
+        .custom-alert-close-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
         /* 추가 스타일을 원한다면 여기에 작성하세요 */
+        .wishlist-btn {
+            background-color: transparent;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #ff6666;
+        }
+
+        .wishlist-btn:focus {
+            outline: none;
+        }
+
+        .wishlist-btn .fa-heart {
+            color: #ff6666;
+        }
+
+        .wishlist-btn.active .fa-heart {
+            color: #ff3333;
+        }
         /* 신고하기 버튼과 드롭다운 스타일 */
         .report-dropdown {
             position: relative;
@@ -149,6 +219,19 @@
             }
 
 
+        .report-btn:focus {
+            outline: none;
+        }
+
+        .report-btn i {
+            color: red; /* 경찰차 사이렌 색상 */
+        }
+
+        .report-btn:hover i {
+            color: darkred; /* 호버 시 색상 */
+        }
+
+
     </style>
 
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
@@ -158,6 +241,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js" integrity="sha512-1QvjE7BtotQjkq8PxLeF6P46gEpBRXuskzIVgjFpekzFVF4yjRgrQvTG1MTOJ3yQgvTteKAcO7DSZI92+u/yZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js" integrity="sha512-iKDtgDyTHjAitUDdLljGhenhPwrbBfqTKWO1mkhSFH3A7blITC9MhYon6SjnMhp4o0rADGw9yAC6EW4t5a4K3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        // 금액에 쉼표 추가
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // 경매 등록, 참여 내역 금액에 쉼표 추가
+        window.onload = function() {
+            document.querySelectorAll('.price').forEach(function(element) {
+                element.innerText = formatNumber(element.innerText);
+            });
+        };
+
 
         document.addEventListener('DOMContentLoaded', function () {
             const bidForm = document.getElementById('bidForm');
@@ -183,7 +278,17 @@
 
             // 서버로부터 받은 메시지를 화면에 표시
             function showMessage(bidRes) {
-                document.getElementById('currentPrice').value = bidRes.bidCurrentPrice;
+                var currentPriceField = document.getElementById('currentPrice');
+                currentPriceField.value = bidRes.bidCurrentPrice;
+
+                // 시각적 효과 추가 (배경색을 잠깐 변경)
+                currentPriceField.style.transition = "background-color 0.5s ease"; // 애니메이션 시간 설정
+                currentPriceField.style.backgroundColor = "#dff0d8"; // 초록색 배경 (성공을 나타냄)
+
+                // 일정 시간 후에 원래 배경색으로 복원
+                setTimeout(function() {
+                    currentPriceField.style.backgroundColor = ""; // 원래 배경색으로 복원
+                }, 1000); // 1초 후에 복원
             }
             // 페이지 로드 시 WebSocket 연결
 
@@ -196,7 +301,7 @@
                 const currentPrice = document.getElementById('currentPrice').value;
                 console.log("현재 가격: " + currentPrice);
                 const productId = document.getElementById('productId').value;
-                const currentTime = new Date().toISOString(); // 현재 시각 ISO 형식
+                const currentTime = new Date(); // 현재 시각 ISO 형식
                 const bidDto = {
                     bidPrice: currentPrice,
                     productId: productId,
@@ -212,14 +317,25 @@
                     },
                     success: function (bidRes) {
                         console.log('Bid successful:', bidRes);
-                        alert('Bid placed successfully!');
+                        alert('입찰에 성공했어요!');
                         // Update the current price on the page
+                        // Update the current price on the page
+                        var currentPriceField = document.getElementById('currentPrice');
+                        currentPriceField.value = bidRes.bidCurrentPrice;
 
-                        document.getElementById('currentPrice').value = bidRes.bidCurrentPrice;
+                        // 시각적 효과 추가 (배경색을 잠깐 변경)
+                        currentPriceField.style.transition = "background-color 0.5s ease"; // 애니메이션 시간 설정
+                        currentPriceField.style.backgroundColor = "#dff0d8"; // 초록색 배경 (성공을 나타냄)
+
+                        // 일정 시간 후에 원래 배경색으로 복원
+                        setTimeout(function() {
+                            currentPriceField.style.backgroundColor = ""; // 원래 배경색으로 복원
+                        }, 1000); // 1초 후에 복원
+
                         if(bidRes.bidStatus === "ACCEPTED") {
                             if (productId) {
                                 // Redirect to the payment page using the product ID
-                                window.location.href = '/app/cash/payment/' + productId;
+                                window.location.href = `[[@{/cash/payment/${productId}}]]`;
                             } else {
                                 alert('Product ID not found. Unable to proceed to payment.');
                             }
@@ -227,7 +343,7 @@
                     },
                     error: function (xhr, status, error) {
                         console.error('Error placing bid:', error);
-                        alert('Failed to place bid. Please try again.');
+                        alert('입찰에 실패 했어요 다시 시도해 주세요');
                         // Even in case of an error, update the current price on the page
                         const responseJson = JSON.parse(xhr.responseText);
                     }
@@ -237,10 +353,34 @@
             buyForm.addEventListener('submit', function (event) {
                 event.preventDefault(); // 기본 폼 제출 방지
 
+                // 페이지 클릭 방지를 위한 오버레이 추가
+                const overlay = document.createElement('div');
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                overlay.style.zIndex = '1000';
+                overlay.style.display = 'flex';
+                overlay.style.justifyContent = 'center';
+                overlay.style.alignItems = 'center';
+                document.body.appendChild(overlay);
+
+                // 로딩 스피너 추가
+                const spinner = document.createElement('div');
+                spinner.style.border = '16px solid #f3f3f3'; /* Light grey */
+                spinner.style.borderTop = '16px solid #3498db'; /* Blue */
+                spinner.style.borderRadius = '50%';
+                spinner.style.width = '120px';
+                spinner.style.height = '120px';
+                spinner.style.animation = 'spin 2s linear infinite';
+                overlay.appendChild(spinner);
+
                 const immediatePrice = document.getElementById('immediatePrice').value;
                 console.log("즉시 구매 가격: " + immediatePrice);
                 const productId = document.getElementById('productId2').value;
-                const currentTime = new Date().toISOString(); // 현재 시각 ISO 형식
+                const currentTime = new Date(); // 현재 시각 ISO 형식
                 const winnerReqDto = {
                     buyPrice: immediatePrice,
                     productId: productId,
@@ -256,12 +396,15 @@
                     },
                     success: function (data) {
                         console.log('Immediate buy successful:', data);
-                        alert('Immediate buy placed successfully!');
+                        alert('즉시 구매에 성공했어요!');
                         var productId = data.id;
+
+                        // 오버레이 및 스피너 제거
+                        document.body.removeChild(overlay);
 
                         if (productId) {
                             // Redirect to the payment page using the product ID
-                            window.location.href = '/app/cash/payment/' + productId;
+                            window.location.href = `[[@{/cash/payment/${productId}}]]`;
                         } else {
                             alert('Product ID not found. Unable to proceed to payment.');
                         }
@@ -269,22 +412,65 @@
                     },
                     error: function (xhr, status, error) {
                         console.error('Error placing immediate buy:', error);
-                        alert('Failed to place immediate buy. Please try again.');
+                        alert('즉시 구매에 실패했습니다 다시 시도해주세요');
+
+                        // 오버레이 및 스피너 제거
+                        document.body.removeChild(overlay);
                     }
                 });
             });
+
+// 로딩 스피너 애니메이션을 위한 CSS
+            const style = document.createElement('style');
+            style.innerHTML = `
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+`;
+            document.head.appendChild(style);
+
         });
     </script>
 </head>
 <body>
 <div layout:fragment="content1">
+    <div class="custom-alert-overlay" id="customAlert" style="display: none;">
+        <div class="custom-alert-box">
+            <h2>알림</h2>
+            <p>첫번째 입찰 시 즉시구매가격의 10%의 선입찰금이 지불됩니다.</p>
+            <p>첫 입찰을 안 하고 즉시 구매를 진행할 시에도 선입찰금 10%가 지불됩니다.</p>
+            <p>선입찰금은 경매가 종료됐을 때 전액 환불됩니다.</p>
+            <p>즉시 구매를 누를 시, 당신이 낙찰자로 선정됩니다. 3일 이내로 결제를 진행해야 합니다.</p>
+            <p class="warning">경고: 낙찰자로 선정되고 3일 이내로 결제를 진행하지 않을 시, 선입찰금은 패널티 금액으로 전액 플랫폼에 3%, 판매자에게 7%가 귀속됩니다.</p>
+            <button class="custom-alert-close-btn" onclick="closeCustomAlert()">확인</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // 로컬 스토리지에서 'visited' 키가 있는지 확인
+            const visited = localStorage.getItem('visited');
+
+            // 'visited' 키가 없으면 즉, 첫 방문이면 알림창을 띄우고 'visited' 키를 저장
+            if (!visited) {
+                document.getElementById('customAlert').style.display = 'flex';
+                // 'visited' 키를 로컬 스토리지에 저장
+                localStorage.setItem('visited', 'true');
+            }
+        });
+
+        function closeCustomAlert() {
+            document.getElementById('customAlert').style.display = 'none';
+        }
+    </script>
     <div class="breadcrumb breadcrumb-style-one mb-0">
         <div class="container">
             <div class="col-lg-12 text-center">
                 <h1 class="breadcrumb-title">경매 물품 상세 정보</h1>
                 <ul class="d-flex justify-content-center breadcrumb-items">
-                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a href="../index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Auction Details</li>
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item active">경매 물품 상세 정보</li>
                 </ul>
             </div>
         </div>
@@ -301,10 +487,10 @@
                         <div class="auction-timer">
                             <div class="countdown">
                                 <h6>
-                                    <span th:id="|days-${productDetail.id}|">0</span>D :
-                                    <span th:id="|hours-${productDetail.id}|">0</span>H :
-                                    <span th:id="|minutes-${productDetail.id}|">0</span>M :
-                                    <span th:id="|seconds-${productDetail.id}|">0</span>S
+                                    <span th:id="|days-${productDetail.id}|">0</span>일
+                                    <span th:id="|hours-${productDetail.id}|">0</span>시간
+                                    <span th:id="|minutes-${productDetail.id}|">0</span>분
+                                    <span th:id="|seconds-${productDetail.id}|">0</span>초 남음
                                 </h6>
                             </div>
                             <script th:inline="javascript">
@@ -319,7 +505,7 @@
 
 // Ensure product has the necessary properties
                                     if (product && product.endTime && product.id) {
-                                        const endTime = new Date(product.endTime).toISOString(); // Ensure valid date
+                                        const endTime = new Date(product.endTime); // Ensure valid date
                                         const productId = product.id;
 
                                         console.log(`Starting countdown for product ID: ${productId}`);
@@ -345,15 +531,11 @@
                                             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                                             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
                                             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                                            console.log(productId); //2
                                             // Update DOM elements
-                                            console.log(`days-${productId}`);
-                                            console.log(`Countdown for product ID ${productId}: ${days}d ${hours}h ${minutes}m ${seconds}s`);
-                                            const daysElem = document.getElementById(`days-${productId}`);
+                                           const daysElem = document.getElementById(`days-${productId}`);
                                             const hoursElem = document.getElementById(`hours-${productId}`);
                                             const minutesElem = document.getElementById(`minutes-${productId}`);
                                             const secondsElem = document.getElementById(`seconds-${productId}`);
-                                            console.log(daysElem + " " + hoursElem + "" + minutesElem + "" + secondsElem + "ffffffff");
                                             if (daysElem && hoursElem && minutesElem && secondsElem) {
                                                 daysElem.textContent = days;
                                                 hoursElem.textContent = hours;
@@ -385,7 +567,7 @@
                     </div>
                     <!-- 상품 이미지를 하얀 박스 위에 표시 -->
                     <div class="swiper-container">
-                        <div class="swiper-wrapper">
+                        <div class="swiper-wrapper" style="text-align: center;">
                             <!-- 이미지 리스트를 반복하여 표시 -->
                             <div class="swiper-slide" th:each="imgUrl : ${productDetail.imgUrl}">
                                 <img alt="상품 이미지" class="product-image" th:src="${imgUrl}" onclick="openFullscreen(this)">
@@ -398,8 +580,8 @@
 
                     <!-- 외부 좌우 내비게이션 버튼 추가 -->
                     <div class="external-navigation">
-                        <button class="swiper-button-prev-outer">Prev</button>
-                        <button class="swiper-button-next-outer">Next</button>
+                        <button class="swiper-button-prev-outer btn btn-dark">이전</button>
+                        <button class="swiper-button-next-outer btn btn-dark">다음</button>
                     </div>
 
                     <!-- Initialize Swiper -->
@@ -452,15 +634,6 @@
                         }
                     </script>
 
-                    <div class="report-dropdown" style="position: relative; text-align: right; margin-bottom: 5px;">
-                        <button class="report-btn">신고하기</button>
-                        <div class="report-dropdown-content" style="position: absolute; right: 0; display: none; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1;">
-                            <a href="#" class="report-option" data-value="부적절한 내용">부적절한 내용</a>
-                            <a href="#" class="report-option" data-value="허위 정보">허위 정보</a>
-                            <a href="#" class="report-option" data-value="기타">기타</a>
-                        </div>
-                    </div>
-
                     <!-- 이미지 리스트 아래 작은 이미지 표시 부분 -->
 <!--                    <ul class="nav small-image-list d-flex justify-content-md-between justify-content-center gap-md-4 gap-2">-->
 <!--                        <li class="nav-item">-->
@@ -482,15 +655,50 @@
                                 </li>
                                 <li><span>카테고리 :</span><span id="end-time"
                                                              th:text="${productDetail.category}">카테고리</span></li>
-                                <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
-                                <li><span>입찰 단위 :</span><span th:text="${productDetail.bidUnit} + '￦' "></span></li>
-                                <li><span>즉시 구매가 :</span><span th:text="${productDetail.immediatePrice}+ '￦' ">즉시 구매가</span>
+                                <li><span>경매 마감 시간 :</span><span th:text="${#dates.format(productDetail.endTime, 'yy년 M월 d일 HH:mm:ss')}">경매 마감 시간</span></li>
+                                <li><span>입찰 단위 :</span><span class="price" th:text="${productDetail.bidUnit} + '￦' "></span></li>
+                                <li><span>즉시 구매가 :</span><span class="price" th:text="${productDetail.immediatePrice}+ '￦' ">즉시 구매가</span>
                                 </li>
                                 <li><span>상품 설명 :</span>
                                     <span class="description" th:text="${productDetail.description}">상품 설명</span></li>
                             </ul>
+
+                            <!-- 신고하기 -->
+                            <div sec:authorize="!hasAuthority('ROLE_ADMIN')" class="report-dropdown" style="position: relative; text-align: right; margin-bottom: 5px;">
+                                <button class="report-btn" style="background-color: transparent; border: none; cursor: pointer;">
+                                    <i class="fa-solid fa-flag" style="color: red;"></i> <!-- 경찰차 사이렌 대체 아이콘 -->
+                                </button>
+                                <div class="report-dropdown-content" style="position: absolute; right: 0; display: none; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1;">
+                                    <a href="#" class="report-option" data-value="부적절한 내용">부적절한 내용</a>
+                                    <a href="#" class="report-option" data-value="허위 정보">허위 정보</a>
+                                    <a href="#" class="report-option" data-value="기타">기타</a>
+                                </div>
+                                <!-- 찜하기 -->
+<!--                            <div class="wishlist">-->
+<!--                                <button class="wishlist-btn">-->
+<!--                                    <i class="fa-regular fa-heart" aria-hidden="true"></i>-->
+<!--                                </button>-->
+<!--                            </div>-->
+                            </div>
                         </div>
+
                         <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const wishlistBtn = document.querySelector('.wishlist-btn');
+
+                                wishlistBtn.addEventListener('click', function() {
+                                    // 아이콘을 채우거나 비우는 로직
+                                    this.classList.toggle('active');
+
+                                    if (this.classList.contains('active')) {
+                                        this.querySelector('i').classList.remove('fa-regular');
+                                        this.querySelector('i').classList.add('fa-solid');
+                                    } else {
+                                        this.querySelector('i').classList.remove('fa-solid');
+                                        this.querySelector('i').classList.add('fa-regular');
+                                    }
+                                });
+                            });
                             // Dropdown toggle
                             document.querySelector('.report-btn').addEventListener('click', function() {
                                 const dropdown = document.querySelector('.report-dropdown-content');
@@ -544,11 +752,11 @@
                             });
                         </script>
 
-                        <div class="single-widget">
+                        <div sec:authorize="!hasAuthority('ROLE_ADMIN')" class="single-widget">
                             <form class="widget-form" id="bidForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
-                                    <input type="text" readonly class="form-control" placeholder="Current Price"
+                                    <input type="text" readonly class="price form-control" placeholder="Current Price"
                                            th:value="${productDetail.currentPrice}" id="currentPrice"
                                            name="currentPrice">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
@@ -558,13 +766,13 @@
                             </form>
                         </div>
 
-                        <div class="single-widget">
+                        <div sec:authorize="!hasAuthority('ROLE_ADMIN')" class="single-widget">
                             <form class="widget-form" id="buyForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
                                     <!-- 현재 가격을 보여주는 입력 필드 -->
-                                    <input type="text" readonly class="form-control" placeholder="Immediate Price"
+                                    <input type="text" readonly class="price form-control" placeholder="Immediate Price"
                                            th:value="${productDetail.immediatePrice}" id="immediatePrice"
-                                           name="immediatePrice">
+                                          name="immediatePrice">
                                     <!-- 상품 ID를 숨긴 필드에 저장 -->
                                     <input type="hidden" th:value="${productDetail.id}" name="productId2"
                                            id="productId2">

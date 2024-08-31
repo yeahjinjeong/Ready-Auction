@@ -14,6 +14,7 @@
             border-radius: 5px;
             overflow: hidden;
         }
+
         /* 썸네일 이미지 박스 스타일 */
         .nav-item div {
             width: 80px; /* 썸네일 이미지와 동일한 너비 */
@@ -73,8 +74,8 @@
             <div class="col-lg-12 text-center">
                 <h1 class="breadcrumb-title">구매확정</h1>
                 <ul class="d-flex justify-content-center breadcrumb-items">
-                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/static}">Home</a></li>
-                    <li class="breadcrumb-item active">Payment</li>
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a>
+                    <li class="breadcrumb-item active">결제</li>
                 </ul>
             </div>
         </div>
@@ -92,10 +93,11 @@
 
                     <!-- 상품 이미지를 하얀 박스 위에 표시 -->
                     <div class="swiper-container">
-                        <div class="swiper-wrapper">
+                        <div class="swiper-wrapper" style="text-align: center;">
                             <!-- 이미지 리스트를 반복하여 표시 -->
                             <div class="swiper-slide" th:each="imgUrl : ${productDetail.imgUrl}">
-                                <img alt="상품 이미지" class="product-image" th:src="${imgUrl}" onclick="openFullscreen(this)">
+                                <img alt="상품 이미지" class="product-image" th:src="${imgUrl}"
+                                     onclick="openFullscreen(this)">
                             </div>
                         </div>
                         <!-- 내비게이션 버튼 -->
@@ -105,8 +107,8 @@
 
                     <!-- 외부 좌우 내비게이션 버튼 추가 -->
                     <div class="external-navigation">
-                        <button class="swiper-button-prev-outer">Prev</button>
-                        <button class="swiper-button-next-outer">Next</button>
+                        <button class="swiper-button-prev-outer btn btn-dark">이전</button>
+                        <button class="swiper-button-next-outer btn btn-dark">다음</button>
                     </div>
 
                     <!-- Initialize Swiper -->
@@ -159,36 +161,42 @@
                             document.body.appendChild(fullScreenDiv);
                         }
                     </script>
-            </div>
+                </div>
                 <div class="col-lg-6">
                     <div class="widget-right-area">
                         <div class="single-widget">
-                            <h5 class="widget-title">Product Overview</h5>
+                            <h5 class="widget-title">상품 구매 확정</h5>
                             <ul class="widget-list">
                                 <li><span>상품명 :</span><span th:text="${productDetail.name}">상품명</span></li>
-                                <li><span>판매자 ID :</span><span th:text="${productDetail.memberId}">판매자</span></li>
+                                <li><span>판매자 :</span>
+                                    <a th:href="@{/member/profile/{memberId}(memberId=${productDetail.memberId})}">
+                                        <span th:text="${productDetail.nickName}">판매자</span>
+                                    </a>
+                                </li>
                                 <li><span>카테고리 :</span><span th:text="${productDetail.category}">카테고리</span></li>
-                                <li><span>경매 마감 시간 :</span><span th:text="${productDetail.endTime}">경매 마감 시간</span></li>
-                                <li><span>즉시 구매가 :</span><span th:text="'₩' + ${productDetail.immediatePrice}">즉시 구매가</span></li>
+                                <li><span>경매 시작 시간 :</span><span th:text="${#dates.format(productDetail.startTime, 'yy년 M월 d일 HH:mm:ss')}">경매 시작 시간</span></li>
+                                <li><span>경매 마감 시간 :</span><span th:text="${#dates.format(productDetail.endTime, 'yy년 M월 d일 HH:mm:ss')}">경매 마감 시간</span></li>
+                                <li><span>즉시 구매가 :</span><span class="price"
+                                        th:text="'₩' + ${productDetail.immediatePrice}">즉시 구매가</span></li>
                                 <li><span>상품 설명 :</span><span th:text="${productDetail.description}">상품 설명</span></li>
                             </ul>
                         </div>
 
                         <div class="single-widget">
-                            <form class="widget-form" id="PaymentForm" >
+                            <form class="widget-form" id="PaymentForm">
                                 <div class="form-group d-flex justify-content-center align-items-center">
-                                      <button type="submit" class="widget-btn">구매 확정</button>
+                                    <button type="submit" class="widget-btn">구매 확정</button>
                                 </div>
                             </form>
                             <script>
-                                $(document).ready(function() {
-                                    $('#PaymentForm').on('submit', function(event) {
+                                $(document).ready(function () {
+                                    $('#PaymentForm').on('submit', function (event) {
                                         event.preventDefault(); // 폼의 기본 제출 동작을 막습니다.
                                         // 요청에 보낼 데이터 (PaymentReqDto에 해당하는 데이터 구성)
                                         var paymentData = {
                                             productId: [[${productDetail.id}]],  // 상품 ID
                                             amount: [[${productDetail.currentPrice}]],  // 현재가
-                                            payTime: new Date().toISOString()  // 현재 시간을 ISO 8601 형식으로 설정
+                                            payTime: new Date()
                                         };
 
                                         $.ajax({
@@ -197,13 +205,14 @@
                                             contentType: 'application/json',
                                             dataType: 'json',
                                             data: JSON.stringify(paymentData),
-                                            success: function(response) {
+                                            success: function (response) {
                                                 // 성공적으로 응답을 받은 경우 실행됩니다.
                                                 console.log('Payment created successfully:', response);
-                                                alert('결제가 성공적으로 처리되었습니다!');
+                                                alert('구매확정이 성공적으로 처리되었습니다!');
+                                                window.location.href = '/auction';
                                                 // 필요에 따라 페이지 리다이렉션, 메시지 표시 등을 수행할 수 있습니다.
                                             },
-                                            error: function(xhr, status, error) {
+                                            error: function (xhr, status, error) {
                                                 // 요청이 실패한 경우 실행됩니다.
                                                 console.error('Error occurred while creating payment:', error);
                                                 alert('결제 중 오류가 발생했습니다. 다시 시도해주세요.');
@@ -218,7 +227,21 @@
                 </div>
             </div>
         </div>
-        </section>
+    </section>
+
+    <script>
+        // 금액에 쉼표 추가
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // 경매 등록, 참여 내역 금액에 쉼표 추가
+        window.onload = function() {
+            document.querySelectorAll('.price').forEach(function(element) {
+                element.innerText = formatNumber(element.innerText);
+            });
+        };
+    </script>
 
 </div>
 </body>

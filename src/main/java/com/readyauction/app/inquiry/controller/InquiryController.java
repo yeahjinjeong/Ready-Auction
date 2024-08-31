@@ -4,6 +4,7 @@ import com.readyauction.app.auth.principal.AuthPrincipal;
 import com.readyauction.app.inquiry.dto.InquiryAnswerDto;
 import com.readyauction.app.inquiry.dto.InquiryDetailDto;
 import com.readyauction.app.inquiry.dto.InquiryDto;
+import com.readyauction.app.inquiry.dto.InquiryReqDto;
 import com.readyauction.app.inquiry.service.InquiryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,48 +22,31 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InquiryController {
     private final InquiryService inquiryService;
+
     @GetMapping("/faq")
-    public String inquiry() {
-        return "inquiry/faq";
+    public void inquiry() {
+
     }
 
-    @GetMapping("/admin-faq")
-    public String adminInquiry(Model model) {
-        List<InquiryDto> inquiryDtos = inquiryService.findAll();
-        model.addAttribute("inquiryList", inquiryDtos);
-        log.info("inquiryDtos : {}", inquiryDtos);
-        return "inquiry/admin-faq";
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        model.addAttribute("inquiryReqDto", new InquiryReqDto());
+        return "inquiry/inquiry-register";
     }
 
-    @GetMapping("/detail/{id}")
-    public String adminInquiryDetail(
-            @PathVariable Long id,
-            Model model) {
+    // 문의 등록하기
+    @PostMapping("/register")
+    public String registerInquiry(@ModelAttribute InquiryReqDto inquiryReqDto) {
+        inquiryService.registerInquiry(inquiryReqDto);
+        return "redirect:/mypage";
+    }
+    // 문의 게시글 조회
+    @GetMapping("/{id}")
+    public String getInquiryDetail(@PathVariable("id") Long id, Model model) {
         InquiryDetailDto inquiryDetailDto = inquiryService.findAndNicknameById(id);
+        log.debug("inquiryDetailDto : {}", inquiryDetailDto);
         model.addAttribute("inquiry", inquiryDetailDto);
-        log.info("inquiryDetailDto : {}", inquiryDetailDto);
-        return "inquiry/admin-faq-detail";
+        return "inquiry/inquiry-detail";
     }
 
-    @PostMapping("/detail/answer")
-    public String createInquiryDetailAnswer(
-            @ModelAttribute InquiryAnswerDto inquiryAnswerDto,
-            @AuthenticationPrincipal AuthPrincipal principal
-    ){
-        log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
-        inquiryService.addAnswer(principal.getMember().getId(), inquiryAnswerDto);
-        return "redirect:/inquiry/detail/" + inquiryAnswerDto.getInquiryId();
-    }
-
-    @ResponseBody
-    @PatchMapping("/detail/answer")
-    public ResponseEntity<?> updateInquiryDetailAnswer(
-            @RequestBody InquiryAnswerDto inquiryAnswerDto,
-            @AuthenticationPrincipal AuthPrincipal principal
-    ){
-        // 한번밖에 못단다고 가정하기
-        log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
-        inquiryService.changeAnswer(principal.getMember().getId(), inquiryAnswerDto);
-        return ResponseEntity.ok("ok");
-    }
 }

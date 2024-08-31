@@ -27,10 +27,10 @@
  <div class="breadcrumb breadcrumb-style-one mb-0 ">
   <div class="container">
    <div class="col-lg-12 text-center">
-    <h1 class="breadcrumb-title">My Page</h1>
+    <h1 class="breadcrumb-title">마이페이지</h1>
     <ul class="d-flex justify-content-center breadcrumb-items">
      <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a></li>
-     <li class="breadcrumb-item active">My Page</li>
+     <li class="breadcrumb-item active">마이페이지</li>
     </ul>
    </div>
   </div>
@@ -44,12 +44,10 @@
      <div class="pp-buttons-wrap">
       <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
        <button class="nav-link active" id="v-btn-pp1" data-bs-toggle="pill" data-bs-target="#v-pills-pp1" type="button" role="tab" aria-controls="v-pills-pp1" aria-selected="true">내 프로필 </button>
-       <button class="nav-link" id="v-btn-pp2" data-bs-toggle="pill" data-bs-target="#v-pills-pp2" type="button" role="tab" aria-controls="v-pills-pp2" aria-selected="false">캐시</button>
-       <button class="nav-link" id="v-btn-pp3" data-bs-toggle="pill" data-bs-target="#v-pills-pp3" type="button" role="tab" aria-controls="v-pills-pp3" aria-selected="false">계정</button>
+<!--       <button class="nav-link" id="v-btn-pp3" data-bs-toggle="pill" data-bs-target="#v-pills-pp3" type="button" role="tab" aria-controls="v-pills-pp3" aria-selected="false">계정</button>-->
        <button class="nav-link" id="v-btn-pp4" data-bs-toggle="pill" data-bs-target="#v-pills-pp4" type="button" role="tab" aria-controls="v-pills-pp4" aria-selected="false">경매 참여 내역</button>
        <button class="nav-link" id="v-btn-pp5" data-bs-toggle="pill" data-bs-target="#v-pills-pp5" type="button" role="tab" aria-controls="v-pills-pp5" aria-selected="false">경매 등록 내역</button>
-       <button class="nav-link" id="v-btn-pp6" data-bs-toggle="pill" data-bs-target="#v-pills-pp6" type="button" role="tab" aria-controls="v-pills-pp6" aria-selected="false">찜한 상품</button>
-       <button class="nav-link" id="v-btn-pp7" data-bs-toggle="pill" data-bs-target="#v-pills-pp7" type="button" role="tab" aria-controls="v-pills-pp7" aria-selected="false">1:1 문의 내역</button>
+       <button class="nav-link" id="v-btn-pp6" data-bs-toggle="pill" data-bs-target="#v-pills-pp6" type="button" role="tab" aria-controls="v-pills-pp6" aria-selected="false">1:1 문의 내역</button>
       </div>
      </div>
     </div>
@@ -69,7 +67,25 @@
             <li><span>닉네임 :</span><span th:text="${profileDto.nickname}"></span></li>
             <li><span>내 동네 :</span><span th:text="${profileDto.address}"></span></li>
             <li><span>매너지수 :</span><span th:text="${profileDto.mannerScore}"></span></li>
-            <li><span>받은 매너 평가 :</span><span text=""></span></li>
+            <li>
+             <span>좋아요 :</span>
+             <ul>
+              <li th:each="entry : ${profileDto.likeCounts}">
+               <span th:text="${entry.key}">항목명</span>:
+               <span th:text="${entry.value}">0</span>개
+              </li>
+             </ul>
+            </li>
+
+            <li>
+             <span>싫어요 :</span>
+             <ul>
+              <li th:each="entry : ${profileDto.dislikeCounts}">
+               <span th:text="${entry.key}">항목명</span>:
+               <span th:text="${entry.value}">0</span>개
+              </li>
+             </ul>
+            </li>
            </ul>
            <div style="text-align: right">
             <a th:href="@{/mypage/profile/update}" class="alpha-btn-md-dark">Edit</a>
@@ -79,187 +95,43 @@
       </div>
 
 
-      <!-- 캐시 -->
-      <div class="tab-pane fade" id="v-pills-pp2" role="tabpanel" aria-labelledby="v-btn-pp2">
-       <div class="container">
-
-        <!-- 캐시 충전/출금 -->
-        <div class="single-widget">
-         <h5 class="wdget-title">My Cash</h5>
-         <ul class="widget-list">
-          <li><label>잔액 :</label><span id="cash"></span></li>
-         </ul>
-         <div style="text-align: right">
-          <a th:href="@{/cash/charge}" class="alpha-btn-md-dark">충전</a>
-          <a th:href="@{/cash/withdrawal}" class="alpha-btn-md-dark">출금</a>
-         </div>
-        </div>
-
-        <!-- 캐시 내역 조회 -->
-        <div class="tab-inner-contentbox mt-0">
-         <div class="item-describe-area">
-          <ul class="nav nav-pills d-flex justify-content-center gap-sm-4 gap-1" id="pills-tab" role="tablist">
-           <li class="nav-item" role="presentation">
-            <button class="nav-link active describe-btn" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">전체 내역</button>
-           </li>
-           <li class="nav-item" role="presentation">
-            <button class="nav-link describe-btn" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">입금 내역</button>
-           </li>
-           <li class="nav-item" role="presentation">
-            <button class="nav-link describe-btn" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">출금 내역</button>
-           </li>
-          </ul>
-
-          <!-- 전체 내역 -->
-          <div class="tab-content" id="pills-tabContent">
-           <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-            <div class="describe-content">
-             <table class="table table-striped">
-              <thead class="table-dark">
-              <tr>
-               <th scope="col" colspan="2">구분</th>
-               <th scope="col">상품명</th>
-               <th scope="col">금액</th>
-               <th scope="col">일시</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr th:each="transaction : ${transactionHistory}">
-               <td th:text="${transaction.type}"></td>
-               <td th:text="${transaction.status}"></td>
-               <td>
-                <a th:href="@{/auction/product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
-               </td>
-               <td>
-                <span th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
-                      th:classappend="${transaction.amount < 0 ? 'red' : 'blue'}"
-                      class="amount">
-                </span>
-               </td>
-               <td th:text="${#dates.format(transaction.date, 'yyyy년 M월 d일 HH:mm')}"></td>
-              </tr>
-              </tbody>
-             </table>
-            </div>
-           </div>
-
-           <!-- 입금 내역 -->
-           <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
-            <div class="describe-content">
-             <table class="table table-striped">
-              <thead class="table-dark">
-              <tr>
-               <th scope="col" colspan="2">구분</th>
-               <th scope="col">상품명</th>
-               <th scope="col">금액</th>
-               <th scope="col">일시</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr th:each="transaction : ${transactionHistory}"
-                  th:if="${transaction.amount >= 0}">
-               <td th:text="${transaction.type}"></td>
-               <td th:text="${transaction.status}"></td>
-               <td>
-                <a th:href="@{/auction/product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
-               </td>
-               <td>
-                <span th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
-                      th:classappend="${transaction.amount < 0 ? 'red' : 'blue'}"
-                      class="amount">
-                </span>
-               </td>
-               <td th:text="${#dates.format(transaction.date, 'yyyy년 M월 d일 HH:mm')}"></td>
-              </tr>
-              </tbody>
-             </table>
-            </div>
-           </div>
-
-           <!-- 출금 내역 -->
-           <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
-            <div class="describe-content">
-             <table class="table table-striped">
-              <thead class="table-dark">
-              <tr>
-               <th scope="col" colspan="2">구분</th>
-               <th scope="col">상품명</th>
-               <th scope="col">금액</th>
-               <th scope="col">일시</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr th:each="transaction : ${transactionHistory}"
-                  th:if="${transaction.amount < 0}">
-               <td th:text="${transaction.type}"></td>
-               <td th:text="${transaction.status}"></td>
-               <td>
-                <a th:href="@{/auction/product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
-               </td>
-               <td>
-                <span th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
-                      th:classappend="${transaction.amount < 0 ? 'red' : 'blue'}"
-                      class="amount">
-                </span>
-               </td>
-               <td th:text="${#dates.format(transaction.date, 'yyyy년 M월 d일 HH:mm')}"></td>
-              </tr>
-              </tbody>
-             </table>
-            </div>
-           </div>
-          </div>
-         </div>
-        </div>
-       </div>
-      </div>
-
-
       <!-- 계정 -->
-      <div class="tab-pane fade" id="v-pills-pp3" role="tabpanel" aria-labelledby="v-btn-pp3">
-       <div class="tab-inner-contentbox mt-0">
-        <h5 class="pp-title pt-0">Introduction</h5>
-        <p>This Privacy Policy describes how your personal information is collected, used, and shared when you visit,
-         subscribe, register or make a purchase from nftfox, ‘Site’. </p>
-        <h5 class="pp-title">Definition of personal data</h5>
-        <p>Dictum vestibulum nulla justo sed, ligula rutrum sollicitudin, vivamus non. Nunc donec tincidunt, vivamus
-         repellat habitanaccumsan faucibus ante in mauris. Lorem purus leo eleifend semper sit, donec duis vel orci lorem
-         consectetuer, lacus lorem praesent elit odio ut, tortor id metus fermentum mi ipsum, quisque proin. Aptent
-         aliquet facilisis</p>
-        <ul class="pp-list">
-         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-          industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
-          scrambled it to make a type specimen book. It has.</li>
-         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-          industry's standard dummy text ever since the 1500s.</li>
-         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-          industry's standard dummy text ever since the 1500s, when an unknown printer </li>
-        </ul>
-        <h5 class="pp-title">Cookies and Similar Technologies</h5>
-        <p>We use cookies and similar technologies to provide, protect, and improve our products and services, such as by personalizing content, offering and measuring advertisements, understanding user behavior, and providing a safer experience.</p>
-        <h6 class="highlighted-text">You can remove or reject cookies using your browser or device settings, but in some cases doing so may affect your ability to use our products and services.</h6>
-        <ul class="pp-list">
-         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown</li>
-         <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer </li>
-        </ul>
-        <h5 class="pp-title">Your Rights</h5>
-        <p>Dictum vestibulum nulla justo sed, ligula rutrum sollicitudin, vivamus non. Nunc donec tincidunt, vivamus repellat habitanaccumsan faucibus ante in mauris. Lorem purus leo eleifend semper sit, donec duis vel orci lorem consectetuer, lacus lorem praesent elit odio ut, tortor id metus fermentum mi ipsum, quisque proin. Aptent aliquet facilisis</p>
-       </div>
-       <div class="tab-inner-contentbox">
-        <h5 class="pp-title pt-0">How you can contact us</h5>
-        <p>Sem adipiscing tempus ut dis vestibulum, feugiat scelerisque senectus magna sem vel curae. Nulla alias magnis fusce erat tincidunt pulvinar, varius nusenectus, ac hendrerit eget. Venenatis dictumst pellentesque orci lobortisquismassa mi lorem. Vel odio dui ac, pede quod fermentum quam urna, eu amet wisletie nulla, semper erat, donec morbi purus massa blandit rutru</p>
-       </div>
-       <div class="tab-inner-contentbox">
-        <h5 class="pp-title pt-0">Additional Information</h5>
-        <p>Dictum vestibulum nulla justo sed, ligula rutrum sollicitudin, vivamus non. Nunc donec tincidunt, vivamus repellat habitanaccumsan faucibus ante in mauris. Lorem purus leo eleifend semper sit, donec duis vel orci lorem consectetuer, lacus lorem praesent elit odio ut, tortor id metus fermentum mi ipsum, quisque proin. Aptent aliquet facilisis</p>
-       </div>
-      </div>
+<!--      <div class="tab-pane fade" id="v-pills-pp3" role="tabpanel" aria-labelledby="v-btn-pp3">-->
+<!--       <div class="tab-inner-contentbox mt-0">-->
+<!--        <h5 class="pp-title pt-0">Introduction</h5>-->
+<!--        <p> </p>-->
+<!--        <h5 class="pp-title">Definition of personal data</h5>-->
+<!--        <p></p>-->
+<!--        <ul class="pp-list">-->
+<!--         <li></li>-->
+<!--         <li></li>-->
+<!--         <li></li>-->
+<!--        </ul>-->
+<!--        <h5 class="pp-title">Cookies and Similar Technologies</h5>-->
+<!--        <p></p>-->
+<!--        <h6 class="highlighted-text">You can remove or reject cookies using your browser or device settings, but in some cases doing so may affect your ability to use our products and services.</h6>-->
+<!--        <ul class="pp-list">-->
+<!--         <li></li>-->
+<!--         <li></li>-->
+<!--        </ul>-->
+<!--        <h5 class="pp-title">Your Rights</h5>-->
+<!--        <p></p>-->
+<!--       </div>-->
+<!--       <div class="tab-inner-contentbox">-->
+<!--        <h5 class="pp-title pt-0">How you can contact us</h5>-->
+<!--        <p></p>-->
+<!--       </div>-->
+<!--       <div class="tab-inner-contentbox">-->
+<!--        <h5 class="pp-title pt-0">Additional Information</h5>-->
+<!--        <p></p>-->
+<!--       </div>-->
+<!--      </div>-->
 
 
       <!-- 경매 참여 내역 -->
       <div class="tab-pane fade" id="v-pills-pp4" role="tabpanel" aria-labelledby="v-btn-pp4">
        <div class="tab-inner-contentbox mt-0">
-        <h5 class="pp-title pt-0">경매 참여 내역</h5>
+        <h5 class="wdget-title">경매 참여 내역</h5>
 
         <!-- 경매 참여 내역 조회 -->
         <div class="item-describe-area">
@@ -283,7 +155,6 @@
              <thead class="table-dark">
               <tr>
                <th scope="col">상품명</th>
-<!--               <th scope="col">Bid Status</th>-->
                <th scope="col">나의 입찰가</th>
                <th scope="col">현재 입찰가</th>
                <th scope="col">시작일</th>
@@ -295,11 +166,10 @@
                <td>
                 <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
                </td>
-<!--               <td th:text="${bid.bidStatus}"></td>-->
                <td class="price" th:text="${bid.myPrice}"></td>
                <td class="price" th:text="${bid.product.currentPrice}"></td>
-               <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일 HH:mm')}"></td>
-               <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일 HH:mm')}"></td>
+               <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
+               <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일')}"></td>
               </tr>
              </tbody>
             </table>
@@ -312,9 +182,7 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-             <tr>
               <th scope="col">상품명</th>
-<!--              <th scope="col">Bid Status</th>-->
               <th scope="col">나의 입찰가</th>
               <th scope="col">시작일</th>
               <th scope="col">마감일</th>
@@ -322,21 +190,20 @@
              </tr>
              </thead>
              <tbody>
-             <tr th:each="bid : ${winningBids}">
+             <tr th:each="product : ${winningBids}">
               <td>
-               <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
+               <a th:href="@{/auction/bid-product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
               </td>
-<!--              <td th:text="${bid.bidStatus}"></td>-->
-              <td class="price" th:text="${bid.myPrice}"></td>
-              <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일 HH:mm')}"></td>
-              <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일 HH:mm')}"></td>
+              <td class="price" th:text="${product.winner.price}"></td>
+              <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일')}"></td>
+              <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일')}"></td>
               <td>
-               <a th:if="${isWinnerConfirmedMap[bid.product.id]}"
-                  th:href="@{/cash/payment/{productId}(productId=${bid.product.id})}"
+               <a th:if="${isWinnerConfirmedMap[product.id]}"
+                  th:href="@{/cash/payment/{productId}(productId=${product.id})}"
                   class="btn btn-primary">
                 결제
                </a>
-               <span th:unless="${isWinnerConfirmedMap[bid.product.id]}" class="btn btn-secondary">
+               <span th:unless="${isWinnerConfirmedMap[product.id]}" class="btn btn-secondary">
                 결제 완료
                </span>
               </td>
@@ -353,7 +220,6 @@
              <thead class="table-dark">
              <tr>
               <th scope="col">상품명</th>
-<!--               <th scope="col">Bid Status</th>-->
               <th scope="col">나의 입찰가</th>
               <th scope="col">현재 입찰가</th>
               <th scope="col">시작일</th>
@@ -363,13 +229,12 @@
              <tbody>
              <tr th:each="bid : ${losingBids}">
               <td>
-               <a th:href="@{/auction/product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
+               <a th:href="@{/auction/bid-product/{productId}(productId=${bid.product.id})}" th:text="${bid.product.name}"></a>
               </td>
-<!--              <td th:text="${bid.bidStatus}"></td>-->
               <td class="price" th:text="${bid.myPrice}"></td>
               <td class="price" th:text="${bid.product.currentPrice}"></td>
-              <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일 HH:mm')}"></td>
-              <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일 HH:mm')}"></td>
+              <td th:text="${#dates.format(bid.product.startTime, 'yyyy년 M월 d일')}"></td>
+              <td th:text="${#dates.format(bid.product.endTime, 'yyyy년 M월 d일')}"></td>
              </tr>
              </tbody>
             </table>
@@ -384,7 +249,7 @@
       <!-- 경매 등록 내역 -->
       <div class="tab-pane fade" id="v-pills-pp5" role="tabpanel" aria-labelledby="v-btn-pp5">
        <div class="tab-inner-contentbox mt-0">
-        <h5 class="pp-title pt-0">경매 등록 내역</h5>
+        <h5 class="wdget-title">경매 등록 내역</h5>
 
         <!-- 경매 등록 내역 조회 -->
         <div class="item-describe-area">
@@ -407,24 +272,24 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-              <th scope="col">Auction Status</th>
-              <th scope="col">Product Name</th>
-              <th scope="col">Start Price</th>
-              <th scope="col">Current Price</th>
-              <th scope="col">Immediate Price</th>
-              <th scope="col">Start Time</th>
-              <th scope="col">End Time</th>
+              <th scope="col">상품명</th>
+              <th scope="col">시작가</th>
+              <th scope="col">현재 입찰가</th>
+              <th scope="col">즉시 구매가</th>
+              <th scope="col">시작일</th>
+              <th scope="col">마감일</th>
              </tr>
              </thead>
              <tbody>
              <tr th:each="product : ${activeProducts}">
-              <td th:text="${product.auctionStatus}"></td>
-              <td th:text="${product.name}"></td>
+              <td>
+               <a th:href="@{/auction/bid-product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
+              </td>
               <td class="price" th:text="${product.startPrice}"></td>
               <td class="price" th:text="${product.currentPrice}"></td>
               <td class="price" th:text="${product.immediatePrice}"></td>
-              <td th:text="${#dates.format(product.startTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
-              <td th:text="${#dates.format(product.endTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일')}"></td>
+              <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일')}"></td>
              </tr>
              </tbody>
             </table>
@@ -438,24 +303,28 @@
              <thead class="table-dark">
              <tr>
              <tr>
-              <th scope="col">Auction Status</th>
-              <th scope="col">Product Name</th>
-              <th scope="col">Start Price</th>
-              <th scope="col">Current Price</th>
-              <th scope="col">Immediate Price</th>
-              <th scope="col">Start Time</th>
-              <th scope="col">End Time</th>
+              <th scope="col">구분</th>
+              <th scope="col">상품명</th>
+              <th scope="col">시작가</th>
+              <th scope="col">현재 입찰가</th>
+              <th scope="col">즉시 구매가</th>
+              <th scope="col">시작일</th>
+              <th scope="col">마감일</th>
              </tr>
              </thead>
              <tbody>
              <tr th:each="product : ${completedProducts}">
-              <td th:text="${product.auctionStatus}"></td>
-              <td th:text="${product.name}"></td>
+              <td>
+               <span th:text="${product.winner.status == 'CONFIRMED' ? '결제완료' : '구매확정'}"></span>
+              </td>
+              <td>
+               <a th:href="@{/auction/bid-product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
+              </td>
               <td class="price" th:text="${product.startPrice}"></td>
               <td class="price" th:text="${product.currentPrice}"></td>
               <td class="price" th:text="${product.immediatePrice}"></td>
-              <td th:text="${#dates.format(product.startTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
-              <td th:text="${#dates.format(product.endTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일')}"></td>
+              <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일')}"></td>
              </tr>
              </tbody>
             </table>
@@ -468,24 +337,24 @@
             <table class="table table-striped">
              <thead class="table-dark">
              <tr>
-              <th scope="col">Auction Status</th>
-              <th scope="col">Product Name</th>
-              <th scope="col">Start Price</th>
-              <th scope="col">Current Price</th>
-              <th scope="col">Immediate Price</th>
-              <th scope="col">Start Time</th>
-              <th scope="col">End Time</th>
+              <th scope="col">상품명</th>
+              <th scope="col">시작가</th>
+              <th scope="col">현재 입찰가</th>
+              <th scope="col">즉시 구매가</th>
+              <th scope="col">시작일</th>
+              <th scope="col">마감일</th>
              </tr>
              </thead>
              <tbody>
              <tr th:each="product : ${failedProducts}">
-              <td th:text="${product.auctionStatus}"></td>
-              <td th:text="${product.name}"></td>
+              <td>
+               <a th:href="@{/auction/bid-product/{productId}(productId=${product.id})}" th:text="${product.name}"></a>
+              </td>
               <td class="price" th:text="${product.startPrice}"></td>
               <td class="price" th:text="${product.currentPrice}"></td>
               <td class="price" th:text="${product.immediatePrice}"></td>
-              <td th:text="${#dates.format(product.startTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
-              <td th:text="${#dates.format(product.endTime, 'yyyy. MM. dd. HH:mm:ss')}"></td>
+              <td th:text="${#dates.format(product.startTime, 'yyyy년 M월 d일')}"></td>
+              <td th:text="${#dates.format(product.endTime, 'yyyy년 M월 d일')}"></td>
              </tr>
              </tbody>
             </table>
@@ -497,23 +366,85 @@
       </div>
 
 
-      <!-- 찜한 상품 -->
+      <!-- 1:1 문의 내역 -->
       <div class="tab-pane fade" id="v-pills-pp6" role="tabpanel" aria-labelledby="v-btn-pp6">
        <div class="tab-inner-contentbox mt-0">
-        <h5 class="pp-title pt-0">찜한 상품</h5>
+        <h5 class="wdget-title" style="padding-bottom: 30px;">1:1 문의 내역</h5>
+
+        <div class="item-describe-area">
+         <ul class="nav nav-pills d-flex justify-content-center gap-sm-4 gap-1" id="pills-tab4" role="tablist">
+          <li class="nav-item" role="presentation">
+           <button class="nav-link active describe-btn" id="pills-home-tab4" data-bs-toggle="pill" data-bs-target="#pills-home4" type="button" role="tab" aria-controls="pills-home4" aria-selected="true">답변 대기</button>
+          </li>
+          <li class="nav-item" role="presentation">
+           <button class="nav-link describe-btn" id="pills-profile-tab4" data-bs-toggle="pill" data-bs-target="#pills-profile4" type="button" role="tab" aria-controls="pills-profile4" aria-selected="false">답변 완료</button>
+          </li>
+         </ul>
+
+         <!-- 답변 대기 -->
+         <div class="tab-content" id="pills-tabContent4">
+          <div class="tab-pane fade show active" id="pills-home4" role="tabpanel" aria-labelledby="pills-home-tab4">
+           <div class="describe-content">
+            <table class="table table-striped">
+             <thead class="table-dark">
+             <tr>
+              <th scope="col">카테고리</th>
+              <th scope="col">제목</th>
+              <th scope="col">작성 일자</th>
+              <th scope="col">상태</th>
+             </tr>
+             </thead>
+             <tbody>
+             <tr th:each="inquiry : ${inquiries}" th:if="${inquiry.status.description == '답변대기'}">
+              <td th:text="${inquiry.category.description}"></td>
+              <td>
+               <a th:href="@{/inquiry/{id}(id=${inquiry.id})}" th:text="${inquiry.title}"></a>
+              </td>
+              <td class="createdAt" th:text="${inquiry.createdAt}"></td>
+              <td th:text="${inquiry.status.description}"></td>
+             </tr>
+             </tbody>
+            </table>
+           </div>
+          </div>
+
+         <!-- 답변 완료 -->
+          <div class="tab-pane fade" id="pills-profile4" role="tabpanel" aria-labelledby="pills-profile-tab4">
+           <div class="describe-content">
+            <div class="describe-content">
+             <table class="table table-striped">
+              <thead class="table-dark">
+              <tr>
+               <th scope="col">카테고리</th>
+               <th scope="col">제목</th>
+               <th scope="col">작성 일자</th>
+               <th scope="col">상태</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="inquiry : ${inquiries}" th:if="${inquiry.status.description == '답변완료'}">
+               <td th:text="${inquiry.category.description}"></td>
+               <td>
+                <a th:href="@{/inquiry/{id}(id=${inquiry.id})}" th:text="${inquiry.title}"></a>
+               </td>
+               <td class="createdAt" th:text="${inquiry.createdAt}"></td>
+               <td th:text="${inquiry.status.description}"></td>
+              </tr>
+              </tbody>
+             </table>
+            </div>
+           </div>
+          </div>
+
+         <div style="text-align: right">
+          <a th:href="@{/inquiry/register}" class="qsn-send-btn">문의하기</a>
+         </div>
+         </div>
        </div>
-      </div>
-
-
-      <!-- 1:1 문의 내역 -->
-      <div class="tab-pane fade" id="v-pills-pp7" role="tabpanel" aria-labelledby="v-btn-pp7">
-       <div class="tab-inner-contentbox mt-0">
-        <h5 class="pp-title pt-0">1:1 문의 내역</h5>
-       </div>
-      </div>
-
      </div>
     </div>
+   </div>
+   </div>
    </div>
   </div>
  </div>
@@ -524,35 +455,44 @@
    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
 
-  // 계좌 캐시에 쉼표, 원 추가
-  document.addEventListener('DOMContentLoaded', function() {
-   var cash = [[${accountDto.cash}]]; // Thymeleaf에서 값을 삽입
-   document.getElementById('cash').textContent = formatNumber(cash) + '원';
-  });
-
-  // 캐시 내역 금액에 쉼표 추가
-  document.addEventListener("DOMContentLoaded", function() {
-   const amountElements = document.querySelectorAll('.amount');
-
-   amountElements.forEach(function(element) {
-    let amount = parseFloat(element.textContent.replace(/[+,]/g, ''));
-    let formattedAmount = formatNumber(amount);
-
-    // 양수인 경우 '+' 기호를 추가
-    if (amount > 0) {
-     formattedAmount = '+' + formattedAmount;
-    }
-
-    element.textContent = formattedAmount;
-   });
-  });
-
   // 경매 등록, 참여 내역 금액에 쉼표 추가
   window.onload = function() {
    document.querySelectorAll('.price').forEach(function(element) {
     element.innerText = formatNumber(element.innerText);
    });
   };
+
+  $(document).ready(function () {
+   function loadPage(tabId, pageNum) {
+    $.ajax({
+     url: `/mypage/data`,
+     method: 'GET',
+     data: { tab: tabId, page: pageNum },
+     success: function (data) {
+      $(`#${tabId}-content`).html(data.content);
+      $(`#${tabId}-pagination`).html(data.pagination);
+     }
+    });
+   }
+
+   // Initial load
+   loadPage('home', 1);
+
+   // Tab change event
+   $('.nav-link').on('click', function () {
+    const tabId = $(this).data('bs-target').substring(1); // Get the target tab id
+    loadPage(tabId, 1);
+   });
+
+   // Pagination click event
+   $(document).on('click', '.page-link', function (e) {
+    e.preventDefault();
+    const tabId = $(this).closest('.tab-pane').attr('id');
+    const pageNum = $(this).data('page');
+
+    loadPage(tabId, pageNum);
+   });
+  });
  </script>
 </div>
 

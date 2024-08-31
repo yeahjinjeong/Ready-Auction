@@ -41,7 +41,7 @@ public class AuctionRestController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
-        ProductRepDto createdProduct = productService.createProduct(email,productReqDto);
+        ProductRepDto createdProduct = productService.createAuction(email,productReqDto);
         if (createdProduct == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }

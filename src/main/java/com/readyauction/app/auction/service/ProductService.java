@@ -4,6 +4,11 @@ import com.readyauction.app.auction.dto.*;
 import com.readyauction.app.auction.entity.*;
 import com.readyauction.app.auction.repository.ProductRepository;
 
+import java.lang.management.ManagementFactory;
+import java.sql.Timestamp;
+import java.time.Duration;
+import java.time.Instant;
+
 import com.readyauction.app.cash.dto.PaymentReqDto;
 import com.readyauction.app.cash.entity.PaymentCategory;
 import com.readyauction.app.ncp.dto.FileDto;
@@ -13,9 +18,13 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RBucket;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,14 +42,15 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-
 public class ProductService {
-
+    private final RedissonClient redissonClient;
     private final ProductRepository productRepository;
 
     private final NcpObjectStorageService ncpObjectStorageService;
     private final MemberService memberService;
 
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
     public List<Product> findAll(){
         return productRepository.findAll();
     }
@@ -71,7 +81,7 @@ public class ProductService {
     @Transactional
     public String uploadFile(String email, MultipartFile multipartFile) {
         validateMultipartFile(multipartFile);
-        List<FileDto> s3Files = ncpObjectStorageService.uploadFiles(Collections.singletonList(multipartFile), "productIMG/"+ email);
+        List<FileDto> s3Files = ncpObjectStorageService.uploadAuctionFiles(Collections.singletonList(multipartFile), "productIMG/"+ email);
 
         return s3Files.stream()
                 .findFirst()
@@ -133,6 +143,26 @@ public class ProductService {
         }
     }
 
+    public ProductRepDto createAuction(String email, ProductReqDto productReqDto) {
+        // Redis에 경매 ID와 TTL 설정
+
+        ProductRepDto productRepDto = createProduct(email,productReqDto);
+        Timestamp currentTime = Timestamp.from(Instant.now());
+        long durationInSeconds = calculateTimeDifference(currentTime, productRepDto.getEndTime()).getSeconds();
+        // 경매 시작 시 TTL 설정 (예: 1시간)
+
+        String pid = ManagementFactory.getRuntimeMXBean().getName();
+        String key =  "Auction:ProductId:" + productRepDto.getId();
+        redisTemplate.opsForValue().set(key,pid);
+        redisTemplate.expire(key,durationInSeconds, TimeUnit.SECONDS);
+
+        log.info("Auction started for product ID: " + productRepDto.getId());
+        return productRepDto;
+    }
+    public static Duration calculateTimeDifference(Timestamp startTime, Timestamp endTime) {
+        // startTime과 endTime의 차이를 Duration 객체로 변환
+        return Duration.between(startTime.toInstant(), endTime.toInstant());
+    }
     @Transactional
     public List<Product> setProductsStatus(List<Product> products) {
         try {
@@ -303,6 +333,7 @@ public class ProductService {
                 .currentPrice(product.getCurrentPrice())
                 .immediatePrice(product.getImmediatePrice())
                 .imgUrl(product.getImages())
+                .memberId(product.getMemberId())
                 .nickName(memberService.findMemberById(product.getMemberId()).getNickname())
                 .build();
     }
@@ -341,21 +372,44 @@ public class ProductService {
 
     /** 지영 - 마이페이지 경매 등록 내역 조회 시 필요 **/
 
-    // 판매 중 (auctionStatus가 START 또는 PROGRESS)
+    // 판매 중 내역
     @Transactional
     public List<Product> getActiveProducts(Long memberId) {
-        return productRepository.findByMemberIdAndAuctionStatusIn(memberId, List.of(AuctionStatus.START, AuctionStatus.PROGRESS));
-    }
-    @Transactional
-    public List<Product> findByIdIn(List<Long> productIds) {
-        return productRepository.findByIdIn(productIds);
-    }
-    @Transactional
-    public void save(Product product) {
-        productRepository.save(product);
+        return productRepository.findActiveProductsByMemberId(memberId);
     }
 
-    // 지영 - 마이페이지 경매 참여 - 낙찰 시 결제 버튼
+    // 거래 완료 내역
+    @Transactional
+    public List<Product> getCompletedProducts(Long memberId) {
+        // 결제 완료
+        List<Product> confirmedProducts = productRepository.findConfirmedProductsByMemberId(memberId);
+        // 구매 확정
+        List<Product> acceptedProducts = productRepository.findAcceptedProductsByMemberId(memberId);
+
+        // 두 리스트를 합치기
+        List<Product> completedProducts = new ArrayList<>();
+        completedProducts.addAll(confirmedProducts);
+        completedProducts.addAll(acceptedProducts);
+
+        return completedProducts;
+    }
+
+    // 유찰 내역
+    @Transactional
+    public List<Product> getFailedProducts(Long memberId) {
+        return productRepository.findFailedProductsByMemberId(memberId);
+    }
+
+
+    /** 지영 - 마이페이지 경매 참여 내역 조회 시 필요 **/
+
+    // 낙찰 내역
+    @Transactional
+    public List<Product> getWinningBids(Long memberId) {
+        return productRepository.findWinningBids(memberId);
+    }
+
+    // 낙찰 시 결제 버튼
     @Transactional
     public boolean isWinnerConfirmed(Long productId, Long memberId) {
         // Product에서 Winner의 상태를 확인하는 로직
@@ -368,7 +422,7 @@ public class ProductService {
                 product.getWinner().getStatus() == PurchaseStatus.CONFIRMED;
     }
 
-    // 지영 - 마이페이지 경매 참여 - 낙찰 시 결제 완료 버튼
+    // 낙찰 시 결제 완료 버튼
     @Transactional
     public boolean isPaymentComplete(Long productId, Long memberId) {
         // Product에서 Winner의 상태를 확인하는 로직
@@ -381,9 +435,42 @@ public class ProductService {
                 product.getWinner().getStatus() == PurchaseStatus.ACCEPTED;
     }
 
+
     // 예진 - 채팅방 목록 - 상품 이미지
     public List<String> findImagesById(Long productId) {
         return productRepository.findImagesById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product images not found"));
     }
+
+    @Transactional
+    public String findByProductImage(String imageUrl) {
+        return productRepository.findImageByProductImage(imageUrl).orElse(null);
+    }
+    @Transactional
+    public void save(Product product) {
+        productRepository.save(product);
+    }
+
+    @Transactional
+    public Page<ProductDto> getProductsByCategory(Category category, Pageable pageable) {
+        if (category == null) {
+            return productRepository.findActiveProducts(AuctionStatus.END, pageable)
+                    .map(this::convertToProductDto);
+        } else {
+            return productRepository.findByCategoryAndAuctionStatus(category, AuctionStatus.END, pageable)
+                    .map(this::convertToProductDto);
+        }
+    }
+
+    @Transactional
+    public Page<ProductDto> searchProductsByNameAndCategory(String name, Category category, Pageable pageable) {
+        if (category == null) {
+            return productRepository.searchByNameAndStatus(name, AuctionStatus.END, pageable)
+                    .map(this::convertToProductDto);
+        } else {
+            return productRepository.searchByNameCategoryAndStatus(name, category, AuctionStatus.END, pageable)
+                    .map(this::convertToProductDto);
+        }
+    }
+
 }

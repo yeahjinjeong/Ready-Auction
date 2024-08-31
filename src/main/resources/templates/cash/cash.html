@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <style>
+        .image {
+            text-align: center;
+        }
+        .image img {
+            width: 220px;
+            height: 220px;
+            border-radius:50%;
+            margin-bottom: 5%;
+        }
+        .blue {
+            color: blue;
+        }
+        .red {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content1">
+    <div class="breadcrumb breadcrumb-style-one mb-0 ">
+        <div class="container">
+            <div class="col-lg-12 text-center">
+                <h1 class="breadcrumb-title">캐시</h1>
+                <ul class="d-flex justify-content-center breadcrumb-items">
+                    <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item active">캐시</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="auction-winner-wrapper pt-110">
+    <div class="container">
+    <!-- 캐시 충전/출금 -->
+    <div class="single-widget">
+        <h5 class="wdget-title">My Cash</h5>
+        <ul class="widget-list">
+            <li><label>잔액 :</label><span id="cash"></span></li>
+        </ul>
+        <div style="text-align: right">
+            <a th:href="@{/cash/charge}" class="alpha-btn-md-dark">충전</a>
+            <a th:href="@{/cash/withdrawal}" class="alpha-btn-md-dark">출금</a>
+        </div>
+    </div>
+
+    <!-- 캐시 내역 조회 -->
+    <div class="tab-inner-contentbox mt-0">
+        <div class="item-describe-area">
+            <ul class="nav nav-pills d-flex justify-content-center gap-sm-4 gap-1" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active describe-btn" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">전체 내역</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link describe-btn" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">입금 내역</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link describe-btn" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">출금 내역</button>
+                </li>
+            </ul>
+
+            <!-- 전체 내역 -->
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                    <div class="describe-content">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                            <tr>
+                                <th scope="col" colspan="2">구분</th>
+                                <th scope="col">상품명</th>
+                                <th scope="col">금액</th>
+                                <th scope="col">일시</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="transaction : ${transactionHistory}">
+                                <td th:text="${transaction.type}"></td>
+                                <td th:text="${transaction.status}"></td>
+                                <td>
+                                    <a th:href="@{/auction/bid-product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
+                                </td>
+                                <td>
+                                    <span th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
+                                          th:classappend="${transaction.amount < 0 ? 'red' : 'blue'}"
+                                          class="amount">
+                                    </span>
+                                </td>
+                                <td th:text="${#dates.format(transaction.date, 'yy년 M월 d일 HH:mm')}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <!--  페이징  -->
+                        <!--             <ul class="pagination pagination-style-one justify-content-center pt-50">-->
+                        <!--              <li class="page-item page-arrow"><a class="page-link" href="#"> <i class="bi bi-arrow-left"></i></a></li>-->
+                        <!--              <li class="page-item active"><a class="page-link" href="#">01</a></li>-->
+                        <!--              <li class="page-item"><a class="page-link" href="#">02</a></li>-->
+                        <!--              <li class="page-item"><a class="page-link" href="#">03</a></li>-->
+                        <!--              <li class="page-item"><a class="page-link" href="#">04</a></li>-->
+                        <!--              <li class="page-item page-arrow"><a class="page-link" href="#"> <i class="bi bi-arrow-right"></i></a></li>-->
+                        <!--             </ul>-->
+                    </div>
+                </div>
+
+                <!-- 입금 내역 -->
+                <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                    <div class="describe-content">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                            <tr>
+                                <th scope="col" colspan="2">구분</th>
+                                <th scope="col">상품명</th>
+                                <th scope="col">금액</th>
+                                <th scope="col">일시</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="transaction : ${transactionHistory}"
+                                th:if="${transaction.amount >= 0}">
+                                <td th:text="${transaction.type}"></td>
+                                <td th:text="${transaction.status}"></td>
+                                <td>
+                                    <a th:href="@{/auction/bid-product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
+                                </td>
+                                <td>
+                                    <span th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
+                                          th:classappend="${transaction.amount < 0 ? 'red' : 'blue'}"
+                                          class="amount">
+                                    </span>
+                                </td>
+                                <td th:text="${#dates.format(transaction.date, 'yy년 M월 d일 HH:mm')}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 출금 내역 -->
+                <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+                    <div class="describe-content">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                            <tr>
+                                <th scope="col" colspan="2">구분</th>
+                                <th scope="col">상품명</th>
+                                <th scope="col">금액</th>
+                                <th scope="col">일시</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="transaction : ${transactionHistory}"
+                                th:if="${transaction.amount < 0}">
+                                <td th:text="${transaction.type}"></td>
+                                <td th:text="${transaction.status}"></td>
+                                <td>
+                                    <a th:href="@{/auction/bid-product/{productId}(productId=${transaction.productId})}" th:text="${transaction.productName}"></a>
+                                </td>
+                                <td>
+                                    <span th:text="${transaction.amount < 0 ? transaction.amount : '+' + transaction.amount}"
+                                          th:classappend="${transaction.amount < 0 ? 'red' : 'blue'}"
+                                          class="amount">
+                                    </span>
+                                </td>
+                                <td th:text="${#dates.format(transaction.date, 'yy년 M월 d일 HH:mm')}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <script>
+        // 금액에 쉼표 추가
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // 계좌 캐시에 쉼표, 원 추가
+        document.addEventListener('DOMContentLoaded', function() {
+            var cash = [[${accountDto.cash}]]; // Thymeleaf에서 값을 삽입
+            document.getElementById('cash').textContent = formatNumber(cash) + '원';
+        });
+
+        // 캐시 내역 금액에 쉼표 추가
+        document.addEventListener("DOMContentLoaded", function() {
+            const amountElements = document.querySelectorAll('.amount');
+
+            amountElements.forEach(function(element) {
+                let amount = parseFloat(element.textContent.replace(/[+,]/g, ''));
+                let formattedAmount = formatNumber(amount);
+
+                // 양수인 경우 '+' 기호를 추가
+                if (amount > 0) {
+                    formattedAmount = '+' + formattedAmount;
+                }
+
+                element.textContent = formattedAmount;
+            });
+        });
+    </script>
+</div>
+
+</body>
+</html>

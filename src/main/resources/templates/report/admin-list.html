@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+  <style>
+    .image {
+      text-align: center;
+    }
+    .image img {
+      width: 220px;
+      height: 220px;
+      border-radius:50%;
+      margin-bottom: 5%;
+    }
+    .blue {
+      color: blue;
+    }
+    .red {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+<div layout:fragment="content1">
+  <div class="breadcrumb breadcrumb-style-one mb-0 ">
+    <div class="container">
+      <div class="col-lg-12 text-center">
+        <h1 class="breadcrumb-title">신고 내역</h1>
+        <ul class="d-flex justify-content-center breadcrumb-items">
+          <li class="breadcrumb-item"><i class="bi bi-house-door"></i> <a th:href="@{/}">Home</a></li>
+          <li class="breadcrumb-item active">신고 내역</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="auction-winner-wrapper pt-110">
+    <div class="container">
+        <div class="single-widget">
+          <!-- 신고 내역 -->
+          <div class="tab-inner-contentbox">
+            <h5 class="wdget-title">신고 내역</h5>
+
+            <div class="item-describe-area">
+              <ul class="nav nav-pills d-flex justify-content-center gap-sm-4 gap-1" id="pills-tab2" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active describe-btn" id="pills-home-tab2" data-bs-toggle="pill" data-bs-target="#pills-home2" type="button" role="tab" aria-controls="pills-home2" aria-selected="true">경매 게시글 신고</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link describe-btn" id="pills-profile-tab2" data-bs-toggle="pill" data-bs-target="#pills-profile2" type="button" role="tab" aria-controls="pills-profile2" aria-selected="false">채팅 신고</button>
+                </li>
+              </ul>
+
+              <!-- 경매 게시글 신고 내역 -->
+              <div class="tab-content" id="pills-tabContent2">
+                <div class="tab-pane fade show active" id="pills-home2" role="tabpanel" aria-labelledby="pills-home-tab2">
+                  <div class="describe-content">
+                    <table class="table table-striped">
+                      <thead class="table-dark">
+                      <tr>
+                        <th scope="col">신고번호</th>
+                        <th scope="col">신고유저ID</th>
+                        <th scope="col">신고게시글번호</th>
+                        <th scope="col">신고사유</th>
+                        <th scope="col">접수일자</th>
+                        <th scope="col">처리상태</th>
+                        <th scope="col">신고처리</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                        <tr th:each="productReport : ${productReports}">
+                          <td th:text="${productReport.getId()}"></td>
+                          <td th:text="${productReport.getUserId()}"></td>
+                          <td th:text="${productReport.getProductId()}"></td>
+                          <td th:text="${productReport.getReportDate()}">
+                          <td th:text="${productReport.getReportReason()}">
+                          <td th:text="${productReport.getStatus()}">
+                          <td>
+                            <a class="btn btn-primary" th:href="@{/admin/report/product/{productId}(productId=${productReport.getProductId()})}">처리완료</a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- 채팅 신고 내역 -->
+                <div class="tab-pane fade" id="pills-profile2" role="tabpanel" aria-labelledby="pills-profile-tab2">
+                  <div class="describe-content">
+                    <table class="table table-striped">
+                      <thead class="table-dark">
+                      <tr>
+                        <th scope="col">신고자</th>
+                        <th scope="col">신고대상</th>
+                        <th scope="col">상품</th>
+                        <th scope="col">신고 이유</th>
+                        <th scope="col">기타 설명</th>
+                        <th scope="col">작성일자</th>
+                        <th scope="col">처리상태</th>
+                        <th scope="col">신고처리</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr th:each="chatReport : ${chatReports}">
+                        <td th:text="${chatReport.reporterId}"></td>
+                        <td>
+                         <a th:href="@{/member/profile/{memberId}(memberId=${chatReport.reportedMemberId})}" th:text="${chatReport.reportedMemberId}"></a>
+                        </td>
+                        <td th:text="${chatReport.productId}"></td>
+                        <td th:text="${chatReport.reason}"></td>
+                        <td th:text="${chatReport.detail}"></td>
+                        <td th:text="${chatReport.createdAt}"></td>
+                        <td th:text="${chatReport.status}"></td>
+                        <td>
+                          <a th:if="${chatReport.status.name() == 'PENDING'}"
+                             th:href="@{/admin/report/chat/{reportId}(reportId=${chatReport.id})}"
+                             class="btn btn-primary">
+                            활동 정지
+                          </a>
+                          <span th:unless="${chatReport.status.name() == 'PENDING'}" class="btn btn-secondary">처리 완료</span>
+                        </td>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<script layout:fragment="script">
+  const message = `[[${message}]]`;
+  message && alert(message);
+</script>
+</body>
+</html>

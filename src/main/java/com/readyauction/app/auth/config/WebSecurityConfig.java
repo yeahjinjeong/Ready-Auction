@@ -1,5 +1,6 @@
 package com.readyauction.app.auth.config;
 
+import com.readyauction.app.user.entity.Authority;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,10 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    /**
-     * 정적파일에 대해서는 인증/인가 검사를 수행하지 않는다.
-     * @return
-     */
+    // 정적파일에 대해서는 인증/인가 검사를 수행하지 않는다.
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers("/assets/**", "/css/**", "/js/**", "/images/**");
@@ -26,25 +24,18 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf((csrfConfigurer) -> csrfConfigurer.disable());
 
-        /**
-         * - permitAll() : 모두 허용
-         * - authenticated() : 인증된 사용자만 허용
-         * - anonymous() : 인증하지 않은 사용자만 허용
-         * - hasRole(), hasAnyRole() : 특정 권한이 있는 사용자만 허용
-         */
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests((registry) -> {
 
-            // 특수한 경우부터 보편적인 경우순으로 작성
-            registry.requestMatchers("/auction-api/create", "/auction", "/", "/index", "/inquiry/faq").permitAll() // 누구나 허용
+            registry.requestMatchers("/auction-api/create", "/auction", "/", "/index", "/inquiry/faq").permitAll()  // 누구나 허용
                     .requestMatchers( "/member/register").anonymous() // 인증하지 않은 사용자만 허용
-                    .requestMatchers("/mypage/**", "/auction/**").authenticated() // 인증된 사용자만 허용
-//                    .requestMatchers("/admin/**").hasRole("ADMIN")  // ROLE_ADMIN 권한이 있는 사용자만 허용
+                    .requestMatchers("/mypage/**", "/auction/**", "/cash/**", "/chat/**", "inquiry/register").authenticated() // 인증된 사용자만 허용
+                    .requestMatchers("/admin/**").hasAnyAuthority(String.valueOf(Authority.ROLE_ADMIN))  // ROLE_ADMIN 권한이 있는 사용자만 허용
                     .anyRequest().authenticated();
         });
+
         /**
          * 폼로그인 설정
          */
@@ -57,6 +48,7 @@ public class WebSecurityConfig {
                     .failureUrl("/auth/login") // 로그인 실패 시 리다이렉트할 URL을 설정
                     .permitAll(); // 누구나 허용
         });
+
         /**
          * 로그아웃설정 - POST요청만 가능하다.
          */
@@ -72,29 +64,4 @@ public class WebSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    /**
-     * Spring Security에서 관리되는 사용자타입
-     * (임시로 메모리상에 사용자를 등록해서 사용한다. 이후 DB 회원테이블을 이용하도록 대체할 것)
-     * - 사용자는 UserDetails 타입이어야 한다.
-     * - 사용자를 조회하는 서비스는 UserDetailsService타입이어야 한다.
-     * @return
-     */
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//        // 일반사용자
-//        UserDetails user = User.builder()
-//                .username("honggd")
-//                .password(passwordEncoder().encode("1234")) // "1234"를 암호화해서 저장
-//                .roles("USER")
-//                .build();
-//        // 관리자
-//        UserDetails admin = User.builder()
-//                .username("sinsa")
-//                .password(passwordEncoder().encode("1234")) // "1234"를 암호화해서 저장
-//                .roles("USER", "ADMIN")
-//                .build();
-//
-//        return new InMemoryUserDetailsManager(user, admin);
-//    }
 }
