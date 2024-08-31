@@ -380,4 +380,10 @@ public class ProductService {
                 product.getWinner().getMemberId().equals(memberId) &&
                 product.getWinner().getStatus() == PurchaseStatus.ACCEPTED;
     }
+
+    // 예진 - 채팅방 목록 - 상품 이미지
+    public List<String> findImagesById(Long productId) {
+        return productRepository.findImagesById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product images not found"));
+    }
 }

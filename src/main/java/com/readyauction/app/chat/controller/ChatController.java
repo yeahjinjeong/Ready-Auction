@@ -2,6 +2,7 @@ package com.readyauction.app.chat.controller;
 
 import com.readyauction.app.auth.principal.AuthPrincipal;
 import com.readyauction.app.chat.dto.ChatRoomDto;
+import com.readyauction.app.chat.dto.ChatRoomProductDto;
 import com.readyauction.app.chat.dto.MessageDto;
 import com.readyauction.app.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
@@ -60,10 +61,11 @@ public class ChatController {
 //            @PathVariable Long memberId,
             @AuthenticationPrincipal AuthPrincipal principal,
             Model model) {
-        log.debug("멤버아이디 : {}", principal.getMember().getId());
-        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(principal.getMember().getId());
+        log.info("멤버아이디 : {}", principal.getMember().getId());
+//        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(principal.getMember().getId());
+        List<ChatRoomProductDto> chatRoomList  = chatService.findChatRoomAndProductByMemberId(principal.getMember().getId());
 //        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(0L);
-        log.debug(chatRoomList.toString());
+        log.info(chatRoomList.toString());
         model.addAttribute("chatRoomList", chatRoomList);
     }
 }
