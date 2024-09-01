@@ -18,11 +18,11 @@ import java.util.List;
 public class ChatRoomProductDto {
 //    private Long id; //
 //    private Long productId; //
-////    private List<ChatRoomMember> chatRoomMembers;
+//    private List<ChatRoomMember> chatRoomMembers;
 //    private String lastMessage; //
 //    private LocalDateTime lastMessageUpdatedAt; //
 //    private String name; //
-////    private List<String> images;
+//    private List<String> images;
 //    private PurchaseStatus status; // 구매 대기, 거래중, 구매확정 //
     private ChatRoom chatRoom;
     private Product product;

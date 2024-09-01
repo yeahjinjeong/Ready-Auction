@@ -15,6 +15,7 @@ import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,8 +80,15 @@ public class ChatService {
 
     // 채팅방 + 상품 목록 조회
     public List<ChatRoomProductDto> findChatRoomAndProductByMemberId(Long memberId) {
-        Optional<List<ChatRoomProductDto>> chatRoomAndProductByMemberIds = chatRoomRepository.findChatRoomAndProductByMemberId(memberId);
-        return chatRoomAndProductByMemberIds.get();
+        List<ChatRoomProductDto> chatRoomAndProductByMemberIds = new ArrayList<>();
+        try {
+            chatRoomAndProductByMemberIds = chatRoomRepository.findChatRoomAndProductByMemberId(memberId)
+                    .orElseThrow(() -> new ChatNotFoundException("ChatRoom not found for user id : " + memberId));
+            return chatRoomAndProductByMemberIds;
+        } catch (ChatNotFoundException e) {
+            log.debug("ChatNotFoundException : {}", e.getMessage());
+            return chatRoomAndProductByMemberIds;
+        }
     }
 
     // 채팅 메시지 내역 조회하기
@@ -148,7 +156,7 @@ public class ChatService {
     }
 
     // convertAndSendToUser 유니캐스트를 위해 식별값 조회
-    public String findReceiverEmailByMemberId(Long receiverId) {
+    public String findEmailByMemberId(Long receiverId) {
 //        Optional<Member> member = memberRepository.findById(receiverId);
         return memberService.findEmailById(receiverId);
     }

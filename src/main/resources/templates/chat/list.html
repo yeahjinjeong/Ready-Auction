@@ -69,7 +69,7 @@
             margin: 0;
             padding: 18px 16px 10px;
         }
-        .inbox_chat { height: 900px; overflow-y: scroll;}
+        .inbox_chat { height: 940px; overflow-y: scroll;}
 
         .active_chat{ background:#ebebeb;}
 
@@ -440,9 +440,9 @@
                     <h5 style="text-align: center; padding-left: 50px;">판매자 : ${infos.profile.sellerNickName}</h5>
                 </div>
             </div>
-             <div class="card-body" style="display: grid; grid-template-columns: 30% 70%; align-items: center;">
+             <div class="card-body" style="display: grid; grid-template-columns: 30% 70%; align-items: center; height: 195px">
                 <div class="image-container" style="text-align: center;">
-                    <img src="${infos.product.image}" alt="user" class="img-fluid" style="max-width: 100%; height: auto; padding-left: 20px">
+                    <img src="${infos.product.image != null ? infos.product.image : '../assets/images/index1.png'}" alt="product image" class="img-fluid" style="max-width: 100%; height: 150px; padding-left: 20px">
                 </div>
                 <div class="text-container" style="text-align: center;">
                     <h5 class="card-title">상품명 : ${infos.product.productName}</h5>
@@ -472,9 +472,9 @@
                     <h5 style="text-align: center; padding-left: 50px;">구매자 : ${infos.profile.winnerNickName}</h5>
                 </div>
             </div>
-             <div class="card-body" style="display: grid; grid-template-columns: 30% 70%; align-items: center;">
+             <div class="card-body" style="display: grid; grid-template-columns: 30% 70%; align-items: center; height: 195px">
                 <div class="image-container" style="text-align: center;">
-                    <img src="${infos.product.image}" alt="user" class="img-fluid" style="max-width: 100%; height: auto; padding-left: 20px">
+                    <img src="${infos.product.image != null ? infos.product.image : '../assets/images/index1.png'}" alt="user" class="img-fluid" style=" max-width: 100%; height: 150px; padding-left: 20px">
                 </div>
                 <div class="text-container" style="text-align: center;">
                     <h5 class="card-title">상품명 : ${infos.product.productName}</h5>
@@ -573,6 +573,12 @@
             </div>
             <div class="mesgs">
                 <div class="card text-center" id="profile-target">
+                    <div class="card-body" style="height: 360px">
+                        <div class="text-container" style="text-align: center; justify-content: center">
+                            <h5 class="card-title">현재 개설된 채팅방이 없습니다.</h5>
+                            <p>채팅방은 경매가 낙찰됐을시 자동으로 생성됩니다.</p>
+                        </div>
+                    </div>
                 </div>
                 &nbsp;&nbsp;
                 <div class="msg_history" id="target">

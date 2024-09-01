@@ -1,17 +1,14 @@
 package com.readyauction.app.chat.controller;
 
 import com.readyauction.app.auth.principal.AuthPrincipal;
-import com.readyauction.app.chat.dto.ChatRoomDto;
 import com.readyauction.app.chat.dto.ChatRoomProductDto;
 import com.readyauction.app.chat.dto.MessageDto;
 import com.readyauction.app.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -35,16 +32,21 @@ public class ChatController {
             @DestinationVariable("memberId")
             Long memberId,
             MessageDto messageDto) {
+
         log.info("message = {}", messageDto);
         log.info("memberId = {}", memberId);
+
         chatService.saveMessages(messageDto);
-        String userName = chatService.findReceiverEmailByMemberId(messageDto.getReceiverId());
-        String memberEmail = chatService.findReceiverEmailByMemberId(memberId);
-        log.info("userName = {}", userName); // 상대방
-        log.info("memberEmail = {}", memberEmail);
-        simpMessagingTemplate.convertAndSendToUser(userName, "/sub", messageDto); // 상대방에게
+
+        String receiverEmail = chatService.findEmailByMemberId(messageDto.getReceiverId());
+        String senderEmail = chatService.findEmailByMemberId(memberId);
+
+        log.info("receiverEmail = {}", receiverEmail); // 상대방
+        log.info("senderEmail = {}", senderEmail);
+
+        simpMessagingTemplate.convertAndSendToUser(receiverEmail, "/sub", messageDto); // 상대방에게
 //        simpMessagingTemplate.convertAndSendToUser(userName, "/sub", messageDto);
-        simpMessagingTemplate.convertAndSendToUser(memberEmail, "/sub", messageDto); // 나에게
+        simpMessagingTemplate.convertAndSendToUser(senderEmail, "/sub", messageDto); // 나에게
 //        return messageDto;
     }
 
@@ -62,11 +64,15 @@ public class ChatController {
             @AuthenticationPrincipal AuthPrincipal principal,
             Model model) {
         log.info("멤버아이디 : {}", principal.getMember().getId());
-        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(principal.getMember().getId());
+//        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(principal.getMember().getId());
+//        model.addAttribute("chatRoomList", chatRoomList);
         List<ChatRoomProductDto> chatRoomProductList  = chatService.findChatRoomAndProductByMemberId(principal.getMember().getId());
-        log.info(chatRoomList.toString());
-        log.info(chatRoomProductList.toString());
-        model.addAttribute("chatRoomList", chatRoomList);
+        log.info("chatRoomProductList = {}", chatRoomProductList);
+        chatRoomProductList.forEach((chatRoomProductDto) -> {
+            if (chatRoomProductDto.getProduct().getImages().isEmpty()) {
+                chatRoomProductDto.getProduct().setImages(List.of("../assets/images/index1.png"));
+            }
+        });
         model.addAttribute("chatRoomProductList", chatRoomProductList);
     }
 }
