@@ -1,6 +1,5 @@
 package com.readyauction.app.chat.controller;
 
-import com.readyauction.app.auction.dto.ProductDto;
 import com.readyauction.app.auth.principal.AuthPrincipal;
 import com.readyauction.app.chat.dto.*;
 import com.readyauction.app.chat.service.ChatService;
@@ -8,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,15 +34,7 @@ public class ChatMessageController {
             @PathVariable Long chatRoomId,
             @AuthenticationPrincipal AuthPrincipal principal
     ) {
-        // productId로 chatRoomId를 찾아서
-//        ChatRoomDto chatRoomDto = chatService.findChatRoomByProductId(productId);
-//        Long chatRoomId = chatService.findChatRoomIdByProductId(productId);
-        // chatRoomId로 메시지들을 찾는다
-//        List<MessageDto> messageDtos = chatService.findChatMessagesByChatRoomId(chatRoomDto.getId());
         log.info("{}", chatRoomId);
-        // memberId가 나와 다르고 status가 0인 메시지들 읽기(1)
-        chatService.updateMessageStatus(chatRoomId, principal.getMember().getId());
-//        chatService.updateMessageStatus(chatRoomId, 1L);
         // chatRoomId로 메시지들을 찾는다
         List<MessageDto> messageDtos = chatService.findChatMessagesByChatRoomId(chatRoomId);
         log.info(messageDtos.toString());
@@ -54,28 +42,35 @@ public class ChatMessageController {
     }
 
     // chatRoomId의 모든 메시지들의 상태를 1 (읽음)으로 바꾼다
-    // 업데이트
+    // 비동기처리
     @PatchMapping("/message/{chatRoomId}/read")
     public void updateMessages(
             @PathVariable Long chatRoomId,
             @RequestParam Long anotherMemberId
     ) {
         log.info("senderId : {}", anotherMemberId); // 상대방 아이디
-        // 채팅방 모든 문자 읽기
+        // 채팅방 안 읽은 문자 읽기 - 어차피 상대방이 문자를 보냈다면, 내가 보낸 문자들을 다 읽었을 거고 나도 상대방 문자들을 다 읽은 거임
         chatService.updateMessageStatus(chatRoomId);
         // 내가 아닌 상대 멤버 찾기
-        String userName = chatService.findReceiverEmailByMemberId(anotherMemberId);
+        String userName = chatService.findEmailByMemberId(anotherMemberId);
+        // 읽었다고 보낸 사람한테 알림 보내기
         simpMessagingTemplate.convertAndSendToUser(userName, "/sub", new MessageDto(null, chatRoomId, null, "enㅇtㅌrㄹy", null, null, null, null));
     }
 
+    // 최초 접속시
     @GetMapping("/message/{chatRoomId}/entry")
     public void sendEntryMessage(
             @PathVariable Long chatRoomId,
             @AuthenticationPrincipal AuthPrincipal principal
     ) {
+        // memberId가 나와 다르고 status가 0인 메시지들 읽기(1)
+        chatService.updateMessageStatus(chatRoomId, principal.getMember().getId());
+
         // 내가 아닌 상대 멤버 찾기
         Long memberId = chatService.findOppositeMemberIdByChatRoomId(chatRoomId, principal.getMember().getId());
-        String userName = chatService.findReceiverEmailByMemberId(memberId);
+        String userName = chatService.findEmailByMemberId(memberId);
+
+
         simpMessagingTemplate.convertAndSendToUser(userName, "/sub", new MessageDto(null, chatRoomId, null, "enㅇtㅌrㄹy", null, null, null, null));
     }
 
@@ -104,11 +99,11 @@ public class ChatMessageController {
     }
 
     // 상품 이미지 조회
-    @GetMapping("/list/image")
-    public ResponseEntity<?> findChatRoomImages(
-            @AuthenticationPrincipal AuthPrincipal principal) {
-        List<ChatImageDto> imageList = chatService.findImagesByChatRoomList(principal.getMember().getId());
-        log.info("imageList = {}", imageList);
-        return ResponseEntity.ok(imageList);
-    }
+//    @GetMapping("/list/image")
+//    public ResponseEntity<?> findChatRoomImages(
+//            @AuthenticationPrincipal AuthPrincipal principal) {
+//        List<ChatImageDto> imageList = chatService.findImagesByChatRoomList(principal.getMember().getId());
+//        log.info("imageList = {}", imageList);
+//        return ResponseEntity.ok(imageList);
+//    }
 }

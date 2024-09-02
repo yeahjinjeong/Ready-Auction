@@ -435,6 +435,13 @@ public class ProductService {
                 product.getWinner().getStatus() == PurchaseStatus.ACCEPTED;
     }
 
+
+    // 예진 - 채팅방 목록 - 상품 이미지
+    public List<String> findImagesById(Long productId) {
+        return productRepository.findImagesById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product images not found"));
+    }
+
     @Transactional
     public String findByProductImage(String imageUrl) {
         return productRepository.findImageByProductImage(imageUrl).orElse(null);
@@ -465,6 +472,5 @@ public class ProductService {
                     .map(this::convertToProductDto);
         }
     }
-
 
 }

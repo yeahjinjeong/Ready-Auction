@@ -2,7 +2,7 @@ package com.readyauction.app.chat.service;
 
 
 import com.readyauction.app.auction.entity.Product;
-import com.readyauction.app.auction.repository.ProductRepository;
+import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.chat.dto.*;
 import com.readyauction.app.chat.entity.ChatMessage;
 import com.readyauction.app.chat.entity.ChatRoom;
@@ -10,10 +10,12 @@ import com.readyauction.app.chat.entity.ChatRoomMember;
 import com.readyauction.app.chat.entity.ChatRoomMemberStatus;
 import com.readyauction.app.chat.repository.ChatMessageRepository;
 import com.readyauction.app.chat.repository.ChatRoomRepository;
+import com.readyauction.app.common.handler.ChatNotFoundException;
 import com.readyauction.app.user.entity.Member;
-import com.readyauction.app.user.repository.MemberRepository;
+import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,21 +30,30 @@ import java.util.Optional;
 public class ChatService {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageRepository chatMessageRepository;
-    private final ProductRepository productRepository;
-    private final MemberRepository memberRepository;
+
+    private final ProductService productService;
+    private final MemberService memberService;
+
+//    private final ProductRepository productRepository;
+//    private final MemberRepository memberRepository;
 
     // 채팅방 생성하기
     public void saveChatRooms(Long productId) {
-        Optional<Product> product = productRepository.findById(productId);
-        Optional<Member> seller = memberRepository.findById(product.get().getMemberId());
-        Member memberSeller = seller.get();
-        Optional<Member> winner = memberRepository.findById(product.get().getWinner().getMemberId());
-        Member memberWinner = winner.get();
+//        Optional<Product> product = productRepository.findById(productId);
+        Optional<Product> product = productService.findById(productId);
+
+//        Optional<Member> seller = memberRepository.findById(product.get().getMemberId());
+//        Member memberSeller = seller.get();
+        Member seller = memberService.findById(product.get().getMemberId());
+
+//        Optional<Member> winner = memberRepository.findById(product.get().getWinner().getMemberId());
+//        Member memberWinner = winner.get();
+        Member winner = memberService.findById(product.get().getWinner().getMemberId());
         ChatRoom chatRoom = ChatRoom.builder()
                 .productId(productId)
                 .chatRoomMembers(List.of(
-                        new ChatRoomMember(memberSeller.getId(), memberSeller.getNickname(), ChatRoomMemberStatus.Seller),
-                        new ChatRoomMember(memberWinner.getId(), memberWinner.getNickname(), ChatRoomMemberStatus.Winner)
+                        new ChatRoomMember(seller.getId(), seller.getNickname(), ChatRoomMemberStatus.Seller),
+                        new ChatRoomMember(winner.getId(), winner.getNickname(), ChatRoomMemberStatus.Winner)
                 ))
                 .build();
         chatRoomRepository.save(chatRoom);
@@ -63,9 +74,21 @@ public class ChatService {
 
     // 나의 채팅방 목록 조회
     public List<ChatRoomDto> findChatRoomsByMemberId(Long memberId) {
-
         Optional<List<ChatRoom>> chatRoomList = chatRoomRepository.findChatRoomsByMemberId(memberId);
         return chatRoomList.get().stream().map(ChatRoomDto::toChatRoomDto).toList();
+    }
+
+    // 채팅방 + 상품 목록 조회
+    public List<ChatRoomProductDto> findChatRoomAndProductByMemberId(Long memberId) {
+        List<ChatRoomProductDto> chatRoomAndProductByMemberIds = new ArrayList<>();
+        try {
+            chatRoomAndProductByMemberIds = chatRoomRepository.findChatRoomAndProductByMemberId(memberId)
+                    .orElseThrow(() -> new ChatNotFoundException("ChatRoom not found for user id : " + memberId));
+            return chatRoomAndProductByMemberIds;
+        } catch (ChatNotFoundException e) {
+            log.debug("ChatNotFoundException : {}", e.getMessage());
+            return chatRoomAndProductByMemberIds;
+        }
     }
 
     // 채팅 메시지 내역 조회하기
@@ -76,15 +99,18 @@ public class ChatService {
 
     // 상품 조회하기
     public ChatProductDto findProductById(Long productId) {
-        Optional<Product> product = productRepository.findById(productId);
+//        Optional<Product> product = productRepository.findById(productId);
+        Optional<Product> product = productService.findById(productId);
         return ChatProductDto.toChatProductDto(product.get());
     }
 
     // 상품 거래자 프로필 조회하기
     public ChatProfileDto findMembers(Long sellerId, Long winnerId) {
-        Optional<Member> seller = memberRepository.findById(sellerId);
-        Optional<Member> winner = memberRepository.findById(winnerId);
-        return ChatProfileDto.toChatProfileDto(seller.get(), winner.get());
+//        Optional<Member> seller = memberRepository.findById(sellerId);
+        Member seller = memberService.findById(sellerId);
+//        Optional<Member> winner = memberRepository.findById(winnerId);
+        Member winner = memberService.findById(winnerId);
+        return ChatProfileDto.toChatProfileDto(seller, winner);
     }
 
     public Long findChatRoomIdByProductId(Long productId) {
@@ -115,33 +141,41 @@ public class ChatService {
 
     // 채팅방별 내가 안 읽은 메시지 개수 조회하기
     public List<ChatUnreadCountDto> findCountStatusByNotMemberId(Long memberId) {
+        // 안 읽은 채팅 개수 리스트
         List<ChatUnreadCountDto> chatUnreadCountDtos = new ArrayList<>();
-        Optional<List<Long>> chatRoomIdList = chatRoomRepository.findChatRoomIdsByMemberId(memberId);
-        chatRoomIdList.get().stream().forEach((chatRoomId) -> {
-            Optional<ChatUnreadCountDto> chatUnreadCountDto = chatMessageRepository.findUnreadCountsByNotMemberId(memberId, chatRoomId);
-            chatUnreadCountDto.ifPresent(chatUnreadCountDtos::add);
-            }
-        );
-//        Optional<ChatUnreadCountDto> unreadCounts = chatMessageRepository.findUnreadCountsByNotMemberId(memberId, chatRoomId);
+        // 내가 참여하고 있는 채팅방 아이디 리스트
+        List<Long> chatRoomIdList = chatRoomRepository.findChatRoomIdsByMemberId(memberId).orElseThrow(() -> new ChatNotFoundException("chatroom not found for user ID: " + memberId));
+        if (!chatRoomIdList.isEmpty()) {
+            chatRoomIdList.forEach((chatRoomId) -> {
+                Optional<ChatUnreadCountDto> chatUnreadCountDto = chatMessageRepository.findUnreadCountsByNotMemberId(memberId, chatRoomId);
+                chatUnreadCountDto.ifPresent(chatUnreadCountDtos::add);
+                }
+            );
+        }
         return chatUnreadCountDtos;
     }
 
     // convertAndSendToUser 유니캐스트를 위해 식별값 조회
-    public String findReceiverEmailByMemberId(Long receiverId) {
-        Optional<Member> member = memberRepository.findById(receiverId);
-        return member.get().getEmail();
+    public String findEmailByMemberId(Long receiverId) {
+//        Optional<Member> member = memberRepository.findById(receiverId);
+        return memberService.findEmailById(receiverId);
     }
 
     // 채팅방 상품 사진 조회
-    public List<ChatImageDto> findImagesByChatRoomList(Long memberId) {
-        Optional<List<Long>> productList = chatRoomRepository.findProductIdsByMemberId(memberId);
-        List<ChatImageDto> chatImageDtos = new ArrayList<>();
-        productList.get().forEach((e) -> {
-            Optional<List<String>> images = productRepository.findImagesById(e);
-            chatImageDtos.add(new ChatImageDto(e, images.get().get(0)));
-        });
-        return chatImageDtos;
-    }
+//    public List<ChatImageDto> findImagesByChatRoomList(Long memberId) {
+//        // 경매 상품 리스트의 이미지 리스트 중 첫번째거를 받아서 조회해야 함
+//        // 경매 테이블이랑 이미지 테이블 조인해서 멤버 아이디에 맞는 이미지들 전부 불러와서 첫번째것만 어떻게 불러오지?
+//        List<ChatImageDto> chatImageDtos = new ArrayList<>();
+//        List<Long> productList = chatRoomRepository.findProductIdsByMemberId(memberId).orElseThrow(() -> new ChatNotFoundException("chatroom not found for user ID: " + memberId));
+//        if (!productList.isEmpty()) {
+//            productList.forEach((productId) -> {
+////            Optional<List<String>> images = productRepository.findImagesById(productId);
+//                List<String> images = productService.findImagesById(productId);
+//                chatImageDtos.add(new ChatImageDto(productId, images.get(0)));
+//            });
+//        }
+//        return chatImageDtos;
+//    }
 
     public Long findOppositeMemberIdByChatRoomId(Long chatRoomId, Long id) {
         Long memberId = chatRoomRepository.findOppositeMemberIdByChatRoomId(chatRoomId, id);

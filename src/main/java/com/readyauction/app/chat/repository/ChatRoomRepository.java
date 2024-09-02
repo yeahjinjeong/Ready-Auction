@@ -1,5 +1,6 @@
 package com.readyauction.app.chat.repository;
 
+import com.readyauction.app.chat.dto.ChatRoomProductDto;
 import com.readyauction.app.chat.entity.ChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -59,6 +60,21 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             m.memberId != :id
     """)
     Long findOppositeMemberIdByChatRoomId(Long chatRoomId, Long id);
+
+    @Query("""
+        select
+            new com.readyauction.app.chat.dto.ChatRoomProductDto(
+            c, p
+            )
+        from
+            ChatRoom c join c.chatRoomMembers m
+            left join Product p on c.productId = p.id
+        where
+            m.memberId = :memberId
+        order by
+            c.createdAt desc
+    """)
+    Optional<List<ChatRoomProductDto>> findChatRoomAndProductByMemberId(Long memberId);
 }
 
 /**
