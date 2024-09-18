@@ -2,6 +2,8 @@ package com.readyauction.app.inquiry.repository;
 
 import com.readyauction.app.inquiry.dto.InquiryDto;
 import com.readyauction.app.inquiry.entity.Inquiry;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,7 +18,7 @@ public interface InquiryRepository extends JpaRepository<Inquiry, Long> {
     from Inquiry i join Member m on i.authorId = m.id
     order by i.createdAt desc
     """)
-    List<InquiryDto> findAllAndNickname();
+    Page<InquiryDto> findAllAndNickname(Pageable pageable);
 
     List<Inquiry> findByAuthorId(Long userId); // 사용자 ID로 문의를 조회
 

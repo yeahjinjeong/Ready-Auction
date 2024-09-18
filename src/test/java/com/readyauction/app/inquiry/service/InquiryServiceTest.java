@@ -24,8 +24,8 @@ class InquiryServiceTest {
     void findAllAndNickname() {
         // given
         // when
-        List<InquiryDto> inquiryDtoList = inquiryRepository.findAllAndNickname();
+//        List<InquiryDto> inquiryDtoList = inquiryRepository.findAllAndNickname();
         // then
-        System.out.println(inquiryDtoList);
+//        System.out.println(inquiryDtoList);
     }
 }

@@ -138,7 +138,6 @@ public class NcpObjectStorageService {
             log.info("Auction for Image ID: " + uploadFileUrl);
 
         }
-
         return s3files;
     }
 

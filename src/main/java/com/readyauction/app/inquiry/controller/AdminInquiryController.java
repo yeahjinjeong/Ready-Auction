@@ -1,12 +1,17 @@
 package com.readyauction.app.inquiry.controller;
 
 import com.readyauction.app.auth.principal.AuthPrincipal;
+import com.readyauction.app.common.paging.PageCriteria;
 import com.readyauction.app.inquiry.dto.InquiryAnswerDto;
 import com.readyauction.app.inquiry.dto.InquiryDetailDto;
 import com.readyauction.app.inquiry.dto.InquiryDto;
 import com.readyauction.app.inquiry.service.AdminInquiryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -24,9 +29,25 @@ public class AdminInquiryController {
 
     // 관리자 문의 조회
     @GetMapping("/list")
-    public String adminInquiry(Model model) {
-        List<InquiryDto> inquiryDtos = adminInquiryService.findAll();
+    public String adminInquiry(
+            @PageableDefault(page = 0, size = 10) Pageable pageable,
+            Model model) {
+
+        pageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize()
+        );
+
+        Page<InquiryDto> inquiryDtos = adminInquiryService.findAll(pageable);
+
+        int page = inquiryDtos.getNumber();
+        int limit = inquiryDtos.getTotalPages();
+        int totalCount = (int) inquiryDtos.getTotalElements();
+        String url = "list"; // 상대주소
+
         model.addAttribute("inquiryList", inquiryDtos);
+        model.addAttribute("pageCriteria", new PageCriteria(page, limit, totalCount, url));
+
         log.info("inquiryDtos : {}", inquiryDtos);
         return "inquiry/admin-faq";
     }

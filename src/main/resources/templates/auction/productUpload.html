@@ -416,7 +416,7 @@
                 data: JSON.stringify(productData), // Serialize JSON
                 beforeSend: function (xhr) {
                     // Add email to the request header
-                    xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
+                    // xhr.setRequestHeader("email", "ssg2@gmail.com"); // Retrieve from session
                 },
                 success: function (data) {
                     alert('상품이 성공적으로 등록되었습니다.');

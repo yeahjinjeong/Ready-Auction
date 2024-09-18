@@ -6,6 +6,7 @@ import com.readyauction.app.auction.dto.ProductReqDto;
 import com.readyauction.app.auction.dto.WinnerReqDto;
 import com.readyauction.app.auction.entity.Category;
 import com.readyauction.app.auction.service.ProductService;
+import com.readyauction.app.common.paging.PageCriteria;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -43,10 +45,14 @@ public class AuctionController {
     public String searchAuction(
             @RequestParam(required = false) String prodName,
             @RequestParam(defaultValue = "ALL") String category, // Use String for category
-            @RequestParam(defaultValue = "0") int page,
+            @PageableDefault(page = 0, size = 9) Pageable pageable,
             Model model) {
 
-        Pageable pageable = PageRequest.of(page, 9, Sort.by("endTime").ascending());
+        pageable = PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by("endTime").ascending());
+
         Page<ProductDto> products;
 
         // Convert category String to Enum
@@ -58,6 +64,8 @@ public class AuctionController {
             return "error/404"; // or handle it appropriately
         }
 
+        log.debug("prodName = {}", prodName);
+
         if (prodName != null && !prodName.isEmpty()) {
             products = productService.searchProductsByNameAndCategory(prodName, categoryEnum, pageable);
         } else {
@@ -65,10 +73,11 @@ public class AuctionController {
         }
 
         model.addAttribute("products", products);
-        model.addAttribute("currentPage", "auction");
-        model.addAttribute("currentPageNumber", products.getNumber());
-        model.addAttribute("totalPages", products.getTotalPages());
-        model.addAttribute("prodName", prodName);
+
+        int page = products.getNumber();
+        int limit = products.getTotalPages();
+
+        model.addAttribute("pageCriteria", new PageCriteria(page, limit, 0, "/auction"));
         model.addAttribute("selectedCategory", category);  // Pass the selected category
 
         return "auction/auction";

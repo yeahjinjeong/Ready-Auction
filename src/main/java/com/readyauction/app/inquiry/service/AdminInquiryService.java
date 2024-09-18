@@ -11,6 +11,8 @@ import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.repository.MemberRepository;
 import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,15 +25,9 @@ import java.util.List;
 public class AdminInquiryService {
     private final InquiryRepository inquiryRepository;
     private final MemberRepository memberRepository;
-    public List<InquiryDto> findAll() {
-        List<InquiryDto> inquiryDtos = inquiryRepository.findAllAndNickname();
-//        List<InquiryDto> inquiryDtos = new ArrayList<>();
-//        inquiry.forEach((i) -> {
-//            String author = memberRepository.findNicknamesByMemberId(i);
-//            InquiryDto inquiryDto = InquiryDto.toInquiryListDto(i, author);
-//            inquiryDtos.add(inquiryDto);
-//        });
-        return inquiryDtos;
+
+    public Page<InquiryDto> findAll(Pageable pageable) {
+        return inquiryRepository.findAllAndNickname(pageable);
     }
 
     public InquiryDetailDto findAndNicknameById(Long id) {

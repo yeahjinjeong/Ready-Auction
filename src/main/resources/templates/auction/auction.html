@@ -159,16 +159,16 @@
             <!-- Pagination -->
             <ul class="pagination pagination-style-one justify-content-center pt-50">
                 <li th:if="${products.hasPrevious()}" class="page-item page-arrow">
-                    <a class="page-link" th:href="@{/auction(page=${products.number - 1}, category=${selectedCategory})}"><i class="bi bi-arrow-left"></i></a>
+                    <a class="page-link" th:href="@{/auction(page=${pageCriteria.page - 1}, category=${selectedCategory})}"><i class="bi bi-arrow-left"></i></a>
                 </li>
 
-                <li th:each="pageNum : ${#numbers.sequence(1, products.totalPages)}"
-                    th:classappend="${pageNum == products.number + 1} ? 'page-item active' : 'page-item'">
+                <li th:each="pageNum : ${#numbers.sequence(1, pageCriteria.limit)}"
+                    th:classappend="${pageNum == pageCriteria.page + 1} ? 'page-item active' : 'page-item'">
                     <a class="page-link" th:href="@{/auction(page=${pageNum - 1}, category=${selectedCategory})}">[[${pageNum}]]</a>
                 </li>
 
                 <li th:if="${products.hasNext()}" class="page-item page-arrow">
-                    <a class="page-link" th:href="@{/auction(page=${products.number + 1}, category=${selectedCategory})}"><i class="bi bi-arrow-right"></i></a>
+                    <a class="page-link" th:href="@{/auction(page=${pageCriteria.page + 1}, category=${selectedCategory})}"><i class="bi bi-arrow-right"></i></a>
                 </li>
             </ul>
 
