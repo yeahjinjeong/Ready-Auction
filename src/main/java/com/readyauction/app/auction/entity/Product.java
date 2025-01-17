@@ -50,10 +50,10 @@ public class Product {
 
     private Integer immediatePrice;
 
-    @NotEmpty(message = "최소 하나의 이미지는 필수 항목입니다.")
+//    @NotEmpty(message = "최소 하나의 이미지는 필수 항목입니다.")
     @ElementCollection
     @CollectionTable(name = "tbl_product_images", joinColumns = @JoinColumn(name = "product_id"))
-    @Column(name = "image_url")
+    @Column(name = "image_url", nullable = true)
     private List<String> images;
     @Enumerated(EnumType.STRING)
     private AuctionStatus auctionStatus;

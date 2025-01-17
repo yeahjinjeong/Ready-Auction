@@ -59,7 +59,7 @@ public class ProductService {
         Long userId = getUserIdFromRequest(email);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        System.out.println(productReqDto.getImgUrls().get(0));
+//        System.out.println(productReqDto.getImgUrls().get(0));
         Product product = Product.builder()
                 .memberId(userId)
                 .name(productReqDto.getName())
