@@ -96,7 +96,7 @@ public class ChatService {
     // 채팅 메시지 내역 조회하기
     public List<MessageDto> findChatMessagesByChatRoomId(Long id, Pageable pageable) {
         Page<ChatMessage> chatMessageList = chatMessageRepository.findChatMessagesByChatRoomId(id, pageable);
-        return chatMessageList.get().map(MessageDto::toChatMessageDto).toList();
+        return chatMessageList.getContent().stream().map(MessageDto::toChatMessageDto).toList();
     }
 
     // 상품 조회하기

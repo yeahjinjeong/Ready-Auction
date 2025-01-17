@@ -198,7 +198,7 @@
     let mySubscription = null;
     var isEnd = false;
     var isChatRoomScrolled = false;
-    var $whereAmI = 0;
+    var whereAmI = 0;
     var pageable = new URLSearchParams({
         page: 0,
         size: 10,
@@ -291,6 +291,9 @@
                 // 채팅 내역 불러오기
                 fetchChatMessages();
 
+                window.scrollTo(0, document.body.scrollHeight);
+                document.querySelector("#target").scrollTop = document.querySelector("#target").scrollHeight;
+
                 // 채팅방 입장 알림
                 $.ajax({
                     url: `[[@{/chat/message/${$chatRoomId}/entry}]]`,
@@ -315,7 +318,7 @@
 
                                 const data = JSON.parse(frame.body);
                                 const $container = document.querySelector("#target");
-                                const {chatMsgId, chatRoomId, senderId, message, createdAt, status} = data;
+                                const {messageId, chatRoomId, senderId, message, createdAt, status} = data;
 
                                 const date = new Date(createdAt);
 
@@ -399,26 +402,18 @@
         });
     });
 
-    $(".msg_history").scroll(function () {
-        var $window = $(this);
-        var scrollTop = $window.scrollTop();
-
-        if (scrollTop < 1 && isChatRoomScrolled === false) {
-            isChatRoomScrolled = true;
-            // $whereAmI = $("#target").first().data('msgNo').prev().offset();
-            fetchChatMessages();
-        }
-    })
-
     function fetchChatMessages() {
         if (isEnd) return;
+
         $.ajax({
             url : `[[@{/chat/message/${$chatRoomId}?${pageable.toString()}}]]`,
             method : 'get', // 기본값
             dataType : 'json', // 기대하는 응답 MIME
             success: function(data) {
-                pageable.set('page', pageable.get('page') + 1);
-                if (data.size < 10) isEnd = true;
+                if (data.length < 10) isEnd = true;
+                else {
+                    pageable.set('page', pageable.get('page') + 1);
+                }
                 displayChatMessages(data, $memberId);
             },
             error: function(xhr, status, error) {
@@ -507,10 +502,9 @@
 
     function displayChatMessages(messages, currentMemberId) {
         const messageHistory = document.getElementById('target');
-        // messageHistory.innerHTML = ''; // 기존 메시지를 지우고 새로운 메시지를 표시
         console.log(messages);
-        console.log(currentMemberId);
         messages.forEach(function (msg) {
+            whereAmI = msg.messageId;
             // 예시로, 현재 로그인한 사용자의 ID와 메시지를 보낸 사람의 ID를 비교하여 메시지 타입 결정
             var isIncoming = msg.senderId != currentMemberId; // true/false
             var msgType = isIncoming ? 'incoming_msg' : 'outgoing_msg';
@@ -527,7 +521,15 @@
                 </div>`;
             messageHistory.innerHTML = msgHTML + messageHistory.innerHTML; // 메시지 추가
         });
-        // messageHistory.scrollTo({top: $whereAmI.body.scrollHeight ,behavior: 'smooth'});
+
+
+        var position = $('[data-msgNo=' + whereAmI + ']').prev();
+
+        if (position !== undefined) {
+            messageHistory.scrollTo({top: position.offsetTop ,behavior: 'smooth'});
+        } else {
+            messageHistory.scrollTop = messageHistory.scrollHeight;
+        }
         isChatRoomScrolled = false;
     }
 </script>
@@ -608,6 +610,16 @@
 <script>
     const $message = document.querySelector("#message");
     const $messageBtn = document.querySelector("#send");
+    const $messageContainer = $("#target");
+
+    $("#target.msg_history").scroll(function () {
+        var scrollTop = $messageContainer.scrollTop();
+
+        if (scrollTop === 0 && isChatRoomScrolled === false) {
+            isChatRoomScrolled = true;
+            fetchChatMessages();
+        }
+    })
 
     // 입력 필드에 키보드 이벤트 리스너를 추가합니다.
     $message.addEventListener('keyup', function(event) {
