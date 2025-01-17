@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Optional;
@@ -71,9 +73,9 @@ public class ChatTest {
     @DisplayName("[채팅-조회] 채팅 메시지 조회")
     void findChatMessagesByChatRoomId() {
         // given
-        Optional<List<ChatMessage>> chatMessageList = chatMessageRepository.findChatMessagesByChatRoomId(1L);
+        Page<ChatMessage> chatMessageList = chatMessageRepository.findChatMessagesByChatRoomId(1L, PageRequest.of(0, 9));
         // when
-        List<MessageDto> messageDtos = chatMessageList.get().stream().map(MessageDto::toChatMessageDto).toList();
+        List<MessageDto> messageDtos = chatMessageList.get().map(MessageDto::toChatMessageDto).toList();
         // then
         System.out.println(messageDtos);
     }

@@ -5,6 +5,8 @@ import com.readyauction.app.chat.dto.*;
 import com.readyauction.app.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -31,12 +33,13 @@ public class ChatMessageController {
 
     @GetMapping("/message/{chatRoomId}")
     public List<MessageDto> findMessages(
-            @PathVariable Long chatRoomId,
-            @AuthenticationPrincipal AuthPrincipal principal
+            @PathVariable final Long chatRoomId,
+            @AuthenticationPrincipal final AuthPrincipal principal,
+            @PageableDefault(page = 0, size = 9) final Pageable pageable
     ) {
         log.info("{}", chatRoomId);
         // chatRoomId로 메시지들을 찾는다
-        List<MessageDto> messageDtos = chatService.findChatMessagesByChatRoomId(chatRoomId);
+        List<MessageDto> messageDtos = chatService.findChatMessagesByChatRoomId(chatRoomId, pageable);
         log.info(messageDtos.toString());
         return messageDtos;
     }

@@ -15,6 +15,8 @@ import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,9 +94,9 @@ public class ChatService {
     }
 
     // 채팅 메시지 내역 조회하기
-    public List<MessageDto> findChatMessagesByChatRoomId(Long id) {
-        Optional<List<ChatMessage>> chatMessageList = chatMessageRepository.findChatMessagesByChatRoomId(id);
-        return chatMessageList.get().stream().map(MessageDto::toChatMessageDto).toList();
+    public List<MessageDto> findChatMessagesByChatRoomId(Long id, Pageable pageable) {
+        Page<ChatMessage> chatMessageList = chatMessageRepository.findChatMessagesByChatRoomId(id, pageable);
+        return chatMessageList.get().map(MessageDto::toChatMessageDto).toList();
     }
 
     // 상품 조회하기

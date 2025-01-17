@@ -190,6 +190,21 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 <script>
+    let $memberId;
+    let $receiverId;
+    let $memberEmail;
+    let $chatRoomId;
+    let stompClient;
+    let mySubscription = null;
+    var isEnd = false;
+    var isChatRoomScrolled = false;
+    var $whereAmI = 0;
+    var pageable = new URLSearchParams({
+        page: 0,
+        size: 10,
+        sort: 'id,desc',
+    });
+
     $(document).ready(function() {
         // 페이지가 로드되면 첫 번째 채팅방을 자동으로 클릭
         $('.chat_list').first().trigger('click');
@@ -215,29 +230,6 @@
         })
         .catch(error => console.error('Error fetching unread message counts:', error));
 
-    // 채팅방에 경매 상품 사진 띄우기
-    // fetch('[[@{/chat/list/image}]]')
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         // 데이터 순회하며 매핑
-    //         data.forEach((image, index) => {
-    //             console.log(image)
-    //             // 각 채팅방의 chat_img 요소를 찾기
-    //             const chatRoomImage = document.querySelector(`.chat_img[data-product-id="${image.productId}"]`);
-    //             if (chatRoomImage) {
-    //                 console.log(image.image);
-    //                 chatRoomImage.innerHTML = ''; // 일단 있는 이미지 지우고
-    //                 chatRoomImage.insertAdjacentHTML('beforeend',
-    //                     ` <img src="${image.image}" alt=""> `)
-    //             }
-    //         });
-    //     })
-    //     .catch(error => console.error('Error fetching unread message counts:', error));
-
-    // let id = Math.floor(Math.random() * 2);
-    let $memberId;
-    let $receiverId;
-    let $memberEmail;
     // 로그인한 사용자 멤버 아이디 얻어오기
     fetch('[[@{/chat/authentication/member}]]')
         .then(response => response.json())
@@ -245,9 +237,6 @@
             $memberId = data.id;
             $memberEmail = data.email;
         });
-    let $chatRoomId;
-    let stompClient;
-    let mySubscription = null;
 
     // 채팅방 들어가기
     document.addEventListener("DOMContentLoaded", function() {
@@ -263,12 +252,15 @@
                     mySubscription.unsubscribe();
                     mySubscription = null;
                 }
-                // 모든 clickableElements에서 active_chat 클래스를 빼고
+                // 모든 clickableElements에서 'active_chat' 클래스를 빼고
                 clickableElements.forEach(function(el) {
                     el.classList.remove("active_chat");
                 });
                 // 새롭게 클릭된 요소에 'active_chat' 클래스 추가
                 element.classList.add("active_chat");
+                const messageHistory = document.getElementById('target');
+                messageHistory.innerHTML = '';
+                pageable.set('page', 0);
 
                 const profileBox = document.getElementById('profile-target');
                 profileBox.innerHTML = '';
@@ -297,17 +289,7 @@
                 })
 
                 // 채팅 내역 불러오기
-                $.ajax({
-                    url : `[[@{/chat/message/${$chatRoomId}}]]`,
-                    method : 'get', // 기본값
-                    dataType : 'json', // 기대하는 응답 MIME
-                    success: function(data) {
-                        displayChatMessages(data, $memberId);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching chat:', status, error);
-                    }
-                })
+                fetchChatMessages();
 
                 // 채팅방 입장 알림
                 $.ajax({
@@ -417,6 +399,34 @@
         });
     });
 
+    $(".msg_history").scroll(function () {
+        var $window = $(this);
+        var scrollTop = $window.scrollTop();
+
+        if (scrollTop < 1 && isChatRoomScrolled === false) {
+            isChatRoomScrolled = true;
+            // $whereAmI = $("#target").first().data('msgNo').prev().offset();
+            fetchChatMessages();
+        }
+    })
+
+    function fetchChatMessages() {
+        if (isEnd) return;
+        $.ajax({
+            url : `[[@{/chat/message/${$chatRoomId}?${pageable.toString()}}]]`,
+            method : 'get', // 기본값
+            dataType : 'json', // 기대하는 응답 MIME
+            success: function(data) {
+                pageable.set('page', pageable.get('page') + 1);
+                if (data.size < 10) isEnd = true;
+                displayChatMessages(data, $memberId);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching chat:', status, error);
+            }
+        })
+    }
+
     function displayChatProfiles(infos, currentMemberId) {
         const profileBox = document.getElementById('profile-target');
         profileBox.innerHTML = ``;
@@ -497,20 +507,17 @@
 
     function displayChatMessages(messages, currentMemberId) {
         const messageHistory = document.getElementById('target');
-        messageHistory.innerHTML = ''; // 기존 메시지를 지우고 새로운 메시지를 표시
+        // messageHistory.innerHTML = ''; // 기존 메시지를 지우고 새로운 메시지를 표시
         console.log(messages);
         console.log(currentMemberId);
         messages.forEach(function (msg) {
             // 예시로, 현재 로그인한 사용자의 ID와 메시지를 보낸 사람의 ID를 비교하여 메시지 타입 결정
             var isIncoming = msg.senderId != currentMemberId; // true/false
             var msgType = isIncoming ? 'incoming_msg' : 'outgoing_msg';
-            var imgHTML = isIncoming ? '</div>' : ''; // <img id="message_img" src="https://ptetutorials.com/images/user-profile.png" alt="user"> incoming_msg_img
             var dateTimeFormat = new Date(msg.createdAt2); // 'createdAt2' 필드를 사용하여 날짜 포맷팅
             var msgHTML =
-                `<div class="${msgType}">
-                    <div class="${isIncoming ? '' : 'sent_msg'}">
-                    ${imgHTML}
-                    <div class="${isIncoming ? 'received_msg' : ''}">
+                `<div class="${msgType}" data-msgNo = "${msg.id}">
+                    <div class="${isIncoming ? 'received_msg' : 'sent_msg'}">
                         <div class="${isIncoming ? 'received_withd_msg' : ''}">
                             <p>${msg.message}</p>
                             ${isIncoming ? '' : msg.status == 0 ? '<span class="chat_read">1</span>' : ''}
@@ -518,8 +525,10 @@
                         </div>
                     </div>
                 </div>`;
-            messageHistory.innerHTML += msgHTML; // 메시지 추가
+            messageHistory.innerHTML = msgHTML + messageHistory.innerHTML; // 메시지 추가
         });
+        // messageHistory.scrollTo({top: $whereAmI.body.scrollHeight ,behavior: 'smooth'});
+        isChatRoomScrolled = false;
     }
 </script>
 <button type="button" class="btn-close" aria-label="Close" onclick="history.back()"></button>

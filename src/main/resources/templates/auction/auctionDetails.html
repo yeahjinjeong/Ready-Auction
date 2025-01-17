@@ -391,9 +391,9 @@
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(winnerReqDto),
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader("email", "ssg2@gmail.com");
-                    },
+                    // beforeSend: function (xhr) {
+                    //     xhr.setRequestHeader("email", "ssg2@gmail.com");
+                    // },
                     success: function (data) {
                         console.log('Immediate buy successful:', data);
                         alert('즉시 구매에 성공했어요!');

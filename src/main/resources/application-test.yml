@@ -9,5 +9,5 @@ spring:
 #    password: readyauction
     url: jdbc:mysql://localhost:3306/auctiondb
     username: root
-    password: mysql
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver

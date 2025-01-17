@@ -32,7 +32,7 @@ public class EmailService {
             mimeMessageHelper.setTo(emailMessage.getTo()); // 메일 수신자
             mimeMessageHelper.setSubject(emailMessage.getSubject()); // 메일 제목
             mimeMessageHelper.setText(emailMessage.getMessage(), true); // 메일 본문 내용, HTML 여부
-            javaMailSender.send(mimeMessage);
+//            javaMailSender.send(mimeMessage);
             log.info("Success!!");
         } catch (MessagingException e) {
             log.info("fail!!");

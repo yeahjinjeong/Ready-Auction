@@ -31,8 +31,8 @@ public class RedissonConfig {
     @Value("${REDIS_PORT}")
     private int redisPort;
 
-    @Value("${REDIS_PASSWORD}")
-    private String redisPassword;
+//    @Value("${REDIS_PASSWORD}")
+//    private String redisPassword;
 
     private static final String REDISSON_HOST_PREFIX = "redis://";
 
@@ -41,7 +41,7 @@ public class RedissonConfig {
         Config config = new Config();
         config.useSingleServer()
                 .setAddress(REDISSON_HOST_PREFIX + redisHost + ":" + redisPort)
-                .setPassword(redisPassword)
+//                .setPassword(redisPassword)
                 .setConnectionPoolSize(4)
                 .setConnectionMinimumIdleSize(2)
                 .setSubscriptionConnectionPoolSize(3)
@@ -65,7 +65,7 @@ public class RedissonConfig {
         RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
         redisConfig.setHostName(redisHost);
         redisConfig.setPort(redisPort);
-        redisConfig.setPassword(RedisPassword.of(redisPassword));
+//        redisConfig.setPassword(RedisPassword.of(redisPassword));
 
         return new LettuceConnectionFactory(redisConfig);
     }
