@@ -201,7 +201,7 @@
     var whereAmI = 0;
     var pageable = new URLSearchParams({
         page: 0,
-        size: 10,
+        size: 8,
         sort: 'id,desc',
     });
 
@@ -410,10 +410,8 @@
             method : 'get', // 기본값
             dataType : 'json', // 기대하는 응답 MIME
             success: function(data) {
-                if (data.length < 10) isEnd = true;
-                else {
-                    pageable.set('page', pageable.get('page') + 1);
-                }
+                if (data.length < pageable.get('size')) isEnd = true;
+                pageable.set('page', parseInt(pageable.get('page')) + 1);
                 displayChatMessages(data, $memberId);
             },
             error: function(xhr, status, error) {
@@ -504,7 +502,6 @@
         const messageHistory = document.getElementById('target');
         console.log(messages);
         messages.forEach(function (msg) {
-            whereAmI = msg.messageId;
             // 예시로, 현재 로그인한 사용자의 ID와 메시지를 보낸 사람의 ID를 비교하여 메시지 타입 결정
             var isIncoming = msg.senderId != currentMemberId; // true/false
             var msgType = isIncoming ? 'incoming_msg' : 'outgoing_msg';
@@ -530,6 +527,7 @@
         } else {
             messageHistory.scrollTop = messageHistory.scrollHeight;
         }
+        whereAmI = messages[0].messageId;
         isChatRoomScrolled = false;
     }
 </script>

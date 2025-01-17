@@ -35,7 +35,7 @@ public class ChatMessageController {
     public List<MessageDto> findMessages(
             @PathVariable final Long chatRoomId,
             @AuthenticationPrincipal final AuthPrincipal principal,
-            @PageableDefault(page = 4, size = 3) final Pageable pageable
+            @PageableDefault(page = 0, size = 8) final Pageable pageable
     ) {
         log.info("{}", chatRoomId);
         // chatRoomId로 메시지들을 찾는다
