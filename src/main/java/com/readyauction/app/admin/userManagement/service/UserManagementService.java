@@ -30,10 +30,10 @@ public class UserManagementService {
                 member.getAddress(),
                 member.getPhone(),
                 member.getBirth(),
-                member.getUserStatus() == UserStatus.active ? member.getCreatedAt() : member.getDeletedAt(),
+                member.getUserStatus() == UserStatus.active ? member.getCreatedAt() : member.getUpdatedAt(),
                 member.getUserStatus().toString(),
                 member.getCreatedAt(), // 가입일
-                member.getDeletedAt(), // 탈퇴일
+                member.getUpdatedAt(), // 탈퇴일
                 member.getMannerScore()
         );
     }

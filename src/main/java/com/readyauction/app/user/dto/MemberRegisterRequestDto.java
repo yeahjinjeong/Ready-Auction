@@ -68,16 +68,13 @@ public class MemberRegisterRequestDto {
                 .email(this.email)
                 .password(this.password)
                 .name(this.name)
+                .birth(this.birth)
+                .gender(this.gender)
                 .phone(this.phone)
                 .address(this.address)
                 .mannerScore(0)
-                .gender(this.gender)
-                .birth(this.birth)
                 .nickname(this.nickname)
                 .profilePicture(this.profilePicture)
-                .createdAt(this.createdAt)
-                .updatedAt(this.updatedAt)
-                .deletedAt(this.deletedAt)
                 .userStatus(UserStatus.active)
                 .build();
     }

@@ -1,10 +1,8 @@
 package com.readyauction.app.user.entity;
 
+import com.readyauction.app.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -17,11 +15,9 @@ import java.util.Set;
 @Table(name = "tbl_user")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "user_type") // 자식클래스 타입을 결정하는 컬럼명
-@Data
-@SuperBuilder
+@Getter
 @NoArgsConstructor
-@AllArgsConstructor
-public abstract class User {
+public abstract class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,34 +31,8 @@ public abstract class User {
     @Column(nullable = false)
     private String name;
 
-    @Column
-    private LocalDate birth;
-
-    @Column
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
-
     @Column(nullable = false)
     private String phone;
-
-    @Column(nullable = false)
-    private String address;
-
-    @Column(nullable = false, unique = true)
-    private String nickname;
-
-    @Column
-    private String profilePicture;
-
-    @Column(nullable = false)
-    @CreationTimestamp
-    private Timestamp createdAt;
-
-    @Column
-    private Timestamp updatedAt;
-
-    @Column
-    private Timestamp deletedAt;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -74,9 +44,24 @@ public abstract class User {
     @Enumerated(EnumType.STRING)
     private Set<Authority> authorities;
 
-    public User(String address, String nickname, String profilePicture) {
-        this.address = address;
-        this.nickname = nickname;
-        this.profilePicture = profilePicture;
+    public User(
+            String email,
+            String password,
+            String name,
+            String phone,
+            UserStatus userStatus,
+            Set<Authority> authorities) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.phone = phone;
+        this.userStatus = userStatus;
+        this.authorities = authorities;
+    }
+    protected void changeName(String name) {
+        this.name = name;
+    }
+    protected void changeUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
     }
 }

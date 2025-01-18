@@ -41,8 +41,7 @@ public class MemberService {
     public Member register(MemberRegisterRequestDto dto) {
         // dto -> entity 변환
         Member member = dto.toMember();
-        // 기본권한 설정
-        member.setDefaultAuthorities();
+        // 기본권한 설정xx
         member = memberRepository.save(member);
         // 계좌 자동 생성
         accountService.create(member.getId());
@@ -136,7 +135,7 @@ public class MemberService {
 
     public void updateProfile(String email, String nickname, MultipartFile image, @RequestParam("isRemovedImage") boolean isRemovedImage) throws IOException {
         Member member = memberRepository.findByEmail(email);
-        member.setNickname(nickname);
+        member.changeNickname(nickname);
 
         // 이미지 제거 요청이 있을 경우
         if (isRemovedImage) {
@@ -144,7 +143,7 @@ public class MemberService {
             deleteImage(member.getProfilePicture());
 
             // Member 엔티티의 profilePicture를 null로 업데이트
-            member.setProfilePicture(null);
+            member.changeProfilePicture(null);
         } else {
             // 기존 프로필 이미지가 있는 경우 삭제
             if (member.getProfilePicture() != null) {
@@ -153,10 +152,8 @@ public class MemberService {
 
             // 새 프로필 이미지 업로드
             String newProfilePicture = uploadImage(email, image);
-            member.setProfilePicture(newProfilePicture);
+            member.changeProfilePicture(newProfilePicture);
         }
-
-        member.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         save(member);
     }
 
@@ -190,6 +187,6 @@ public class MemberService {
 
     public void changeStatus(Long reportedMemberId, UserStatus userStatus) {
         Member member = memberRepository.findById(reportedMemberId).get();
-        member.setUserStatus(userStatus);
+        member.chageUserStatus(userStatus);
     }
 }

@@ -1,12 +1,13 @@
 package com.readyauction.app.user.entity;
 
 import com.readyauction.app.user.dto.ProfileDto;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.util.Set;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,24 +17,60 @@ import lombok.ToString;
 @DiscriminatorValue("mem") // Member타입 구분하는 값을 mem로 지정 (기본값: Member)
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor
-@AllArgsConstructor
 @ToString(callSuper = true)
-@Data
-@SuperBuilder
+@Getter
 public class Member extends User {
+
+    @Column
+    private LocalDate birth;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    @Column(nullable = false, unique = true)
+    private String nickname;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column
+    private String profilePicture;
+
     private Integer mannerScore; // 매너지수
 
-    public void setDefaultAuthorities() {
-        this.setAuthorities(Set.of(Authority.ROLE_USER));
+    @Builder
+    public Member(
+            final String email,
+            final String password,
+            final String name,
+            final LocalDate birth,
+            final Gender gender,
+            final String phone,
+            final String nickname,
+            final String address,
+            final String profilePicture,
+            final Integer mannerScore,
+            final UserStatus userStatus
+    ) {
+        super(email, password, name, phone, userStatus, Set.of(Authority.ROLE_USER));
+        this.birth = birth;
+        this.gender = gender;
+        this.nickname = nickname;
+        this.address = address;
+        this.profilePicture = profilePicture;
+        this.mannerScore = mannerScore;
     }
 
     public void changeName(String name) {
-        this.setName(name);
+        super.changeName(name);
+    }
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
     }
 
-    public Member(String nickname, String address, String profilePicture, Integer mannerScore) {
-        super(nickname, address, profilePicture);  // User 필드 초기화
-        this.mannerScore = mannerScore;
+    public void changeProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 
     public void updateMannerScore(Integer initialScore) {
@@ -46,5 +83,9 @@ public class Member extends User {
 
     public void decreaseMannerScore() {
         this.mannerScore -= 5;
+    }
+
+    public void chageUserStatus(UserStatus userStatus) {
+        super.changeUserStatus(userStatus);
     }
 }

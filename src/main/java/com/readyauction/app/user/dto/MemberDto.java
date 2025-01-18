@@ -44,7 +44,7 @@ public class MemberDto {
         this.profilePicture = member.getProfilePicture();
         this.createdAt = member.getCreatedAt();
         this.updatedAt = member.getUpdatedAt();
-        this.deletedAt = member.getDeletedAt();
+        this.deletedAt = member.getUpdatedAt();
         this.userStatus = member.getUserStatus();
     }
 }
