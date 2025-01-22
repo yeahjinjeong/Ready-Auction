@@ -196,14 +196,10 @@
     let $chatRoomId;
     let stompClient;
     let mySubscription = null;
-    var isEnd = false;
-    var isChatRoomScrolled = false;
-    var whereAmI = 0;
-    var pageable = new URLSearchParams({
-        page: 0,
-        size: 8,
-        sort: 'id,desc',
-    });
+    var isEnd;
+    var isChatRoomScrolled;
+    var whereAmI;
+    var pageable;
 
     $(document).ready(function() {
         // 페이지가 로드되면 첫 번째 채팅방을 자동으로 클릭
@@ -245,6 +241,16 @@
 
         clickableElements.forEach(function(element) {
             element.addEventListener("click", function() {
+
+                isEnd = false;
+                isChatRoomScrolled = false;
+                whereAmI = 0;
+                pageable = new URLSearchParams({
+                    page: 0,
+                    size: 8,
+                    sort: 'id,desc',
+                });
+
                 const ws = new SockJS('[[@{/chat/list}]]'); // 한 사용자당 하나 // 채팅을 시작할 때마다 할당되고 디비에 소켓 아이디가 저장된다. // 클라이언트에서 소켓 리스너랑 소켓 센더
                 stompClient = Stomp.over(ws);
 
