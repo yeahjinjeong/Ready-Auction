@@ -1,15 +1,11 @@
 package com.readyauction.app.user.entity;
 
-import com.readyauction.app.user.dto.ProfileDto;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.util.Set;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -85,7 +81,7 @@ public class Member extends User {
         this.mannerScore -= 5;
     }
 
-    public void chageUserStatus(UserStatus userStatus) {
+    public void changeUserStatus(UserStatus userStatus) {
         super.changeUserStatus(userStatus);
     }
 }

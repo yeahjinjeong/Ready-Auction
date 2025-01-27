@@ -18,8 +18,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Controller
 @RequestMapping("/admin/inquiry")
 @Slf4j
@@ -70,7 +68,7 @@ public class AdminInquiryController {
             @AuthenticationPrincipal AuthPrincipal principal
     ){
         log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
-        adminInquiryService.addAnswer(principal.getMember().getId(), inquiryAnswerDto);
+        adminInquiryService.addAnswer(principal.getUser().getId(), inquiryAnswerDto);
         return "redirect:/admin/inquiry/detail/" + inquiryAnswerDto.getInquiryId();
     }
 
@@ -82,7 +80,7 @@ public class AdminInquiryController {
             @AuthenticationPrincipal AuthPrincipal principal
     ){
         log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
-        adminInquiryService.changeAnswer(principal.getMember().getId(), inquiryAnswerDto);
+        adminInquiryService.changeAnswer(principal.getUser().getId(), inquiryAnswerDto);
         return ResponseEntity.ok("ok");
     }
 
@@ -94,7 +92,7 @@ public class AdminInquiryController {
             @AuthenticationPrincipal AuthPrincipal principal
     ){
         log.info("inquiryAnswerDto : {}", inquiryAnswerDto);
-        adminInquiryService.deleteAnswer(principal.getMember().getId(), inquiryAnswerDto);
+        adminInquiryService.deleteAnswer(principal.getUser().getId(), inquiryAnswerDto);
         return ResponseEntity.ok("ok");
     }
 

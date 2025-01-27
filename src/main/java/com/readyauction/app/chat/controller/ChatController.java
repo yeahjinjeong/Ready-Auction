@@ -63,10 +63,10 @@ public class ChatController {
 //            @PathVariable Long memberId,
             @AuthenticationPrincipal AuthPrincipal principal,
             Model model) {
-        log.info("멤버아이디 : {}", principal.getMember().getId());
+        log.info("멤버아이디 : {}", principal.getUser().getId());
 //        List<ChatRoomDto> chatRoomList  = chatService.findChatRoomsByMemberId(principal.getMember().getId());
 //        model.addAttribute("chatRoomList", chatRoomList);
-        List<ChatRoomProductDto> chatRoomProductList  = chatService.findChatRoomAndProductByMemberId(principal.getMember().getId());
+        List<ChatRoomProductDto> chatRoomProductList  = chatService.findChatRoomAndProductByMemberId(principal.getUser().getId());
         log.info("chatRoomProductList = {}", chatRoomProductList);
         chatRoomProductList.forEach((chatRoomProductDto) -> {
             if (chatRoomProductDto.getProduct().getImages().isEmpty()) {

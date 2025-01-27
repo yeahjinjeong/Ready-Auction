@@ -28,7 +28,7 @@ public class ChatMessageController {
     public ResponseEntity<?> getMemberId(
             @AuthenticationPrincipal AuthPrincipal principal
     ) {
-        return ResponseEntity.ok(principal.getMember());
+        return ResponseEntity.ok(principal.getUser());
     }
 
     @GetMapping("/message/{chatRoomId}")
@@ -67,10 +67,10 @@ public class ChatMessageController {
             @AuthenticationPrincipal AuthPrincipal principal
     ) {
         // memberId가 나와 다르고 status가 0인 메시지들 읽기(1)
-        chatService.updateMessageStatus(chatRoomId, principal.getMember().getId());
+        chatService.updateMessageStatus(chatRoomId, principal.getUser().getId());
 
         // 내가 아닌 상대 멤버 찾기
-        Long memberId = chatService.findOppositeMemberIdByChatRoomId(chatRoomId, principal.getMember().getId());
+        Long memberId = chatService.findOppositeMemberIdByChatRoomId(chatRoomId, principal.getUser().getId());
         String userName = chatService.findEmailByMemberId(memberId);
 
 
@@ -96,7 +96,7 @@ public class ChatMessageController {
     public ResponseEntity<?> chatCountList(
             @AuthenticationPrincipal AuthPrincipal principal) {
         // 상대방이 보낸 메시지 중(멤버아이디가 다름) 0인 메시지 상태에 대해 카운트한다.
-        List<ChatUnreadCountDto> countList = chatService.findCountStatusByNotMemberId(principal.getMember().getId());
+        List<ChatUnreadCountDto> countList = chatService.findCountStatusByNotMemberId(principal.getUser().getId());
         log.info("countList = {}", countList);
         return ResponseEntity.ok(countList);
     }

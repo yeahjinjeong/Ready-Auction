@@ -1,5 +1,8 @@
 package com.readyauction.app.auth.service;
 
+import com.readyauction.app.auth.config.jwt.JwtProvider;
+import com.readyauction.app.auth.domain.RefreshToken;
+import com.readyauction.app.auth.domain.repository.RefreshTokenRepository;
 import com.readyauction.app.auth.principal.AuthPrincipal;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.entity.User;
@@ -21,22 +24,37 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AuthService implements UserDetailsService {
     private final UserRepository userRepository;
-
-    /**
-     * 사용자 아이디로 db에서 사용자객체를 조회해 UserDetails구현타입(AuthPrincipal)으로 반환한다.
-     * - username으로 조회한 결과가 없는 경우 UsernameNotFoundException을 명시적으로 던져주어야 한다.
-     * @param email
-     * @return
-     * @throws UsernameNotFoundException
-     */
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtProvider jwtProvider;
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        log.info("loadUserByUsername({})", email);
-        // orElseThrow()는 NoSuchElementException예외를 던진다.
-        User member = userRepository.findMemberByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email));
-        log.info("member = {}", member);
-        return new AuthPrincipal(member);
+        return new AuthPrincipal(user);
+    }
+
+    public String createNewAccessToken(String refreshToken) {
+        if (!jwtProvider.validateAccessToken(refreshToken)) {
+            throw new IllegalArgumentException("Unexpected refreshToken");
+        }
+
+        RefreshToken rt = findByRefreshToken(refreshToken);
+        User user = findById(rt.getUserId());
+
+        return jwtProvider.createAccessToken(user);
+    }
+
+    public User findById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
+    }
+
+    public String findRefreshTokenByUserId(Long userId) {
+        return refreshTokenRepository.findRefreshTokenByUserId_(userId).getRefreshToken();
+    }
+
+    public RefreshToken findByRefreshToken(String refreshToken) {
+        return refreshTokenRepository.findUserByRefreshToken(refreshToken);
     }
 
     /**
@@ -44,9 +62,9 @@ public class AuthService implements UserDetailsService {
      * @param email
      */
     public void updateAuthentication(String email) {
-        User newMember = userRepository.findMemberByEmail(email)
+        User newUser = userRepository.findMemberByEmail(email)
                                 .orElseThrow();
-        AuthPrincipal authPrincipal = new AuthPrincipal(newMember);
+        AuthPrincipal authPrincipal = new AuthPrincipal(newUser);
         Authentication newAuthentication = new UsernamePasswordAuthenticationToken(
             authPrincipal,
             authPrincipal.getPassword(),

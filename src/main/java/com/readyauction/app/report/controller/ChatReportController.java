@@ -41,7 +41,7 @@ public class ChatReportController {
             @AuthenticationPrincipal AuthPrincipal principal
     ) {
         log.info("chatReportDto : {}", chatReportReqDto);
-        chatReportReqDto.setReporterId(principal.getMember().getId());
+        chatReportReqDto.setReporterId(principal.getUser().getId());
         mannerReportService.reportChat(chatReportReqDto);
         return "redirect:/chat/list";
     }

@@ -38,7 +38,7 @@ public class MannerReportController {
 //        log.info("likes : {}", likes);
         // 매너폼을 저장하기
         // + 매너스코어 반영하기 => 멤버 엔티티 조회 후 change 하기~!
-        mannerReportService.applyMannerScore(principal.getMember().getId(), mannerReportReqDto);
+        mannerReportService.applyMannerScore(principal.getUser().getId(), mannerReportReqDto);
         return "redirect:/chat/list";
     }
 }

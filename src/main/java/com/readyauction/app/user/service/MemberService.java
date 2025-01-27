@@ -1,5 +1,8 @@
 package com.readyauction.app.user.service;
 
+import com.readyauction.app.auth.config.jwt.JwtProvider;
+import com.readyauction.app.auth.domain.RefreshToken;
+import com.readyauction.app.auth.domain.repository.RefreshTokenRepository;
 import com.readyauction.app.cash.service.AccountService;
 import com.readyauction.app.common.handler.UserNotFoundException;
 import com.readyauction.app.ncp.dto.FileDto;
@@ -12,6 +15,7 @@ import com.readyauction.app.user.dto.MemberDto;
 import com.readyauction.app.user.dto.MemberRegisterRequestDto;
 import com.readyauction.app.user.dto.MemberUpdateRequestDto;
 import com.readyauction.app.user.dto.ProfileDto;
+import com.readyauction.app.user.entity.Authority;
 import com.readyauction.app.user.entity.Member;
 import com.readyauction.app.user.entity.UserStatus;
 import com.readyauction.app.user.repository.MemberRepository;
@@ -23,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -35,14 +38,23 @@ public class MemberService {
     private final NcpObjectStorageService ncpObjectStorageService;
     private final AccountService accountService;
     private final MannerReportRepository mannerReportRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtProvider jwtProvider;
     @Value("${spring.s3.bucket}")
     private String bucketName;
 
     public Member register(MemberRegisterRequestDto dto) {
         // dto -> entity 변환
         Member member = dto.toMember();
-        // 기본권한 설정xx
+        String refreshToken = jwtProvider.createRefreshToken(Authority.ROLE_USER);
         member = memberRepository.save(member);
+        refreshTokenRepository.save(
+                RefreshToken.builder()
+                        .userId(member.getId())
+                        .refreshToken(refreshToken)
+                        .build()
+        );
+        // 기본권한 설정xx
         // 계좌 자동 생성
         accountService.create(member.getId());
         // 매너지수 기본 50 세팅
@@ -187,6 +199,6 @@ public class MemberService {
 
     public void changeStatus(Long reportedMemberId, UserStatus userStatus) {
         Member member = memberRepository.findById(reportedMemberId).get();
-        member.chageUserStatus(userStatus);
+        member.changeUserStatus(userStatus);
     }
 }

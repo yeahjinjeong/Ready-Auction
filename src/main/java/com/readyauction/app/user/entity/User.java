@@ -23,7 +23,7 @@ public abstract class User extends BaseEntity {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String email; // E-mail
+    private String email;
 
     @Column(nullable = false)
     private String password;
