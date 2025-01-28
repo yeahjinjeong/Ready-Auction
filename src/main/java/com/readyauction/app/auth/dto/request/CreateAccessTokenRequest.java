@@ -1,4 +1,4 @@
-package com.readyauction.app.auth.dto.req;
+package com.readyauction.app.auth.dto.request;
 
 import lombok.Data;
 

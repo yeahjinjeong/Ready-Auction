@@ -33,7 +33,7 @@
 
             <div class="right-form-area">
                 <h3>Login Your Account</h3>
-                <form class="w-100" th:action="@{/auth/login}" method="post">
+                <form id="loginForm" class="w-100" method="post">
                     <div class="form-inner">
                         <label>이메일</label>
                         <input type="text" name="email" placeholder="Your email">
@@ -48,7 +48,6 @@
 <!--                            <input type="checkbox" id="html">-->
 <!--                            <label for="html">Remember Me</label>-->
 <!--                        </div>-->
-
 <!--                        <a href="#" class="forgot-pass">Forgotten Password</a>-->
 <!--                    </div>-->
                     <input type="submit" value="로그인" class="account-btn">
@@ -73,37 +72,64 @@
     </div>
 
     <script>
-        // 로그인 결과에 따른 알림 메시지 표시
-        window.onload = function() {
-            /* 서버에서 로그인 성공 또는 실패 여부에 대한 정보를 받기 위한 Thymeleaf 코드 */
-            /* 예: 서버에서 model.addAttribute("loginSuccess", true 또는 false); 를 사용하여 결과 전달 */
-            /* 아래 코드에서 loginSuccess 및 loginFailure는 서버에서 전달받는 속성이라고 가정 */
+    let accessToken = "";
+    const form = document.getElementById("loginForm");
 
-            /* 로그인 성공 알림 */
-            var loginSuccess = /*[[${loginSuccess}]]*/ false;  // 서버에서 제공하는 값
-            if (loginSuccess) {
+    form.addEventListener("submit", function(event) {
+        event.preventDefault();  // 기본 폼 제출을 막음
+
+        const formData = new FormData(form);  // 폼 데이터를 FormData로 준비
+
+        fetch('[[@{/auth/login}]]', {
+            method: "POST",
+            credentials: "include",
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                // 로그인 성공
+                const accessToken = response.headers.get('Authorization');
+                localStorage.setItem("accessToken", accessToken);
                 showAlert("로그인 성공!");
-            }
-
-            /* 로그인 실패 알림 */
-            var loginFailure = /*[[${loginFailure}]]*/ false;  // 서버에서 제공하는 값
-            if (loginFailure) {
+                window.location.href = '[[@{/auction}]]';
+            } else {
                 showAlert("로그인 실패. 다시 시도해주세요.");
             }
-        }
+        })
+        .catch(error => console.error("폼 제출 에러:", error));
+    })
 
-        // 알림 메시지 표시 함수
-        function showAlert(message) {
-            var alertBox = document.getElementById("alert-box");
-            var alertMessage = document.getElementById("alert-message");
-            alertMessage.textContent = message;
-            alertBox.style.display = "block";
+    // 로그인 결과에 따른 알림 메시지 표시
+    // window.onload = function() {
+        /* 서버에서 로그인 성공 또는 실패 여부에 대한 정보를 받기 위한 Thymeleaf 코드 */
+        /* 예: 서버에서 model.addAttribute("loginSuccess", true 또는 false); 를 사용하여 결과 전달 */
+        /* 아래 코드에서 loginSuccess 및 loginFailure는 서버에서 전달받는 속성이라고 가정 */
 
-            // 3초 후 알림 메시지 자동 닫기
-            setTimeout(function() {
-                alertBox.style.display = "none";
-            }, 3000);
-        }
+        /* 로그인 성공 알림 */
+        // var loginSuccess = /*[[${loginSuccess}]]*/ false; // 서버에서 제공하는 값
+        // if (loginSuccess) {
+        // showAlert("로그인 성공!");
+        // }
+
+        /* 로그인 실패 알림 */
+        // var loginFailure = /*[[${loginFailure}]]*/ false; // 서버에서 제공하는 값
+        // if (loginFailure) {
+        // showAlert("로그인 실패. 다시 시도해주세요.");
+        // }
+    // }
+
+    // 알림 메시지 표시 함수
+    function showAlert(message) {
+        var alertBox = document.getElementById("alert-box");
+        var alertMessage = document.getElementById("alert-message");
+        alertMessage.textContent = message;
+        alertBox.style.display = "block";
+
+        // 3초 후 알림 메시지 자동 닫기
+        setTimeout(function () {
+            alertBox.style.display = "none";
+        }, 3000);
+    }
     </script>
 
 

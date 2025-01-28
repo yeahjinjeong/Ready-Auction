@@ -29,18 +29,14 @@ public class JwtAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
     private final JwtProvider jwtProvider;
     private final AuthService authService;
 
-//    public JwtAuthenticationSuccessHandler(JwtProvider jwtProvider, AuthService authService) {
-//        this.jwtProvider = jwtProvider;
-//        this.authService = authService;
-//    }
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
         AuthPrincipal principal = (AuthPrincipal) authentication.getPrincipal();
         String accessToken = jwtProvider.createAccessToken(principal.getUser());
 
         // 액세스 토큰을 Authorization 헤더에 추가
-        response.setHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
+        response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
 
         // 리프레시 토큰을 쿠키에 추가
         ResponseCookie responseCookie = ResponseCookie.from(
@@ -59,10 +55,5 @@ public class JwtAuthenticationSuccessHandler extends SimpleUrlAuthenticationSucc
         response.sendRedirect("/auction");
         super.onAuthenticationSuccess(request, response, authentication);
         response.setStatus(HttpServletResponse.SC_OK);
-    }
-
-    public static String serialize(Object object) {
-        return Base64.getUrlEncoder()
-                .encodeToString(SerializationUtils.serialize(object));
     }
 }

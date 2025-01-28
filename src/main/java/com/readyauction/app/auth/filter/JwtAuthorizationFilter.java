@@ -19,14 +19,8 @@ import java.io.IOException;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
-//    private final AuthService authService;
     private final static String HEADER_AUTHORIZATION = "Authorization";
     private final static String TOKEN_PREFIX = "Bearer ";
-
-//    public JwtAuthorizationFilter(JwtProvider jwtProvider, AuthService authService) {
-//        this.jwtProvider = jwtProvider;
-//        this.authService = authService;
-//    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

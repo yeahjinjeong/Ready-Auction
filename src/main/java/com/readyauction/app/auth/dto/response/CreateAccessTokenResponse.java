@@ -1,4 +1,4 @@
-package com.readyauction.app.auth.dto.res;
+package com.readyauction.app.auth.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
