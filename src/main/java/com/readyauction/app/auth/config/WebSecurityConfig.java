@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -43,18 +44,17 @@ public class WebSecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests((registry) -> {registry.requestMatchers("/auction-api/create", "/auction", "/", "/auth/login", "/inquiry/faq").permitAll()  // 누구나 허용
-                        .requestMatchers( "/member/register").anonymous() // 인증하지 않은 사용자만 허용
-                        .requestMatchers("/mypage/**", "/auction/**", "/cash/**", "/chat/**", "inquiry/register").authenticated() // 인증된 사용자만 허용
-                        .requestMatchers("/admin/**").hasAnyAuthority(String.valueOf(Authority.ROLE_ADMIN))  // ROLE_ADMIN 권한이 있는 사용자만 허용
-                        .anyRequest().authenticated();
-                })
-//                .authorizeHttpRequests((registry) -> {registry.requestMatchers("/auction-api/create", "/auction", "/", "/auth/login", "/inquiry/faq").permitAll()  // 누구나 허용
-//                    .requestMatchers( "/member/register").anonymous() // 인증하지 않은 사용자만 허용
-//                    .requestMatchers("/mypage/**", "/auction/**", "/cash/**", "/chat/**", "inquiry/register").authenticated() // 인증된 사용자만 허용
-//                    .requestMatchers("/admin/**").hasAnyAuthority(String.valueOf(Authority.ROLE_ADMIN))  // ROLE_ADMIN 권한이 있는 사용자만 허용
-//                    .anyRequest().authenticated();
+//                .authorizeHttpRequests((registry) -> {registry.requestMatchers("/auction", "/", "/auth/login", "/inquiry/faq").permitAll()  // 누구나 허용
+//                        .requestMatchers( "/member/register").anonymous() // 인증하지 않은 사용자만 허용
+//                        .requestMatchers("/mypage/**", "/auction/**", "/cash/**", "/chat/**", "inquiry/register").authenticated() // 인증된 사용자만 허용
+//                        .requestMatchers("/admin/**").hasAnyAuthority(String.valueOf(Authority.ROLE_ADMIN))  // ROLE_ADMIN 권한이 있는 사용자만 허용
+//                        .anyRequest().authenticated();
 //                })
+                .authorizeHttpRequests((registry) -> {registry.requestMatchers(HttpMethod.OPTIONS).permitAll()  // 누구나 허용
+                    .requestMatchers( "/member/register").anonymous() // 인증하지 않은 사용자만 허용
+                    .requestMatchers("/admin/**").hasAnyAuthority(String.valueOf(Authority.ROLE_ADMIN))  // ROLE_ADMIN 권한이 있는 사용자만 허용
+                    .anyRequest().permitAll();
+                })
                 .formLogin(AbstractHttpConfigurer::disable)
 //                .formLogin(configurer -> {
 //                    configurer.loginPage("/auth/login") // GET 로그인폼 요청 url (핸들러 작성 필요)

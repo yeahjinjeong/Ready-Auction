@@ -5,6 +5,7 @@ import com.readyauction.app.auction.entity.PurchaseCategory;
 import com.readyauction.app.auction.service.BidService;
 import com.readyauction.app.auction.service.ProductService;
 import com.readyauction.app.auction.service.RedisLockService;
+import com.readyauction.app.auth.principal.AuthPrincipal;
 import com.readyauction.app.chat.service.ChatService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,7 +37,9 @@ public class AuctionRestController {
     final RedisLockService redisLockService;
 
     @PostMapping("/create")
-        public ResponseEntity<ProductRepDto> createAuction(HttpServletRequest request,@RequestBody ProductReqDto productReqDto) {
+        public ResponseEntity<ProductRepDto> createAuction(HttpServletRequest request
+            ,@RequestBody ProductReqDto productReqDto
+    ) {
         log.info(request.getHeader("email")+"이메일");
         log.info(productReqDto.toString());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

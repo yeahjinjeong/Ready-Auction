@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -27,14 +28,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
-        String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
-        log.error("authorizationHeader : {}", authorizationHeader);
-        String token = getAccessToken(authorizationHeader);
-        if (jwtProvider.validateAccessToken(token)) {
-            Authentication authentication = jwtProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        try {
+            String authorizationHeader = request.getHeader(HEADER_AUTHORIZATION);
+            log.error("authorizationHeader : {}", authorizationHeader);
+            String token = getAccessToken(authorizationHeader);
+            if (jwtProvider.validateAccessToken(token)) {
+                Authentication authentication = jwtProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            response.sendRedirect("/auth/login");
         }
-        filterChain.doFilter(request, response);
     }
 
     private String getAccessToken(String authorizationHeader) {

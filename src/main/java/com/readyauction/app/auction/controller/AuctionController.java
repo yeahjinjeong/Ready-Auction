@@ -6,6 +6,7 @@ import com.readyauction.app.auction.dto.ProductReqDto;
 import com.readyauction.app.auction.dto.WinnerReqDto;
 import com.readyauction.app.auction.entity.Category;
 import com.readyauction.app.auction.service.ProductService;
+import com.readyauction.app.auth.principal.AuthPrincipal;
 import com.readyauction.app.common.paging.PageCriteria;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +41,9 @@ public class AuctionController {
     private final ProductService productService;
 
     @GetMapping("/productUpload") // 상품 등록
-    public void createAuction(Model model) {
+    public void createAuction(Model model, @AuthenticationPrincipal AuthPrincipal principal) {
         // 상품 등록 로직
+        Long id = principal.getUser().getId();
     }
 
     @GetMapping("") // 상품 조회
